@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "57F62C04D0E6D330B2C0ACAF4C1DC0EDC1AFCA7E",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "8A01E9A4396C1C5E62B2A6CE7482E93B28974BCC" : 9223372036854775807,
+    "57F62C04D0E6D330B2C0ACAF4C1DC0EDC1AFCA7E" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "9D6C21C1-0E9C-4CA8-BED5-0272CC4E4856",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "8A01E9A4396C1C5E62B2A6CE7482E93B28974BCC" : "",
+    "57F62C04D0E6D330B2C0ACAF4C1DC0EDC1AFCA7E" : "E-bikeApp\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "E-Bike App",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "E-Bike App\/E-Bike App.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:Moshkim\/E-bikeApp.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "57F62C04D0E6D330B2C0ACAF4C1DC0EDC1AFCA7E"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Moshkim\/E-bikeApp",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8A01E9A4396C1C5E62B2A6CE7482E93B28974BCC"
+    }
+  ]
+}

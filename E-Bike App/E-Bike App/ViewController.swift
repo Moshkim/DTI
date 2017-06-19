@@ -10,7 +10,9 @@ import Foundation
 import UIKit
 
 
-class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIViewControllerTransitioningDelegate {
+    
+    
 
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -86,7 +88,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             pageControlBottomAnchor?.constant = 40
             skipButtonTopAnchor?.constant = -40
             nextButtonTopAnchor?.constant = -40
-            moveToMapButton.isHidden = false
+            animateButton.isHidden = false
             
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 self.view.layoutIfNeeded()}, completion: nil)
@@ -107,7 +109,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         pageControlBottomAnchor?.constant = 40
         skipButtonTopAnchor?.constant = -40
         nextButtonTopAnchor?.constant = -40
-        moveToMapButton.isHidden = false
+        animateButton.isHidden = false
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()}, completion: nil)
@@ -122,7 +124,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.tintColor = UIColor.DTIBlue()
         button.titleLabel?.shadowColor = UIColor.darkGray
-        
         button.addTarget(self, action: #selector(moveToMapView), for: .touchUpInside)
         
         let mapViewController = MapViewController(nibName: "MapViewController", bundle: nil)
@@ -131,23 +132,51 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         return button
     }()
     
-    func moveToMapView() {
-    
-        performSegue(withIdentifier: "MapViewSegue", sender: moveToMapButton)
+    func moveToMapView(_ button: TransitionSubmitButton) {
+
+        button.animate(3, completion: { () -> () in
+            let secondVC = MapViewController()
+            secondVC.transitioningDelegate = self
+            self.present(secondVC, animated: true, completion: nil)
+            
+        })
+        //performSegue(withIdentifier: "MapViewSegue", sender: moveToMapButton)
     
     }
     
     
+    lazy var animateButton: TransitionSubmitButton = {
+        let button = TransitionSubmitButton()
+        button.layer.cornerRadius = 20.0
+        button.backgroundColor = UIColor.DTIBlue()
+        button.setTitle("Log In", for: .normal)
+        button.setTitleColor(UIColor.DTIRed(), for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.titleLabel?.shadowColor = UIColor.darkGray
+        
+        button.addTarget(self, action: #selector(moveToMapView), for: .touchUpInside)
+        return button
+    }()
     
     
+    // MARK: UIViewControllerTransitioningDelegate
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return TKFadeInAnimator(transitionDuration: 0.5, startingAlpha: 0.8)
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return nil
+    }
     
     var pageControlBottomAnchor: NSLayoutConstraint?
     var skipButtonTopAnchor: NSLayoutConstraint?
     var nextButtonTopAnchor: NSLayoutConstraint?
     var moveToMapButtonAnchor: NSLayoutConstraint?
+    var animateButtonButtomAnchor: NSLayoutConstraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         observeKeyboardNotification()
@@ -157,12 +186,13 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         view.addSubview(pageControl)
         view.addSubview(skipButton)
         view.addSubview(nextButton)
-        view.addSubview(moveToMapButton)
+        view.addSubview(animateButton)
+        //view.addSubview(moveToMapButton)
         view.addGestureRecognizer(tap)
         
-        moveToMapButton.isHidden = true
+        animateButton.isHidden = true
         
-        moveToMapButtonAnchor = moveToMapButton.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 160, rightConstant: 0, widthConstant: 0, heightConstant: 30)[3]
+        animateButtonButtomAnchor = animateButton.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 10, leftConstant: 30, bottomConstant: 200, rightConstant: 30, widthConstant: 0, heightConstant: 40)[3]
         
         pageControlBottomAnchor = pageControl.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 40)[1]
         
@@ -194,7 +224,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             pageControlBottomAnchor?.constant = 40
             skipButtonTopAnchor?.constant = -40
             nextButtonTopAnchor?.constant = -40
-            moveToMapButton.isHidden = false
+            animateButton.isHidden = false
             //moveToMapButtonAnchor?.constant = -10
         }
         // Back on the regular page controls, Page Number < 5
@@ -203,7 +233,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             pageControlBottomAnchor?.constant = 0
             skipButtonTopAnchor?.constant = 15
             nextButtonTopAnchor?.constant = 15
-            moveToMapButton.isHidden = true
+            animateButton.isHidden = true
             //moveToMapButtonAnchor?.constant = 50
         }
         

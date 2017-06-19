@@ -9,7 +9,24 @@
 import Foundation
 import UIKit
 
+
 class LoginPage: UICollectionViewCell {
+
+    
+    //let animateButton: TransitionSubmitButton
+    
+    let wholeView: UIImageView = {
+        let image = UIImage(named: "atom")
+        let imageView = UIImageView(image: image)
+        //imageView.center =
+        imageView.frame(forAlignmentRect: .zero)
+        imageView.layer.zPosition = -1
+        imageView.contentMode = .scaleAspectFit
+        
+        return imageView
+    
+    }()
+    
 
     
     let logoImageView: UIImageView = {
@@ -41,15 +58,23 @@ class LoginPage: UICollectionViewCell {
         
     }()
     
+
+    
+
+    
+    
     let loginButton: UIButton = {
         let button = UIButton(type: .system)
         //let Text = NSMutableAttributedString(string: "Log In", attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 10), NSForegroundColorAttributeName:UIColor.DTIRed()])
+        button.layer.cornerRadius = 30
         button.backgroundColor = UIColor.DTIBlue()
         
         button.setTitle("Log In", for: .normal)
         button.setTitleColor(UIColor.DTIRed(), for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.titleLabel?.shadowColor = UIColor.darkGray
+        
+        
         //button.isHighlighted = true
         //button.adjustsImageWhenHighlighted = true
         
@@ -57,18 +82,54 @@ class LoginPage: UICollectionViewCell {
     }()
     
     
-
+    /*
+    let blurrView: UIVisualEffectView = {
+        
+        let blurrEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
+        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurrEffect)
+        
+        
+        let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
+        let blurrView = UIVisualEffectView(effect: blurrEffect)
+        blurrView.layer.zPosition = -1
+        blurrView.contentMode = .scaleAspectFit
+        blurrView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        return blurrView
+    }()
     
-    
+     */
+ 
 
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
+        addSubview(wholeView)
         addSubview(logoImageView)
         addSubview(emailTextField)
         addSubview(passwordTextField)
-        addSubview(loginButton)
+        //addSubview(loginButton)
+        //addSubview(animateButton)
+        
+        
+        
+        
+        let blurrEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
+        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurrEffect)
+        let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
+        let blurrView = UIVisualEffectView(effect: blurrEffect)
+        
+        blurrView.frame = self.bounds
+        blurrView.layer.zPosition = -1
+        blurrView.contentMode = .scaleAspectFit
+        blurrView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(blurrView)
+        addSubview(vibrancyView)
+        
+        
+        
+        
+        
         //addSubview(moveToMapButton)
         
         
@@ -79,16 +140,18 @@ class LoginPage: UICollectionViewCell {
         
         _ = passwordTextField.anchor(emailTextField.bottomAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, topConstant: 10, leftConstant: 30, bottomConstant: 0, rightConstant: 30, widthConstant: 0, heightConstant: 50)
         
-        _ = loginButton.anchor(passwordTextField.bottomAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, topConstant: 10, leftConstant: 30, bottomConstant: 0, rightConstant: 30, widthConstant: 0, heightConstant: 50)
+        //_ = loginButton.anchor(passwordTextField.bottomAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, topConstant: 10, leftConstant: 30, bottomConstant: 0, rightConstant: 30, widthConstant: 0, heightConstant: 50)
         
-        //_ = moveToMapButton.anchor(loginButton.bottomAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 30)
         
+        //_ = animateButton.anchor(loginButton.bottomAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, topConstant: 10, leftConstant: 30, bottomConstant: 0, rightConstant: 30, widthConstant: 0, heightConstant: 60)
 
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+
 
 }
 
