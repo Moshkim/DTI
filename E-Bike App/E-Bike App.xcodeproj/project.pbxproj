@@ -8,42 +8,80 @@
 
 /* Begin PBXBuildFile section */
 		7811FA365087491747E10638 /* Pods_E_Bike_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538CC959FD3D7DE95978EC3E /* Pods_E_Bike_App.framework */; };
+		A60DBB101F0D6B6E00AAD99D /* GraphViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60DBB0F1F0D6B6E00AAD99D /* GraphViewController.swift */; };
 		A6144F981EDDEF6200204D02 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144F971EDDEF6200204D02 /* Utils.swift */; };
 		A6144F9A1EDDF1FC00204D02 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144F991EDDF1FC00204D02 /* SplashViewController.swift */; };
 		A6144F9C1EDDF23C00204D02 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144F9B1EDDF23C00204D02 /* Constant.swift */; };
 		A6144FA01EDDF7DB00204D02 /* AnimatedUILogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144F9F1EDDF7DB00204D02 /* AnimatedUILogoView.swift */; };
 		A6144FA21EDDFC1800204D02 /* RootContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA11EDDFC1800204D02 /* RootContainerViewController.swift */; };
-		A6144FA41EDE04D800204D02 /* MenuNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA31EDE04D800204D02 /* MenuNavigationViewController.swift */; };
 		A6144FA61EDE242B00204D02 /* TileGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA51EDE242B00204D02 /* TileGridView.swift */; };
 		A6144FA81EDE243200204D02 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA71EDE243200204D02 /* TileView.swift */; };
+		A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */; };
+		A61680631F1EA81400CE39D3 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A61680621F1EA81400CE39D3 /* HealthKit.framework */; };
+		A61680651F1EA82D00CE39D3 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A61680641F1EA82D00CE39D3 /* MapKit.framework */; };
 		A625DDDD1EC623B600DB521E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDC1EC623B600DB521E /* AppDelegate.swift */; };
 		A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDE1EC623B600DB521E /* MapViewController.swift */; };
 		A625DDE21EC623B600DB521E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE01EC623B600DB521E /* Main.storyboard */; };
 		A625DDE51EC623B600DB521E /* E_Bike_App.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A625DDE31EC623B600DB521E /* E_Bike_App.xcdatamodeld */; };
 		A625DDE71EC623B600DB521E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE61EC623B600DB521E /* Assets.xcassets */; };
 		A625DDEA1EC623B600DB521E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */; };
+		A629C8A01F269499002924DE /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C89E1F269499002924DE /* CoreDataStack.swift */; };
+		A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C8A11F269521002924DE /* FormatDisplay.swift */; };
 		A6301CF81EEF1D170005EA12 /* SettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CF71EEF1D170005EA12 /* SettingCell.swift */; };
-		A6301CFA1EEF4A2E0005EA12 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CF91EEF4A2E0005EA12 /* ViewController.swift */; };
+		A6301CFA1EEF4A2E0005EA12 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */; };
 		A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFB1EEF57170005EA12 /* PageCell.swift */; };
 		A6301CFE1EF05A190005EA12 /* Page.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFD1EF05A190005EA12 /* Page.swift */; };
 		A6301D001EF068680005EA12 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFF1EF068680005EA12 /* Extensions.swift */; };
 		A6303E011EE88A3C00A57596 /* PlaceMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E001EE88A3C00A57596 /* PlaceMarker.swift */; };
 		A6303E051EE9F34800A57596 /* SettingsLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E041EE9F34800A57596 /* SettingsLauncher.swift */; };
 		A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E081EEB5BD100A57596 /* ResizeImage.swift */; };
+		A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */; };
+		A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */; };
 		A64D79BC1ED4DBC800318A91 /* SearchResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */; };
+		A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65548571F02CAB400968564 /* MenuNavigationViewController.swift */; };
+		A661BF141F1002410029A905 /* RideStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A661BF131F1002410029A905 /* RideStatusViewController.swift */; };
+		A663974D1F265B9F009D3C96 /* StoryboardSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */; };
+		A663974F1F2661C1009D3C96 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A663974E1F2661C1009D3C96 /* LocationManager.swift */; };
 		A6646FEE1ED360FC00B6FF30 /* enum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6646FED1ED360FC00B6FF30 /* enum.swift */; };
+		A6664F0B1F2FED47007316AA /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6664F0A1F2FED47007316AA /* HistoryViewController.swift */; };
+		A68447EA1F02C8A400B90B79 /* UIViewXRadialGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D01F02C8A400B90B79 /* UIViewXRadialGradient.swift */; };
+		A68447EB1F02C8A400B90B79 /* UITextFieldX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D11F02C8A400B90B79 /* UITextFieldX.swift */; };
+		A68447EC1F02C8A400B90B79 /* UIButtonX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D21F02C8A400B90B79 /* UIButtonX.swift */; };
+		A68447ED1F02C8A400B90B79 /* UILabelX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D31F02C8A400B90B79 /* UILabelX.swift */; };
+		A68447EE1F02C8A400B90B79 /* UIViewAnchorPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D41F02C8A400B90B79 /* UIViewAnchorPoint.swift */; };
+		A68447EF1F02C8A400B90B79 /* UIViewControllerX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D51F02C8A400B90B79 /* UIViewControllerX.swift */; };
+		A68447F01F02C8A400B90B79 /* UIImageViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D61F02C8A400B90B79 /* UIImageViewX.swift */; };
+		A68447F11F02C8A400B90B79 /* UIViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D71F02C8A400B90B79 /* UIViewX.swift */; };
+		A68447F21F02C8A400B90B79 /* UIVisualEffectViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D81F02C8A400B90B79 /* UIVisualEffectViewX.swift */; };
+		A68447F31F02C8A400B90B79 /* UISliderX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D91F02C8A400B90B79 /* UISliderX.swift */; };
+		A68447F51F02C8A400B90B79 /* FloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447DC1F02C8A400B90B79 /* FloatingActionButton.swift */; };
+		A68447F61F02C8A400B90B79 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447DE1F02C8A400B90B79 /* Model.swift */; };
+		A68447F71F02C8A400B90B79 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447DF1F02C8A400B90B79 /* Data.swift */; };
+		A68447F81F02C8A400B90B79 /* DayWeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447E01F02C8A400B90B79 /* DayWeatherModel.swift */; };
+		A68447FB1F02C8A400B90B79 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447E51F02C8A400B90B79 /* TableViewCell.swift */; };
+		A68447FD1F02C8A400B90B79 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447E81F02C8A400B90B79 /* MenuViewController.swift */; };
+		A684A5E41F0AC1E6007C6FCC /* ConfirmActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A684A5E31F0AC1E6007C6FCC /* ConfirmActionButton.swift */; };
 		A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68573F11EF084FD005C96CC /* LoginPage.swift */; };
+		A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */; };
+		A69FDB041F0D6DC8003D7D15 /* UIColor+colorFromHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */; };
 		A6A72E0D1EF3048900FB5CCE /* RouteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A72E0C1EF3048900FB5CCE /* RouteStore.swift */; };
 		A6BD1C6A1EF842A100E5D8EE /* CGRectEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C651EF842A100E5D8EE /* CGRectEx.swift */; };
 		A6BD1C6B1EF842A100E5D8EE /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C661EF842A100E5D8EE /* FadeTransition.swift */; };
 		A6BD1C6C1EF842A100E5D8EE /* NSTimerEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C671EF842A100E5D8EE /* NSTimerEx.swift */; };
 		A6BD1C6D1EF842A100E5D8EE /* SpinerLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C681EF842A100E5D8EE /* SpinerLayer.swift */; };
 		A6BD1C6E1EF842A100E5D8EE /* TransitionSubmitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C691EF842A100E5D8EE /* TransitionSubmitButton.swift */; };
+		A6C7BFAF1F1933C10000E66A /* CircleMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFA91F1933C10000E66A /* CircleMenu.swift */; };
+		A6C7BFB01F1933C10000E66A /* CircleMenuLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFAA1F1933C10000E66A /* CircleMenuLoader.swift */; };
+		A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */; };
+		A6F1C4181F1FD29F000B03AE /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = A6F1C4171F1FD29F000B03AE /* style.json */; };
+		A6F1C41A1F201063000B03AE /* EbikeDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */; };
+		A6F1C41C1F201699000B03AE /* NewRunViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F1C41B1F201699000B03AE /* NewRunViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		22A681EB5AF2C4ED7C8D8D86 /* Pods-E-Bike App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E-Bike App.release.xcconfig"; path = "Pods/Target Support Files/Pods-E-Bike App/Pods-E-Bike App.release.xcconfig"; sourceTree = "<group>"; };
 		538CC959FD3D7DE95978EC3E /* Pods_E_Bike_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_E_Bike_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A60DBB0F1F0D6B6E00AAD99D /* GraphViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GraphViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/GraphViewController.swift"; sourceTree = "<group>"; };
 		A6144F951EDDEEF400204D02 /* SplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SplashScreen.h; sourceTree = "<group>"; };
 		A6144F961EDDEF3C00204D02 /* Commons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Commons.h; sourceTree = "<group>"; };
 		A6144F971EDDEF6200204D02 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -51,36 +89,71 @@
 		A6144F9B1EDDF23C00204D02 /* Constant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		A6144F9F1EDDF7DB00204D02 /* AnimatedUILogoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimatedUILogoView.swift; sourceTree = "<group>"; };
 		A6144FA11EDDFC1800204D02 /* RootContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootContainerViewController.swift; sourceTree = "<group>"; };
-		A6144FA31EDE04D800204D02 /* MenuNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuNavigationViewController.swift; sourceTree = "<group>"; };
 		A6144FA51EDE242B00204D02 /* TileGridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TileGridView.swift; path = "E-Bike App/TileGridView.swift"; sourceTree = "<group>"; };
 		A6144FA71EDE243200204D02 /* TileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TileView.swift; path = "E-Bike App/TileView.swift"; sourceTree = "<group>"; };
+		A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnimateButtonController.swift; path = "E-Bike App/AnimateButtonController.swift"; sourceTree = SOURCE_ROOT; };
+		A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "E-Bike App.entitlements"; sourceTree = "<group>"; };
+		A61680621F1EA81400CE39D3 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		A61680641F1EA82D00CE39D3 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		A625DDD91EC623B600DB521E /* E-Bike App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E-Bike App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A625DDDC1EC623B600DB521E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A625DDDE1EC623B600DB521E /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		A625DDDE1EC623B600DB521E /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MapViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/MapViewController.swift"; sourceTree = "<group>"; };
 		A625DDE11EC623B600DB521E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A625DDE41EC623B600DB521E /* E_Bike_App.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = E_Bike_App.xcdatamodel; sourceTree = "<group>"; };
 		A625DDE61EC623B600DB521E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A625DDE91EC623B600DB521E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A625DDEB1EC623B600DB521E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A629C89E1F269499002924DE /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		A629C8A11F269521002924DE /* FormatDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormatDisplay.swift; sourceTree = "<group>"; };
 		A6301CF71EEF1D170005EA12 /* SettingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingCell.swift; sourceTree = "<group>"; };
-		A6301CF91EEF4A2E0005EA12 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/LoginViewController.swift"; sourceTree = "<group>"; };
 		A6301CFB1EEF57170005EA12 /* PageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageCell.swift; sourceTree = "<group>"; };
 		A6301CFD1EF05A190005EA12 /* Page.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Page.swift; sourceTree = "<group>"; };
 		A6301CFF1EF068680005EA12 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A6303E001EE88A3C00A57596 /* PlaceMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceMarker.swift; sourceTree = "<group>"; };
-		A6303E021EE9BC2200A57596 /* style.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; };
-		A6303E031EE9C78200A57596 /* style.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = style.geojson; sourceTree = "<group>"; };
 		A6303E041EE9F34800A57596 /* SettingsLauncher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsLauncher.swift; sourceTree = "<group>"; };
 		A6303E081EEB5BD100A57596 /* ResizeImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResizeImage.swift; sourceTree = "<group>"; };
+		A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignupViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/SignupViewController.swift"; sourceTree = "<group>"; };
+		A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EbikeSettingViewController.swift; sourceTree = "<group>"; };
 		A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsController.swift; sourceTree = "<group>"; };
+		A65548571F02CAB400968564 /* MenuNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuNavigationViewController.swift; sourceTree = "<group>"; };
+		A661BF131F1002410029A905 /* RideStatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RideStatusViewController.swift; path = "E-Bike App/RideStatusViewController.swift"; sourceTree = SOURCE_ROOT; };
+		A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardSupport.swift; sourceTree = "<group>"; };
+		A663974E1F2661C1009D3C96 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		A6646FED1ED360FC00B6FF30 /* enum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = enum.swift; sourceTree = "<group>"; };
+		A6664F0A1F2FED47007316AA /* HistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryViewController.swift; path = "E-Bike App/HistoryViewController.swift"; sourceTree = SOURCE_ROOT; };
+		A68447D01F02C8A400B90B79 /* UIViewXRadialGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewXRadialGradient.swift; sourceTree = "<group>"; };
+		A68447D11F02C8A400B90B79 /* UITextFieldX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldX.swift; sourceTree = "<group>"; };
+		A68447D21F02C8A400B90B79 /* UIButtonX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButtonX.swift; sourceTree = "<group>"; };
+		A68447D31F02C8A400B90B79 /* UILabelX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UILabelX.swift; sourceTree = "<group>"; };
+		A68447D41F02C8A400B90B79 /* UIViewAnchorPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewAnchorPoint.swift; sourceTree = "<group>"; };
+		A68447D51F02C8A400B90B79 /* UIViewControllerX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewControllerX.swift; sourceTree = "<group>"; };
+		A68447D61F02C8A400B90B79 /* UIImageViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageViewX.swift; sourceTree = "<group>"; };
+		A68447D71F02C8A400B90B79 /* UIViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewX.swift; sourceTree = "<group>"; };
+		A68447D81F02C8A400B90B79 /* UIVisualEffectViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVisualEffectViewX.swift; sourceTree = "<group>"; };
+		A68447D91F02C8A400B90B79 /* UISliderX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UISliderX.swift; sourceTree = "<group>"; };
+		A68447DC1F02C8A400B90B79 /* FloatingActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
+		A68447DE1F02C8A400B90B79 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		A68447DF1F02C8A400B90B79 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		A68447E01F02C8A400B90B79 /* DayWeatherModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DayWeatherModel.swift; sourceTree = "<group>"; };
+		A68447E51F02C8A400B90B79 /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		A68447E81F02C8A400B90B79 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		A684A5E31F0AC1E6007C6FCC /* ConfirmActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmActionButton.swift; sourceTree = "<group>"; };
 		A68573F11EF084FD005C96CC /* LoginPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
+		A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableGraphView.swift; sourceTree = "<group>"; };
+		A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+colorFromHex.swift"; sourceTree = "<group>"; };
 		A6A72E0C1EF3048900FB5CCE /* RouteStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteStore.swift; sourceTree = "<group>"; };
 		A6BD1C651EF842A100E5D8EE /* CGRectEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGRectEx.swift; sourceTree = "<group>"; };
 		A6BD1C661EF842A100E5D8EE /* FadeTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
 		A6BD1C671EF842A100E5D8EE /* NSTimerEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSTimerEx.swift; sourceTree = "<group>"; };
 		A6BD1C681EF842A100E5D8EE /* SpinerLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinerLayer.swift; sourceTree = "<group>"; };
 		A6BD1C691EF842A100E5D8EE /* TransitionSubmitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitionSubmitButton.swift; sourceTree = "<group>"; };
+		A6C7BFA91F1933C10000E66A /* CircleMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenu.swift; sourceTree = "<group>"; };
+		A6C7BFAA1F1933C10000E66A /* CircleMenuLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuLoader.swift; sourceTree = "<group>"; };
+		A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuButton.swift; sourceTree = "<group>"; };
+		A6F1C4171F1FD29F000B03AE /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = style.json; path = "E-Bike App/style.json"; sourceTree = SOURCE_ROOT; };
+		A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EbikeDetailsViewController.swift; path = "E-Bike App/EbikeDetailsViewController.swift"; sourceTree = SOURCE_ROOT; };
+		A6F1C41B1F201699000B03AE /* NewRunViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewRunViewController.swift; path = "E-Bike App/NewRunViewController.swift"; sourceTree = SOURCE_ROOT; };
 		ACF4783236EC3749D3BED074 /* Pods-E-Bike App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E-Bike App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-E-Bike App/Pods-E-Bike App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,6 +163,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7811FA365087491747E10638 /* Pods_E_Bike_App.framework in Frameworks */,
+				A61680651F1EA82D00CE39D3 /* MapKit.framework in Frameworks */,
+				A61680631F1EA81400CE39D3 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +183,8 @@
 		54596950254F28FE3BCDFFDB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A61680641F1EA82D00CE39D3 /* MapKit.framework */,
+				A61680621F1EA81400CE39D3 /* HealthKit.framework */,
 				538CC959FD3D7DE95978EC3E /* Pods_E_Bike_App.framework */,
 			);
 			name = Frameworks;
@@ -140,6 +217,10 @@
 			isa = PBXGroup;
 			children = (
 				A625DDDB1EC623B600DB521E /* E-Bike App */,
+				A68447DD1F02C8A400B90B79 /* Resources */,
+				A68447E11F02C8A400B90B79 /* Model */,
+				A68447E61F02C8A400B90B79 /* View */,
+				A68447E91F02C8A400B90B79 /* Controller */,
 				A6144F931EDDEE6800204D02 /* Commons */,
 				A625DDDA1EC623B600DB521E /* Products */,
 				3A606F7498171EC61C203D3A /* Pods */,
@@ -158,35 +239,122 @@
 		A625DDDB1EC623B600DB521E /* E-Bike App */ = {
 			isa = PBXGroup;
 			children = (
+				A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */,
 				A625DDDC1EC623B600DB521E /* AppDelegate.swift */,
 				A6144FA11EDDFC1800204D02 /* RootContainerViewController.swift */,
-				A6144FA31EDE04D800204D02 /* MenuNavigationViewController.swift */,
+				A65548571F02CAB400968564 /* MenuNavigationViewController.swift */,
 				A68573F51EF0A2A6005C96CC /* Map */,
 				A6144F941EDDEEAD00204D02 /* SplashScreen */,
 				A68573F41EF0A271005C96CC /* Extensions&HelpFunc */,
-				A68573F31EF0A22F005C96CC /* InstructionPages */,
+				A68573F31EF0A22F005C96CC /* LogInPages */,
 				A68573F61EF0A2CB005C96CC /* Settings */,
+				A63CC22E1EFA11DA00F2B7DC /* SignupPage */,
 				A6BD1C641EF8424A00E5D8EE /* SubmitTransition */,
 				A625DDE01EC623B600DB521E /* Main.storyboard */,
 				A625DDE61EC623B600DB521E /* Assets.xcassets */,
 				A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */,
 				A625DDEB1EC623B600DB521E /* Info.plist */,
 				A625DDE31EC623B600DB521E /* E_Bike_App.xcdatamodeld */,
-				A6303E021EE9BC2200A57596 /* style.json */,
-				A6303E031EE9C78200A57596 /* style.geojson */,
 			);
 			path = "E-Bike App";
 			sourceTree = "<group>";
 		};
-		A68573F31EF0A22F005C96CC /* InstructionPages */ = {
+		A629C89F1F269499002924DE /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
-				A6301CF91EEF4A2E0005EA12 /* ViewController.swift */,
+				A629C89E1F269499002924DE /* CoreDataStack.swift */,
+			);
+			name = "Core Data";
+			path = ../../../../Documents/ebikeTracking/ebikeTracking;
+			sourceTree = "<group>";
+		};
+		A63CC22E1EFA11DA00F2B7DC /* SignupPage */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = SignupPage;
+			sourceTree = "<group>";
+		};
+		A68447DB1F02C8A400B90B79 /* DesignableX */ = {
+			isa = PBXGroup;
+			children = (
+				A68447D01F02C8A400B90B79 /* UIViewXRadialGradient.swift */,
+				A68447D11F02C8A400B90B79 /* UITextFieldX.swift */,
+				A68447D21F02C8A400B90B79 /* UIButtonX.swift */,
+				A68447D31F02C8A400B90B79 /* UILabelX.swift */,
+				A68447D41F02C8A400B90B79 /* UIViewAnchorPoint.swift */,
+				A68447D51F02C8A400B90B79 /* UIViewControllerX.swift */,
+				A68447D61F02C8A400B90B79 /* UIImageViewX.swift */,
+				A68447D71F02C8A400B90B79 /* UIViewX.swift */,
+				A68447D81F02C8A400B90B79 /* UIVisualEffectViewX.swift */,
+				A68447D91F02C8A400B90B79 /* UISliderX.swift */,
+			);
+			path = DesignableX;
+			sourceTree = "<group>";
+		};
+		A68447DD1F02C8A400B90B79 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A6C7BFAE1F1933C10000E66A /* CircleMenuLib */,
+				A68447DB1F02C8A400B90B79 /* DesignableX */,
+				A68447DC1F02C8A400B90B79 /* FloatingActionButton.swift */,
+				A684A5E31F0AC1E6007C6FCC /* ConfirmActionButton.swift */,
+			);
+			name = Resources;
+			path = "../../../../Google Drive/Swift Development/SecretProject/SecretProject";
+			sourceTree = "<group>";
+		};
+		A68447E11F02C8A400B90B79 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A629C89F1F269499002924DE /* Core Data */,
+				A68447DE1F02C8A400B90B79 /* Model.swift */,
+				A68447DF1F02C8A400B90B79 /* Data.swift */,
+				A68447E01F02C8A400B90B79 /* DayWeatherModel.swift */,
+			);
+			name = Model;
+			path = "../../../../Google Drive/Swift Development/SecretProject/SecretProject";
+			sourceTree = "<group>";
+		};
+		A68447E61F02C8A400B90B79 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A68447E51F02C8A400B90B79 /* TableViewCell.swift */,
+				A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */,
+				A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */,
+				A6F1C4171F1FD29F000B03AE /* style.json */,
+			);
+			name = View;
+			path = "../../../../Google Drive/Swift Development/SecretProject/SecretProject";
+			sourceTree = "<group>";
+		};
+		A68447E91F02C8A400B90B79 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */,
+				A68447E81F02C8A400B90B79 /* MenuViewController.swift */,
+				A625DDDE1EC623B600DB521E /* MapViewController.swift */,
+				A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */,
+				A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */,
+				A60DBB0F1F0D6B6E00AAD99D /* GraphViewController.swift */,
+				A661BF131F1002410029A905 /* RideStatusViewController.swift */,
+				A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */,
+				A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */,
+				A6F1C41B1F201699000B03AE /* NewRunViewController.swift */,
+				A6664F0A1F2FED47007316AA /* HistoryViewController.swift */,
+			);
+			name = Controller;
+			path = "../../../../Google Drive/Swift Development/SecretProject/SecretProject";
+			sourceTree = "<group>";
+		};
+		A68573F31EF0A22F005C96CC /* LogInPages */ = {
+			isa = PBXGroup;
+			children = (
 				A6301CFD1EF05A190005EA12 /* Page.swift */,
 				A6301CFB1EEF57170005EA12 /* PageCell.swift */,
 				A68573F11EF084FD005C96CC /* LoginPage.swift */,
 			);
-			name = InstructionPages;
+			name = LogInPages;
 			sourceTree = "<group>";
 		};
 		A68573F41EF0A271005C96CC /* Extensions&HelpFunc */ = {
@@ -195,6 +363,9 @@
 				A6301CFF1EF068680005EA12 /* Extensions.swift */,
 				A6646FED1ED360FC00B6FF30 /* enum.swift */,
 				A6303E081EEB5BD100A57596 /* ResizeImage.swift */,
+				A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */,
+				A629C8A11F269521002924DE /* FormatDisplay.swift */,
+				A663974E1F2661C1009D3C96 /* LocationManager.swift */,
 			);
 			name = "Extensions&HelpFunc";
 			sourceTree = "<group>";
@@ -202,7 +373,6 @@
 		A68573F51EF0A2A6005C96CC /* Map */ = {
 			isa = PBXGroup;
 			children = (
-				A625DDDE1EC623B600DB521E /* MapViewController.swift */,
 				A6303E001EE88A3C00A57596 /* PlaceMarker.swift */,
 				A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */,
 				A6A72E0C1EF3048900FB5CCE /* RouteStore.swift */,
@@ -229,6 +399,33 @@
 				A6BD1C691EF842A100E5D8EE /* TransitionSubmitButton.swift */,
 			);
 			name = SubmitTransition;
+			sourceTree = "<group>";
+		};
+		A6C7BFAB1F1933C10000E66A /* CircleMenuLoader */ = {
+			isa = PBXGroup;
+			children = (
+				A6C7BFAA1F1933C10000E66A /* CircleMenuLoader.swift */,
+			);
+			path = CircleMenuLoader;
+			sourceTree = "<group>";
+		};
+		A6C7BFAD1F1933C10000E66A /* CircleMenuButton */ = {
+			isa = PBXGroup;
+			children = (
+				A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */,
+			);
+			path = CircleMenuButton;
+			sourceTree = "<group>";
+		};
+		A6C7BFAE1F1933C10000E66A /* CircleMenuLib */ = {
+			isa = PBXGroup;
+			children = (
+				A6C7BFA91F1933C10000E66A /* CircleMenu.swift */,
+				A6C7BFAB1F1933C10000E66A /* CircleMenuLoader */,
+				A6C7BFAD1F1933C10000E66A /* CircleMenuButton */,
+			);
+			name = CircleMenuLib;
+			path = "../../../../Downloads/circle-menu-master/CircleMenuLib";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -266,7 +463,19 @@
 				TargetAttributes = {
 					A625DDD81EC623B600DB521E = {
 						CreatedOnToolsVersion = 8.1;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = JB4K9XSBZ5;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -296,6 +505,7 @@
 				A625DDEA1EC623B600DB521E /* LaunchScreen.storyboard in Resources */,
 				A625DDE71EC623B600DB521E /* Assets.xcassets in Resources */,
 				A625DDE21EC623B600DB521E /* Main.storyboard in Resources */,
+				A6F1C4181F1FD29F000B03AE /* style.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,34 +564,68 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A68447ED1F02C8A400B90B79 /* UILabelX.swift in Sources */,
+				A6664F0B1F2FED47007316AA /* HistoryViewController.swift in Sources */,
 				A6301CF81EEF1D170005EA12 /* SettingCell.swift in Sources */,
 				A6BD1C6B1EF842A100E5D8EE /* FadeTransition.swift in Sources */,
+				A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */,
 				A625DDE51EC623B600DB521E /* E_Bike_App.xcdatamodeld in Sources */,
+				A68447EE1F02C8A400B90B79 /* UIViewAnchorPoint.swift in Sources */,
 				A6303E011EE88A3C00A57596 /* PlaceMarker.swift in Sources */,
 				A6144F9C1EDDF23C00204D02 /* Constant.swift in Sources */,
+				A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */,
 				A6144FA21EDDFC1800204D02 /* RootContainerViewController.swift in Sources */,
 				A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */,
 				A6144F981EDDEF6200204D02 /* Utils.swift in Sources */,
+				A68447EA1F02C8A400B90B79 /* UIViewXRadialGradient.swift in Sources */,
 				A6646FEE1ED360FC00B6FF30 /* enum.swift in Sources */,
 				A64D79BC1ED4DBC800318A91 /* SearchResultsController.swift in Sources */,
+				A629C8A01F269499002924DE /* CoreDataStack.swift in Sources */,
+				A6F1C41A1F201063000B03AE /* EbikeDetailsViewController.swift in Sources */,
+				A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */,
 				A6144FA81EDE243200204D02 /* TileView.swift in Sources */,
 				A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */,
+				A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */,
+				A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */,
 				A625DDDD1EC623B600DB521E /* AppDelegate.swift in Sources */,
-				A6144FA41EDE04D800204D02 /* MenuNavigationViewController.swift in Sources */,
 				A6301D001EF068680005EA12 /* Extensions.swift in Sources */,
+				A68447EB1F02C8A400B90B79 /* UITextFieldX.swift in Sources */,
 				A6BD1C6C1EF842A100E5D8EE /* NSTimerEx.swift in Sources */,
+				A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */,
+				A68447F61F02C8A400B90B79 /* Model.swift in Sources */,
 				A6BD1C6D1EF842A100E5D8EE /* SpinerLayer.swift in Sources */,
-				A6301CFA1EEF4A2E0005EA12 /* ViewController.swift in Sources */,
+				A6301CFA1EEF4A2E0005EA12 /* LoginViewController.swift in Sources */,
+				A68447F51F02C8A400B90B79 /* FloatingActionButton.swift in Sources */,
 				A6301CFE1EF05A190005EA12 /* Page.swift in Sources */,
+				A68447F81F02C8A400B90B79 /* DayWeatherModel.swift in Sources */,
 				A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */,
+				A68447F71F02C8A400B90B79 /* Data.swift in Sources */,
+				A68447FD1F02C8A400B90B79 /* MenuViewController.swift in Sources */,
+				A68447FB1F02C8A400B90B79 /* TableViewCell.swift in Sources */,
 				A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */,
+				A6C7BFAF1F1933C10000E66A /* CircleMenu.swift in Sources */,
+				A6F1C41C1F201699000B03AE /* NewRunViewController.swift in Sources */,
+				A68447F21F02C8A400B90B79 /* UIVisualEffectViewX.swift in Sources */,
 				A6303E051EE9F34800A57596 /* SettingsLauncher.swift in Sources */,
 				A6A72E0D1EF3048900FB5CCE /* RouteStore.swift in Sources */,
+				A661BF141F1002410029A905 /* RideStatusViewController.swift in Sources */,
+				A663974D1F265B9F009D3C96 /* StoryboardSupport.swift in Sources */,
+				A69FDB041F0D6DC8003D7D15 /* UIColor+colorFromHex.swift in Sources */,
 				A6144FA01EDDF7DB00204D02 /* AnimatedUILogoView.swift in Sources */,
+				A60DBB101F0D6B6E00AAD99D /* GraphViewController.swift in Sources */,
 				A6144FA61EDE242B00204D02 /* TileGridView.swift in Sources */,
+				A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */,
+				A68447EF1F02C8A400B90B79 /* UIViewControllerX.swift in Sources */,
+				A68447EC1F02C8A400B90B79 /* UIButtonX.swift in Sources */,
+				A68447F31F02C8A400B90B79 /* UISliderX.swift in Sources */,
+				A684A5E41F0AC1E6007C6FCC /* ConfirmActionButton.swift in Sources */,
+				A68447F11F02C8A400B90B79 /* UIViewX.swift in Sources */,
 				A6BD1C6A1EF842A100E5D8EE /* CGRectEx.swift in Sources */,
+				A663974F1F2661C1009D3C96 /* LocationManager.swift in Sources */,
+				A68447F01F02C8A400B90B79 /* UIImageViewX.swift in Sources */,
 				A6BD1C6E1EF842A100E5D8EE /* TransitionSubmitButton.swift in Sources */,
 				A6144F9A1EDDF1FC00204D02 /* SplashViewController.swift in Sources */,
+				A6C7BFB01F1933C10000E66A /* CircleMenuLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -507,10 +751,12 @@
 			baseConfigurationReference = ACF4783236EC3749D3BED074 /* Pods-E-Bike App.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_ENTITLEMENTS = "E-Bike App/E-Bike App.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = JB4K9XSBZ5;
 				INFOPLIST_FILE = "E-Bike App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "MoMo.E-Bike-App";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -521,10 +767,12 @@
 			baseConfigurationReference = 22A681EB5AF2C4ED7C8D8D86 /* Pods-E-Bike App.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_ENTITLEMENTS = "E-Bike App/E-Bike App.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = JB4K9XSBZ5;
 				INFOPLIST_FILE = "E-Bike App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "MoMo.E-Bike-App";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

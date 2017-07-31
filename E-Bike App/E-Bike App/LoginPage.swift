@@ -75,30 +75,99 @@ class LoginPage: UICollectionViewCell {
         button.titleLabel?.shadowColor = UIColor.darkGray
         
         
-        //button.isHighlighted = true
-        //button.adjustsImageWhenHighlighted = true
+        //button.addTarget(self, action: #selector(loginButtonFunc), for: .touchUpInside)
         
         return button
     }()
     
     
-    /*
-    let blurrView: UIVisualEffectView = {
+    func loginButtonFunc(sender: UIButton) {
+        let username = emailTextField.text
+        let password = passwordTextField.text
         
-        let blurrEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
-        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurrEffect)
+        if (username == "" || password == "") {
         
+            return
+        }
         
-        let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
-        let blurrView = UIVisualEffectView(effect: blurrEffect)
-        blurrView.layer.zPosition = -1
-        blurrView.contentMode = .scaleAspectFit
-        blurrView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return blurrView
-    }()
+        //DoLogin(username!, password!)
+        print("wow")
     
-     */
+    }
+    
+    func DoLogin(_ user: String, _ psw: String){
+        /*
+        
+        let url = URL(string: "http://www.kaleidosblog.com/tutorial/login/api/login")
+        let session = URLSession.shared
+        
+        let request = NSMutableURLRequest(url: url!)
+        request.httpMethod = "POST"
+        
+        let paramToSend = "username=" + user + "&password=" + psw
+        
+        request.httpBody = paramToSend.data(using: String.Encoding.utf8)
+        //request.httpMethod = paramToSend.data(using: String.Encoding.utf8, allowLossyConversion: true)
+        
+        let task = session.dataTask(with: request as URLRequest, completionHandler: {
+        (data, response, error) in
+        
+            guard let _ = data else {
+            
+                return
+            }
+            
+            let json:Any?
+            
+            do {
+                json = try JSONSerialization.jsonObject(with: data!, options: [])
+            
+            } catch {
+            
+                return
+            }
+            
+            guard let server_response = json as? NSDictionary else {
+                return
+            }
+            
+            if let data_block = server_response["data"] as? NSDictionary{
+            
+                if let session_data = data_block["session"] as? String {
+                
+                    let preferences = UserDefaults.standard
+                    preferences.set(session_data, forKey: "session")
+                    
+                    DispatchQueue.main.async {
+                        //execute:self.LoginDone
+                    }
+                }
+            
+            }
+            
+            
+        })
+        task.resume()
+         */
+    
+        
+    }
+    
+    func LoginToDo() {
+    
+        emailTextField.isEnabled = true
+        passwordTextField.isEnabled = true
+        
+        loginButton.setTitle("Login", for: .normal)
+    }
  
+    func LoginDone() {
+        emailTextField.isEnabled = false
+        passwordTextField.isEnabled = false
+        
+        loginButton.setTitle("Logout", for: .normal)
+    
+    }
 
     
     override init(frame: CGRect) {
@@ -111,8 +180,16 @@ class LoginPage: UICollectionViewCell {
         //addSubview(loginButton)
         //addSubview(animateButton)
         
+        /*
+        let preference = UserDefaults.standard
         
+        if (preference.object(forKey: "session") != nil){
+            LoginDone()
+        } else {
         
+            LoginToDo()
+        }
+        */
         
         let blurrEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
         let vibrancyEffect = UIVibrancyEffect(blurEffect: blurrEffect)

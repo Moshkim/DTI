@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16G16b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Hwe-xx-yFM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="17A315i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="18p-aU-DDG">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -25,17 +25,190 @@
                     </view>
                     <navigationItem key="navigationItem" id="Ono-hF-FQg"/>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="MapViewSegue" id="FUD-AE-Yek"/>
+                        <segue destination="p3F-1p-gda" kind="show" identifier="SignupViewSegue" id="Cdm-S0-Xcr"/>
+                        <segue destination="tYU-W1-K7i" kind="show" identifier="MapViewSegue1" id="QhA-oC-PrQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7m8-mi-wkr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="684" y="-322"/>
         </scene>
-        <!--Title-->
+        <!--Sign Up View Controller-->
+        <scene sceneID="tA5-jc-LuT">
+            <objects>
+                <viewController id="p3F-1p-gda" customClass="SignUpViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="9lX-Wz-RLm"/>
+                        <viewControllerLayoutGuide type="bottom" id="va8-VS-4d0"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="WCo-dv-Cbv">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="iiK-ht-WYT"/>
+                    <connections>
+                        <segue destination="18p-aU-DDG" kind="show" identifier="MenuViewSegue" id="rcr-Gh-1mr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="F7b-2A-hPt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="268" y="601"/>
+        </scene>
+        <!--Menu View Controller-->
+        <scene sceneID="o6g-Yv-FV3">
+            <objects>
+                <viewController storyboardIdentifier="MenuViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="18p-aU-DDG" customClass="MenuViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="DbU-bP-0Np"/>
+                        <viewControllerLayoutGuide type="bottom" id="HYW-Wi-68X"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="oKz-FQ-gJ4">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="qYS-q7-mUo"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="mapViewSegue" id="rS7-at-CCz"/>
+                        <segue destination="OMG-q7-NHq" kind="show" identifier="ebikeSettingSegue" id="5Qd-cG-oJ0"/>
+                        <segue destination="kFP-kX-oAm" kind="show" identifier="graphSegue" id="fQD-OL-Nyf"/>
+                        <segue destination="pVP-ZR-IT5" kind="show" identifier="riderStatusSegue" id="YyC-Rp-hu5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hVV-hf-coU" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1737" y="602"/>
+        </scene>
+        <!--Ebike Details View Controller-->
+        <scene sceneID="hDR-pY-tge">
+            <objects>
+                <viewController id="3Qy-eS-D2T" customClass="EbikeDetailsViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="vJP-6n-9NN"/>
+                        <viewControllerLayoutGuide type="bottom" id="k82-6J-1pz"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3gi-Am-GXx">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mcE-1Q-oJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="982" y="2149"/>
+        </scene>
+        <!--History View Controller-->
+        <scene sceneID="ie0-Vu-YvD">
+            <objects>
+                <tableViewController id="Yj9-Gh-w0k" customClass="HistoryViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="gaM-Fy-qpK">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="20b-Zh-9Ro">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="20b-Zh-9Ro" id="W4I-wR-Nf8">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Yj9-Gh-w0k" id="AWi-Aq-QY3"/>
+                            <outlet property="delegate" destination="Yj9-Gh-w0k" id="yPb-Aj-9V8"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8TT-8M-emA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-63" y="2149"/>
+        </scene>
+        <!--Rider Status View Controller-->
+        <scene sceneID="ekP-He-UAc">
+            <objects>
+                <viewController id="pVP-ZR-IT5" customClass="RiderStatusViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="3Qy-eS-D2T" kind="show" identifier="saveViewSegue" id="kaR-nJ-hLM"/>
+                        <segue destination="Yj9-Gh-w0k" kind="show" identifier="historyViewSegue" id="YSI-Os-3VV"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4HH-Xx-D9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="982" y="1314"/>
+        </scene>
+        <!--Graph View Controller-->
+        <scene sceneID="imV-be-EtM">
+            <objects>
+                <viewController id="kFP-kX-oAm" customClass="GraphViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Crc-eS-lGU"/>
+                        <viewControllerLayoutGuide type="bottom" id="VkW-dm-Jba"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="CZM-k4-IYf">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zKn-sL-yJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2633" y="1718"/>
+        </scene>
+        <!--Ebike Setting View Controller-->
+        <scene sceneID="hgK-Aj-jPO">
+            <objects>
+                <viewController id="OMG-q7-NHq" customClass="EbikeSettingViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Atm-lX-lhG"/>
+                        <viewControllerLayoutGuide type="bottom" id="Ka0-AL-9mc"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="bLg-Vr-p77">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PKV-zN-SYs">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <items>
+                                    <navigationItem title="Title" id="cFl-6w-6Ga">
+                                        <barButtonItem key="leftBarButtonItem" title="Item" id="PBz-N6-nuJ"/>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <segue destination="18p-aU-DDG" kind="show" id="1YH-UB-0d7"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fnV-pt-11d" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3970" y="600"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="bUw-FJ-Mkz">
+            <objects>
+                <navigationController id="tYU-W1-K7i" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="T0U-x1-o9M">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="1uj-td-jI8"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4mz-dT-MsO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1607" y="-322"/>
+        </scene>
+        <!--Map-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="MapViewController" id="BYZ-38-t0r" customClass="MapViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MapViewController" id="BYZ-38-t0r" userLabel="Map" customClass="MapViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -139,7 +312,7 @@
                             <constraint firstAttribute="trailing" secondItem="llD-mA-GU6" secondAttribute="trailing" id="m8s-aQ-lMv"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Title" id="TTC-bv-NY7"/>
+                    <navigationItem key="navigationItem" id="TTC-bv-NY7"/>
                     <connections>
                         <outlet property="currentAddress" destination="nq5-X4-aw0" id="57z-nN-ppH"/>
                         <outlet property="currentLatitude" destination="Pj5-jh-eiP" id="bj8-mF-nuc"/>
@@ -148,12 +321,13 @@
                         <outlet property="endLocationAddress" destination="x0m-aA-fhR" id="3vf-I8-mYK"/>
                         <outlet property="mapView" destination="llD-mA-GU6" id="eyd-uY-nx2"/>
                         <outlet property="startLocationAddress" destination="FWM-wk-N54" id="daw-zp-OMg"/>
+                        <segue destination="18p-aU-DDG" kind="show" identifier="menuViewSegue" id="QJr-Kw-PYn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <pinchGestureRecognizer id="W4J-x9-g82"/>
             </objects>
-            <point key="canvasLocation" x="2244" y="-322.48875562218893"/>
+            <point key="canvasLocation" x="2522" y="-322"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="ZTH-S6-saE">
@@ -182,10 +356,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <connections>
+                        <segue destination="Hwe-xx-yFM" kind="show" id="FD2-hM-xAN"/>
+                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eIX-Bw-d4t" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1594" y="-966"/>
+            <point key="canvasLocation" x="-239" y="-322"/>
         </scene>
     </scenes>
     <resources>
@@ -194,4 +371,8 @@
         <image name="Start" width="412" height="518"/>
         <image name="getDirectionArrow" width="778" height="768"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="QJr-Kw-PYn"/>
+        <segue reference="rS7-at-CCz"/>
+    </inferredMetricsTieBreakers>
 </document>

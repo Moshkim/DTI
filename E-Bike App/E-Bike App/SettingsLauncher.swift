@@ -100,7 +100,6 @@ class SettingLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDel
             }
             
         }) { (completed: Bool) in
-            
             if setting.name != .Cancel {
                 self.mapViewController?.showControllerForSetting(setting: setting)
             }

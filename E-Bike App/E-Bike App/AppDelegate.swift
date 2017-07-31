@@ -25,6 +25,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSServices.provideAPIKey(googleMapsApiKey)
         GMSPlacesClient.provideAPIKey(googleMapsApiKey)
         UIApplication.shared.statusBarStyle = .lightContent
+
+        //UserDefaults.standard.set(nil, forKey: "name") as? String
+        
+        //UserDefaults.standard.set(nil, forKey: "name")
+        // This will adjust window size of the app to current device we are using
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        var MVC: UIViewController
+        
+        if (UserDefaults.standard.value(forKey: "name") as? String) == nil {
+            // Show the Login Page
+            
+            MVC = storyBoard.instantiateViewController(withIdentifier: "ViewController")
+        } else {
+            
+            // Show the Map View Page
+            MVC = storyBoard.instantiateViewController(withIdentifier: "MenuViewController")
+            
+        }
+        
+        // This will set the root view controller of our app => Map View Controller for now
+        self.window?.rootViewController = MVC
+        
+        // "Key window" is the window that receives events fron the device
+        self.window?.makeKeyAndVisible()
         
         return true
     }

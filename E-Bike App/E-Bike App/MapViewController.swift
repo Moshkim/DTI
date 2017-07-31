@@ -54,6 +54,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
 
 
     
+    
     //MARK: Fetching nearby objects
     //let dataProvider = GMSPlace()
     let searchRadius: Double = 1000
@@ -134,16 +135,14 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     let annotation = GMSMapPoint()
     
     
-    let navController = UINavigationController()
-    
-
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        currentAddress.text = ""
         UIApplication.shared.statusBarStyle = .default
         
-        
+        view.backgroundColor = UIColor(red:0.81, green:0.81, blue:0.81, alpha:1.00)
+        view.layer.zPosition = -2
         //view.addSubview(navBar)
         
 
@@ -158,25 +157,51 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         navigationItem.title = "Map"
         
         setupNavBarButtons()
-        
-        locationManager.delegate = self
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startMonitoringSignificantLocationChanges()
-        locationManager.distanceFilter = 50
-        locationManager.startUpdatingLocation()
-        locationManager.activityType = .otherNavigation
-        
-        
-        
-        mapView.delegate = self
-        
+        mapViewStyle()
+        locationManagerSetting()
         viewWillLayoutSubviews()
         
         
-        mapView.mapType = .normal
-        //mapView.animate(with: GMSCameraUpdate)
+
         
+        
+        do {
+            //Set the map style by passing a valid JSON String.
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+            } else {
+                NSLog("Unable to find style.json")
+                print("Unavle to find the style.json")
+            }
+            
+        } catch {
+            
+            NSLog("One or more of the map style failed to load. \(error)")
+            print("One or more of the map style failed to load. \(error)")
+        }
+        
+
+        
+        
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    
+    override var prefersStatusBarHidden: Bool {
+    
+        return true
+    }
+    
+    
+    
+    func mapViewStyle() {
+        
+        
+        mapView.delegate = self
+        mapView.mapType = .normal
         mapView.isTrafficEnabled = true
         mapView.isBuildingsEnabled = true
         mapView.autoresizesSubviews = true
@@ -192,89 +217,25 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         mapView.autoresizingMask = [.flexibleWidth,.flexibleHeight]
         
         
-        do {
-            //Set the map style by passing a valid JSON String.
-            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "geojson") {
-                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-            } else {
-                NSLog("Unable to find style.json")
-            }
-            
-        } catch {
-            
-            NSLog("One or more of the map style failed to load. \(error)")
-        }
-        
-        /*
-        do {
-            //Set the map style by passing a valid JSON String.
-            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
-                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-            } else {
-                NSLog("Unable to find style.json")
-            }
-            
-        } catch {
-            
-            NSLog("One or more of the map style failed to load. \(error)")
-        }
-        self.view = mapView
-         */
-        
-        //prefersStatusBarHidden
-        
-        //resultsViewController = GMSAutocompleteResultsViewController()
-        //resultsViewController?.delegate = self
-        
-        //addressFilter.type = .address
-        //resultsViewController?.autocompleteFilter = addressFilter
-        //present(resultsViewController!, animated: true, completion: nil)
-        // TODO: We need to find the way out connecting the resultsViewController to be the searchBar
-        
-        
-        //searchController = UISearchController(searchResultsController: resultsViewController)
-        //searchController?.searchResultsUpdater = resultsViewController
-        
-        
-        //let subView = UIView(frame: CGRect(x: 0, y: 65.0, width: 350.0, height: 45.0))
-        
-        //subView.addSubview((searchController?.searchBar)!)
-        //view.addSubview(subView)
-        //searchController?.searchBar.sizeToFit()
-        //navigationItem.titleView = searchController?.searchBar
-        
-        
-        
-        
-        //searchController?.hidesNavigationBarDuringPresentation = false
-        //definesPresentationContext = true
-        
-        
-        //searchDisplayController = UISearchController(searchResultsController: searchBar!)
-        
-        
-        
-        //setSearchBar()
-        
-        //placeClient = GMSPlacesClient.shared()
-        //let myCurrentLocation = mapView.myLocation
-        
-        //let camera = GMSCameraPosition.camera(withLatitude: 33.667231, longitude: -117.750568, zoom: 20.0)
-        //let mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
-        //view = mapView
-        
-        
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     
-    override var prefersStatusBarHidden: Bool {
     
-        return true
+    
+    func locationManagerSetting() {
+        
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.startMonitoringSignificantLocationChanges()
+        locationManager.distanceFilter = 100
+        locationManager.startUpdatingLocation()
+        locationManager.activityType = .fitness
+        
     }
+    
+    
+    
     
     //MARK: Function to create a marker or pin on the GOOGLE MAP
     func createMarker(latitude: CLLocationDegrees, logitude: CLLocationDegrees) {
@@ -300,72 +261,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     }
     
 
-    
-    
-    /**
-     action for search location by address
-     
-     - lon: Longitude location
-     - latitude: latitude location
-     - title: address of location
-     
-     */
-    
-    /*
-    func locateWithLongitude(_ longitude: Double, latitude: Double, title: String) {
-        DispatchQueue.main.async {
-            let position = CLLocationCoordinate2D(latitude: latitude,longitude: longitude)
-            
-            let camera = GMSCameraPosition.camera(withLatitude: latitude, longitude: longitude, zoom: 15)
-            self.mapView.camera = camera
-            
-            
-            let marker = GMSMarker(position: position)
-            marker.title = "Address : \(title)"
-            marker.map = self.mapView
-        }
-        
-    }*/
-    
-    
-    
 
-    
-    /**
-     
-     SearchBar when text change
-     - searchBar: SearchBar Description
-     - searchText: SearchText Description
-     
-     */
-    
-    /*
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let placeClient = GMSPlacesClient()
-        placeClient.autocompleteQuery(searchText, bounds: nil, filter: nil, callback: {(results, error) -> Void in
-            
-            
-            if results == nil {
-                
-                return
-            }
-            
-            for result in results! {
-                if let result = result as? GMSAutocompletePrediction {
-                    self.resultArray.append(result.attributedFullText.string)
-                }
-            }
-            
-            self.searchResultController.reloadDataWithArray(self.resultArray)
-            self.resultArray.removeAll()
-            self.gmsFetcher?.sourceTextHasChanged(searchText)
-        })
-        
-    }
-    
-    
-    */
     
     override func viewWillLayoutSubviews() {
         mapView.padding = UIEdgeInsetsMake(self.topLayoutGuide.length + 15, 0, self.bottomLayoutGuide.length + 3, 0)
@@ -403,28 +299,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
+        //let setRegion = GMSStyleSpan(
+        
         if let location = locations.first{
-            print("Location: \(location)")
             
-            //locationManager.startUpdatingLocation()
-            //let locationTujuan = CLLocation(latitude: 37.784023631590777, longitude: -122.40486681461333)
-            self.currentSpeed.text = "Current Speed is \(location.speed) mpb"
+            self.currentSpeed.text = "Current Speed is \(location.speed) mph"
+            self.currentSpeed.tintColor = UIColor.white
             self.currentLatitude.text = "Latitude is \(location.coordinate.latitude)"
+            self.currentLatitude.tintColor = UIColor.white
             self.currentLogitude.text = "Longitude is \(location.coordinate.longitude)"
+            self.currentLogitude.tintColor = UIColor.white
 
             let camera = GMSCameraPosition(target: location.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
-            
-            
-            if mapView.isHidden {
-                mapView.isHidden = false
-                mapView.camera = camera
-                
-            } else {
-                
-                mapView.animate(to: camera)
-            }
-            
-            
             
             createMarker(latitude: location.coordinate.latitude, logitude: location.coordinate.longitude)
             
@@ -433,8 +319,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
             //MARK: Only main thread will perform the UI icon(Google Map Marker) asyncronized way(by itself)
             mapView.animate(to: camera)
             reverseGeocodeCoordinate(coordinate: location.coordinate)
-            
-            //locationManager.stopUpdatingLocation()
             
         }
     }
@@ -505,29 +389,31 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
         geocoder.reverseGeocodeCoordinate(coordinate){(placemark, error) in
             
-            if error != nil {
-                
-                print("There was an Error")
-                return
+            if (error != nil  && placemark == nil) {
+                NSLog("An error occurred")
             }
                 
             else {
-                if ((placemark?.results()?.count)! > 0) {
+                if (error == nil && placemark != nil) {
                     
                     if let place = placemark?.firstResult() {
                         
-                        if place.country != nil {
-                            self.currentAddress.text = " \(place.lines![0]) \n \(place.lines![1]) \(place.country!)"
-                            UIView.animate(withDuration: 0.25, animations: {
-                                self.view.layoutIfNeeded()
-                            })
-                        } else {
-                            print("There is no thorughfare!")
+                        if place.thoroughfare != nil {
+                            self.currentAddress.text = " \(place.lines![0]) \n \(place.lines![1])"
                         }
+                        else {
+                            print("There is no thorughfare!")
+                        
+                        }
+                        self.currentAddress.textColor = UIColor.white
+                        UIView.animate(withDuration: 0.25, animations: {
+                            self.view.layoutIfNeeded()
+                        })
                     }
                 }
-                else {
-                    print("Error")
+                else if (error == nil && placemark?.results()?.count == 0  || placemark == nil) {
+                    NSLog("No results were returned.")
+                    self.currentAddress.text = "The place is not registered"
                 
                 }
             }
@@ -536,12 +422,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
     
     }
-    /*
-    func setSearchBar() {
-        searchBar?.tintColor = UIColor .black
-    }
-    */
-    
     
     
     @IBAction func openStartLocation(_ sender: UIButton) {
@@ -596,34 +476,50 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
 
     
+    func moveBack() {
+        performSegue(withIdentifier: "menuViewSegue", sender: self)
+    }
+    
+    
+    let navController = UINavigationController()
     
     func setupNavBarButtons() {
         
-            
+        //Setting Button on the left of navigational bar
         let screenSize: CGRect = UIScreen.main.bounds
         let navBar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: screenSize.width, height: 50))
             
-        
+        navBar.backgroundColor = UIColor.colorFromHex(hexString: "#333333")
         
         let settingBarImg: UIImage = resizeImage.resizeImageWith(image: UIImage(named: "navbar")!,newSize: CGSize(width: 25, height: 25))
-        
-        
-        
         
         
         let navItem = UINavigationItem(title: "Map")
         let settingBar = UIBarButtonItem(image: settingBarImg, style: .plain, target: self, action: #selector(handleNav))
         
         
+        //Cancel Button on the right of navigational bar
+        let cancelButton: UIImage = resizeImage.resizeImageWith(image: (UIImage(named: "backButton")?.withRenderingMode(.alwaysTemplate))!, newSize: CGSize(width: 25, height: 25))
+        let button = UIBarButtonItem(image: cancelButton, style: .plain, target: self, action: #selector(moveBack))
+        button.tintColor = UIColor.DTIBlue()
+        
+        
         
         
         navItem.leftBarButtonItem = settingBar
-        navBar.setItems([navItem], animated: true)
+        navItem.rightBarButtonItem = button
         
+        
+        //FIXIT: I need to fix the navigation bar or navigation controller so that i can push or pop the view controller in the setting
+        //navigationItem.setLeftBarButton(settingBar, animated: true)
+        //navigationItem.setRightBarButton(button, animated: true)
+        
+        navBar.setItems([navItem], animated: true)
         self.view.addSubview(navBar)
         
+        _ = navBar.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 60)
         
-        _ = navBar.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 15, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 40)
+        
         
         //navBar.setItems([navItem], animated: false)
         
@@ -647,6 +543,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
 
     }
+    
+    
+    //FIXIT: This func is not current working in terms of navigation controller is not working properly.
 
     func showControllerForSetting(setting: Settings) {
         let settingViewController = UIViewController()
