@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import MapKit
 import CoreLocation
 import GoogleMaps
 import GooglePlaces
