@@ -218,9 +218,6 @@
 			children = (
 				A625DDDB1EC623B600DB521E /* E-Bike App */,
 				A68447DD1F02C8A400B90B79 /* Resources */,
-				A68447E11F02C8A400B90B79 /* Model */,
-				A68447E61F02C8A400B90B79 /* View */,
-				A68447E91F02C8A400B90B79 /* Controller */,
 				A6144F931EDDEE6800204D02 /* Commons */,
 				A625DDDA1EC623B600DB521E /* Products */,
 				3A606F7498171EC61C203D3A /* Pods */,
@@ -239,10 +236,19 @@
 		A625DDDB1EC623B600DB521E /* E-Bike App */ = {
 			isa = PBXGroup;
 			children = (
+				A625DDE61EC623B600DB521E /* Assets.xcassets */,
+				A625DDE01EC623B600DB521E /* Main.storyboard */,
+				A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */,
+				A625DDE31EC623B600DB521E /* E_Bike_App.xcdatamodeld */,
+				A625DDEB1EC623B600DB521E /* Info.plist */,
 				A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */,
 				A625DDDC1EC623B600DB521E /* AppDelegate.swift */,
 				A6144FA11EDDFC1800204D02 /* RootContainerViewController.swift */,
 				A65548571F02CAB400968564 /* MenuNavigationViewController.swift */,
+				A68447E11F02C8A400B90B79 /* Model */,
+				A68447E61F02C8A400B90B79 /* View */,
+				A68447E91F02C8A400B90B79 /* Controller */,
+				A629C89F1F269499002924DE /* Core Data */,
 				A68573F51EF0A2A6005C96CC /* Map */,
 				A6144F941EDDEEAD00204D02 /* SplashScreen */,
 				A68573F41EF0A271005C96CC /* Extensions&HelpFunc */,
@@ -250,11 +256,6 @@
 				A68573F61EF0A2CB005C96CC /* Settings */,
 				A63CC22E1EFA11DA00F2B7DC /* SignupPage */,
 				A6BD1C641EF8424A00E5D8EE /* SubmitTransition */,
-				A625DDE01EC623B600DB521E /* Main.storyboard */,
-				A625DDE61EC623B600DB521E /* Assets.xcassets */,
-				A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */,
-				A625DDEB1EC623B600DB521E /* Info.plist */,
-				A625DDE31EC623B600DB521E /* E_Bike_App.xcdatamodeld */,
 			);
 			path = "E-Bike App";
 			sourceTree = "<group>";
@@ -265,7 +266,7 @@
 				A629C89E1F269499002924DE /* CoreDataStack.swift */,
 			);
 			name = "Core Data";
-			path = ../../../../Documents/ebikeTracking/ebikeTracking;
+			path = ../../../../ebikeTracking/ebikeTracking;
 			sourceTree = "<group>";
 		};
 		A63CC22E1EFA11DA00F2B7DC /* SignupPage */ = {
@@ -307,13 +308,12 @@
 		A68447E11F02C8A400B90B79 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				A629C89F1F269499002924DE /* Core Data */,
 				A68447DE1F02C8A400B90B79 /* Model.swift */,
 				A68447DF1F02C8A400B90B79 /* Data.swift */,
 				A68447E01F02C8A400B90B79 /* DayWeatherModel.swift */,
 			);
 			name = Model;
-			path = "../../../../Google Drive/Swift Development/SecretProject/SecretProject";
+			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
 			sourceTree = "<group>";
 		};
 		A68447E61F02C8A400B90B79 /* View */ = {
@@ -325,7 +325,7 @@
 				A6F1C4171F1FD29F000B03AE /* style.json */,
 			);
 			name = View;
-			path = "../../../../Google Drive/Swift Development/SecretProject/SecretProject";
+			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
 			sourceTree = "<group>";
 		};
 		A68447E91F02C8A400B90B79 /* Controller */ = {
@@ -344,7 +344,7 @@
 				A6664F0A1F2FED47007316AA /* HistoryViewController.swift */,
 			);
 			name = Controller;
-			path = "../../../../Google Drive/Swift Development/SecretProject/SecretProject";
+			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
 			sourceTree = "<group>";
 		};
 		A68573F31EF0A22F005C96CC /* LogInPages */ = {

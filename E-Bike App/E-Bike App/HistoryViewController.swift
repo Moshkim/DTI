@@ -11,7 +11,7 @@ import UIKit
 
 class HistoryViewController: UITableViewController {
 
-
+    var ride: Ride!
 
 
 

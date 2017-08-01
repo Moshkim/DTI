@@ -96,7 +96,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         view.isMyLocationEnabled = true
         view.isBuildingsEnabled = true
         view.autoresizesSubviews = true
-        //view.settings.myLocationButton = true
         view.settings.indoorPicker = true
         view.settings.zoomGestures = true
         view.settings.compassButton = true
@@ -107,21 +106,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         view.setMinZoom(10, maxZoom: 18)
         view.accessibilityElementsHidden = false
         view.autoresizingMask = [.flexibleWidth,.flexibleHeight]
-        //view.padding = UIEdgeInsets(top: 0, left: 0, bottom: 10, right:0)
-        return view
-    }()
-    
-    
-    
-    
-   /*
-    let mainFrameOfView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 400))
-        view.backgroundColor = UIColor.DTIRed()
         
         return view
     }()
-    */
+    
+    
     
     func featureViewController() {
         featureArray = [screenOne,screenTwo, screenThree, screenFour, screenFive]
@@ -672,6 +661,26 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     
+    let toolBox: UIToolbar = {
+        let box = UIToolbar(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+        box.backgroundColor = UIColor.black
+            //UIColor(red:0.21, green:0.27, blue:0.31, alpha:1.00)
+        box.tintColor = UIColor.white
+        box.barStyle = .blackTranslucent
+        
+        let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(moveToHistory))
+        historyButton.tag = 1
+        
+        
+        box.items = [historyButton]
+    
+        return box
+    }()
+    
+    func moveToHistory() {
+        performSegue(withIdentifier: .history, sender: nil)
+    }
+    
     func dismissPopUp(){
         rideView.removeFromSuperview()
         infoView.removeFromSuperview()
@@ -1071,6 +1080,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         view.addSubview(statusViewControl)
         view.addSubview(addressLabel)
         view.addSubview(startButton)
+        view.addSubview(toolBox)
+        
 
         
         mapStyle()
@@ -1093,6 +1104,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         _ = startButton.anchor(addressLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 60, heightConstant: 60)
         startButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        _ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 60)
 
     }
     
@@ -1109,6 +1122,7 @@ extension RiderStatusViewController: SegueHandlerType {
     
     enum SegueIdentifier: String {
         case stopAndSave = "saveViewSegue"
+        case history = "historyViewSegue"
     }
     
     
@@ -1117,7 +1131,13 @@ extension RiderStatusViewController: SegueHandlerType {
         case .stopAndSave:
             let destination = segue.destination as! EbikeDetailsViewController
             destination.ride = ride
+            
+        case .history:
+            let destionation = segue.destination as! HistoryViewController
+            destionation.ride = ride
         }
+        
+        
     }
 
 }
