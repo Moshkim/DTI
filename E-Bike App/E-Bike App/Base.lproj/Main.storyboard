@@ -80,6 +80,40 @@
             </objects>
             <point key="canvasLocation" x="1737" y="602"/>
         </scene>
+        <!--History View Controller-->
+        <scene sceneID="V1C-m9-MmD">
+            <objects>
+                <collectionViewController id="zmZ-5H-2pp" customClass="HistoryViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="UxB-Cu-Yzr">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="gsX-sb-UWA">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Ap0-Jl-SWJ">
+                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </view>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="zmZ-5H-2pp" id="kN9-Vw-FHA"/>
+                            <outlet property="delegate" destination="zmZ-5H-2pp" id="ZHs-xd-aV7"/>
+                        </connections>
+                    </collectionView>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bZV-0j-tz7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-30" y="2019"/>
+        </scene>
         <!--Ebike Details View Controller-->
         <scene sceneID="hDR-pY-tge">
             <objects>
@@ -98,41 +132,13 @@
             </objects>
             <point key="canvasLocation" x="982" y="2149"/>
         </scene>
-        <!--History View Controller-->
-        <scene sceneID="ie0-Vu-YvD">
-            <objects>
-                <tableViewController id="Yj9-Gh-w0k" customClass="HistoryViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="gaM-Fy-qpK">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="20b-Zh-9Ro">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="20b-Zh-9Ro" id="W4I-wR-Nf8">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="Yj9-Gh-w0k" id="AWi-Aq-QY3"/>
-                            <outlet property="delegate" destination="Yj9-Gh-w0k" id="yPb-Aj-9V8"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="8TT-8M-emA" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-63" y="2149"/>
-        </scene>
         <!--Rider Status View Controller-->
         <scene sceneID="ekP-He-UAc">
             <objects>
                 <viewController id="pVP-ZR-IT5" customClass="RiderStatusViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
                     <connections>
                         <segue destination="3Qy-eS-D2T" kind="show" identifier="saveViewSegue" id="kaR-nJ-hLM"/>
-                        <segue destination="Yj9-Gh-w0k" kind="show" identifier="historyViewSegue" id="YSI-Os-3VV"/>
+                        <segue destination="zmZ-5H-2pp" kind="show" identifier="historyViewSegue" id="POC-Ip-nmH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4HH-Xx-D9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
