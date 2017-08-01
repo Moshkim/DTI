@@ -670,9 +670,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(moveToHistory))
         historyButton.tag = 1
+        box.setItems([historyButton], animated: true)
+        box.isMultipleTouchEnabled = true
         
-        
-        box.items = [historyButton]
+        //box.items = [historyButton]
     
         return box
     }()
@@ -1105,7 +1106,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         _ = startButton.anchor(addressLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 60, heightConstant: 60)
         startButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
-        _ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 60)
+        _ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 50)
 
     }
     
@@ -1133,8 +1134,8 @@ extension RiderStatusViewController: SegueHandlerType {
             destination.ride = ride
             
         case .history:
-            let destionation = segue.destination as! HistoryViewController
-            destionation.ride = ride
+            let destionation = segue.destination as! UINavigationController
+            //destionation.ride = ride
         }
         
         

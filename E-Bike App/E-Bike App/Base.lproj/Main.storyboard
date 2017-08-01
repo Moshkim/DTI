@@ -109,10 +109,11 @@
                             <outlet property="delegate" destination="zmZ-5H-2pp" id="ZHs-xd-aV7"/>
                         </connections>
                     </collectionView>
+                    <navigationItem key="navigationItem" id="yJr-r6-eRW"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bZV-0j-tz7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-30" y="2019"/>
+            <point key="canvasLocation" x="1120.8" y="2219.6401799100449"/>
         </scene>
         <!--Ebike Details View Controller-->
         <scene sceneID="hDR-pY-tge">
@@ -130,7 +131,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mcE-1Q-oJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="982" y="2149"/>
+            <point key="canvasLocation" x="1920.8" y="2148.5757121439283"/>
         </scene>
         <!--Rider Status View Controller-->
         <scene sceneID="ekP-He-UAc">
@@ -138,7 +139,7 @@
                 <viewController id="pVP-ZR-IT5" customClass="RiderStatusViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
                     <connections>
                         <segue destination="3Qy-eS-D2T" kind="show" identifier="saveViewSegue" id="kaR-nJ-hLM"/>
-                        <segue destination="zmZ-5H-2pp" kind="show" identifier="historyViewSegue" id="POC-Ip-nmH"/>
+                        <segue destination="4Zi-NT-XUS" kind="show" identifier="historyViewSegue" id="qX4-7C-N0h"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4HH-Xx-D9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -161,7 +162,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zKn-sL-yJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2633" y="1718"/>
+            <point key="canvasLocation" x="3572" y="1717.6911544227887"/>
         </scene>
         <!--Ebike Setting View Controller-->
         <scene sceneID="hgK-Aj-jPO">
@@ -369,6 +370,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eIX-Bw-d4t" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-239" y="-322"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Qfh-pj-fCv">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4Zi-NT-XUS" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="OEl-Zg-xsb">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="zmZ-5H-2pp" kind="relationship" relationship="rootViewController" id="1IU-Wn-8wu"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="N7R-KW-xT4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="181.59999999999999" y="2219.6401799100449"/>
         </scene>
     </scenes>
     <resources>
