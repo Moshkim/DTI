@@ -51,6 +51,14 @@ class HistoryViewController: UITableViewController, GMSMapViewDelegate {
         
     }()
     
+    func loadData() {
+        let delegate = UIApplication.shared.delegate as? AppDelegate
+        
+        //if let context = delegate.managedObjectContext{
+    
+    
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
