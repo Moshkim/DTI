@@ -37,7 +37,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
     
     lazy var data: [Double] = self.generateRandomData(self.numberOfDataItems, max: 50)
     //[29.9, 30, 30, 30, 30, 30, 30, 30, 30]
-    lazy var labels: [String] = self.generateSequentialLabels(self.numberOfDataItems, text: "Distance")
+    lazy var labels: [String] = self.generateSequentialLabels(self.numberOfDataItems, text: "Elev.")
     //["1", "2", "3", "4", "5", "6", "7", "8", "9"]
     
     
@@ -81,7 +81,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 22)
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         label.backgroundColor = UIColor.clear
         label.text = "Date"
         
@@ -92,7 +92,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.boldSystemFont(ofSize: 12)
         label.backgroundColor = UIColor.clear
         label.text = "Distance"
         
@@ -103,7 +103,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.boldSystemFont(ofSize: 12)
         label.backgroundColor = UIColor.clear
         label.text = "Time: "
         
@@ -114,13 +114,26 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.boldSystemFont(ofSize: 12)
         label.backgroundColor = UIColor.clear
         label.text = "Address: "
         label.numberOfLines = 2
         
         return label
     }()
+    
+    var graphLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 12)
+        label.backgroundColor = UIColor.clear
+        label.text = "<Elevation>"
+        
+        return label
+    }()
+    
+    
     
     
     func DrawPath(){
@@ -264,8 +277,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         super.viewDidLoad()
         
         
-        graphView = createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width, height: 150))
-        
+        graphView = createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 150))
         
 
         
@@ -275,6 +287,10 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         // Name of the Route
         view.addSubview(nameOfTheRoute)
+        
+        
+        // Graph Label
+        view.addSubview(graphLabel)
         
         
         // Map View
@@ -304,23 +320,25 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         _ = nameOfTheRoute.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 60)
         
         
-        _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 300)
+        _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
         
-        _ = graphView.anchor(mapView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 150)
+        _ = graphLabel.anchor(mapView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 20)
+        graphLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
-        _ = dateLabel.anchor(graphView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
+        
+        _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 150)
+        
+        
+        _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 20)
         dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
-        distanceLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: timeLabel.leftAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 20)
+        
+        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: distanceLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 20)
         
         
-        _ = timeLabel.anchor(distanceLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
-        timeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        _ = addressLabel.anchor(timeLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 50)
-        addressLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        _ = addressLabel.anchor(timeLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
         
         
         

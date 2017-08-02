@@ -813,8 +813,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                         
                         if place.thoroughfare != nil {
                             self.addressLabel.text = " \(place.lines![0]) \n \(place.lines![1])"
-                            self.address.append("\(place.locality!), \(place.country!)")
                             
+                            if place.locality == nil {
+                                self.address.append("\(place.country)")
+                            
+                            } else {
+                                self.address.append("\(place.locality!), \(place.country!)")
+                            }
                             
                         } else {
                             print("There is no thorughfare!")
