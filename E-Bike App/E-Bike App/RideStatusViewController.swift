@@ -19,6 +19,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     fileprivate var ride:Ride?
     fileprivate var distance = Measurement(value: 0, unit: UnitLength.miles)
+    fileprivate var address: [String] = []
     fileprivate var locationList: [CLLocation] = []
     fileprivate var timer: Timer?
     fileprivate let locationManager = LocationManager.shared
@@ -812,6 +813,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                         
                         if place.thoroughfare != nil {
                             self.addressLabel.text = " \(place.lines![0]) \n \(place.lines![1])"
+                            self.address.append("\(place.locality!), \(place.country!)")
+                            
+                            
                         } else {
                             print("There is no thorughfare!")
                         }
@@ -1017,6 +1021,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         newRide.duration = Int16(seconds)
         newRide.timestamp = Date() as NSDate?
         newRide.name = name
+        
+        
+        for i in 0..<address.count{
+            
+            if (i == address.count/2) {
+                newRide.address = address[i]
+            }
+        }
         
         for location in locationList {
             let locationObject = Locations(context: CoreDataStack.context)

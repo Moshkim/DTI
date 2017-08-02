@@ -35,9 +35,12 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        UIApplication.shared.statusBarStyle = .default
+        collectionView?.backgroundColor = UIColor.black
+        UIApplication.shared.statusBarStyle = .lightContent
         
         navigationItem.title = "History"
+        navigationController?.navigationBar.barTintColor = UIColor.black
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
         
         let app = UIApplication.shared
         let appDelegate = app.delegate as! AppDelegate
@@ -57,6 +60,20 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: 100)
+    }
+    
+    
+    var entityIsEmpty: Bool {
+        
+        do{
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Ride")
+            let count = try context.count(for: request)
+            print(count)
+            return count == 0 ? true : false
+        } catch{
+        
+            return true
+        }
     }
 
     /*
@@ -88,7 +105,6 @@ class RideCell: BaseCells {
     let nameOfTheRoute: UILabel = {
         let name = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
         name.text = "MoMo Trip1"
-        name.textColor = UIColor.white
         return name
     }()
     
@@ -96,7 +112,7 @@ class RideCell: BaseCells {
     
     let dateOfRoute: UILabel = {
         let date = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
-        date.textColor = UIColor.white
+        date.textColor = UIColor.darkGray
         date.text = "1 July, 2017"
         return date
         
@@ -104,7 +120,7 @@ class RideCell: BaseCells {
     
     let distance: UILabel = {
         let totalLength = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
-        totalLength.textColor = UIColor.white
+        totalLength.textColor = UIColor.darkGray
         totalLength.text = "30 mph"
         return totalLength
     }()
@@ -161,7 +177,7 @@ class RideCell: BaseCells {
     
     fileprivate func setupContainerView() {
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.DTIRed()
+        containerView.backgroundColor = UIColor.clear
         addSubview(containerView)
     
         addConstraintsWithFormat(format: "H:|-100-[v0]|", views: containerView)
@@ -171,18 +187,22 @@ class RideCell: BaseCells {
         
         
         containerView.addSubview(nameOfTheRoute)
+        containerView.addSubview(distance)
+        containerView.addSubview(dateOfRoute)
+        
+        
         containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: nameOfTheRoute)
         containerView.addConstraintsWithFormat(format: "V:|-10-[v0(20)]|", views: nameOfTheRoute)
         
         
-        containerView.addSubview(distance)
-        containerView.addConstraintsWithFormat(format: "H:|-10-[v0(50)]|", views: distance)
-        containerView.addConstraintsWithFormat(format: "V:|-40-[v0(10)]|", views: distance)
+        
+        containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: distance)
+        containerView.addConstraintsWithFormat(format: "V:|-40-[v0(20)]|", views: distance)
         
         
-        containerView.addSubview(dateOfRoute)
-        containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: dateOfRoute)
-        containerView.addConstraintsWithFormat(format: "V:|-10-[v0(10)]|", views: dateOfRoute)
+        
+        containerView.addConstraintsWithFormat(format: "H:|-120-[v0(100)]|", views: dateOfRoute)
+        containerView.addConstraintsWithFormat(format: "V:|-40-[v0(20)]|", views: dateOfRoute)
     }
 
 }

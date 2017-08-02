@@ -31,7 +31,6 @@
 		A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFB1EEF57170005EA12 /* PageCell.swift */; };
 		A6301CFE1EF05A190005EA12 /* Page.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFD1EF05A190005EA12 /* Page.swift */; };
 		A6301D001EF068680005EA12 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFF1EF068680005EA12 /* Extensions.swift */; };
-		A6303E011EE88A3C00A57596 /* PlaceMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E001EE88A3C00A57596 /* PlaceMarker.swift */; };
 		A6303E051EE9F34800A57596 /* SettingsLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E041EE9F34800A57596 /* SettingsLauncher.swift */; };
 		A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E081EEB5BD100A57596 /* ResizeImage.swift */; };
 		A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */; };
@@ -108,7 +107,6 @@
 		A6301CFB1EEF57170005EA12 /* PageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageCell.swift; sourceTree = "<group>"; };
 		A6301CFD1EF05A190005EA12 /* Page.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Page.swift; sourceTree = "<group>"; };
 		A6301CFF1EF068680005EA12 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		A6303E001EE88A3C00A57596 /* PlaceMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceMarker.swift; sourceTree = "<group>"; };
 		A6303E041EE9F34800A57596 /* SettingsLauncher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsLauncher.swift; sourceTree = "<group>"; };
 		A6303E081EEB5BD100A57596 /* ResizeImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResizeImage.swift; sourceTree = "<group>"; };
 		A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignupViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/SignupViewController.swift"; sourceTree = "<group>"; };
@@ -369,7 +367,6 @@
 		A68573F51EF0A2A6005C96CC /* Map */ = {
 			isa = PBXGroup;
 			children = (
-				A6303E001EE88A3C00A57596 /* PlaceMarker.swift */,
 				A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */,
 				A6A72E0C1EF3048900FB5CCE /* RouteStore.swift */,
 			);
@@ -567,7 +564,6 @@
 				A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */,
 				A625DDE51EC623B600DB521E /* E_Bike_App.xcdatamodeld in Sources */,
 				A68447EE1F02C8A400B90B79 /* UIViewAnchorPoint.swift in Sources */,
-				A6303E011EE88A3C00A57596 /* PlaceMarker.swift in Sources */,
 				A6144F9C1EDDF23C00204D02 /* Constant.swift in Sources */,
 				A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */,
 				A6144FA21EDDFC1800204D02 /* RootContainerViewController.swift in Sources */,
