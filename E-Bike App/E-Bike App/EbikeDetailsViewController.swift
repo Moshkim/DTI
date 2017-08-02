@@ -126,6 +126,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
     func DrawPath(){
         
         
+        var bounds = GMSCoordinateBounds()
         
         guard let locations = ride.locations,
         locations.count > 0
