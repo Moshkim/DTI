@@ -42,11 +42,11 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         navigationController?.navigationBar.barTintColor = UIColor.black
         navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
         
-        let app = UIApplication.shared
-        let appDelegate = app.delegate as! AppDelegate
+        //let app = UIApplication.shared
+        //let appDelegate = app.delegate as! AppDelegate
         
         
-        
+        print(fetchRecordsForEntity("Ride"))
         
         
         
@@ -54,6 +54,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         collectionView?.register(RideCell.self, forCellWithReuseIdentifier: cellId)
         collectionView?.alwaysBounceVertical = true
         collectionView?.alwaysBounceHorizontal = true
+        
         
     }
     
@@ -63,18 +64,34 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     }
     
     
-    var entityIsEmpty: Bool {
+    var count = 0
+    var booleanOfEntity = Bool()
+    
+
         
-        do{
-            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Ride")
-            let count = try context.count(for: request)
-            print(count)
-            return count == 0 ? true : false
-        } catch{
+    private func fetchRecordsForEntity(_ entity: String) -> [NSManagedObject] {
+        // Create Fetch Request
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
         
-            return true
+        // Helpers
+        var result = [NSManagedObject]()
+        
+        do {
+            // Execute Fetch Request
+            let objResult = try fetchRequest.execute()
+            //let records = try managedObjectContext.fetch(fetchRequest)
+            
+            if let records = objResult as? [NSManagedObject] {
+                result = records
+            }
+            
+        } catch {
+            NSLog("Error fetching entity: %@", error.localizedDescription)
         }
+        print(result)
+        return result
     }
+
 
     /*
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

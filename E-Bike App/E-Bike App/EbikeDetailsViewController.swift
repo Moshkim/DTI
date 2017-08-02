@@ -81,7 +81,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
         label.text = "Date"
         
@@ -92,7 +92,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 12)
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         label.backgroundColor = UIColor.clear
         label.text = "Distance"
         
@@ -103,7 +103,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 12)
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         label.backgroundColor = UIColor.clear
         label.text = "Time: "
         
@@ -114,7 +114,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 12)
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         label.backgroundColor = UIColor.clear
         label.text = "Address: "
         label.numberOfLines = 2
@@ -329,7 +329,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 150)
         
         
-        _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 20)
+        _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 20)
         dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
