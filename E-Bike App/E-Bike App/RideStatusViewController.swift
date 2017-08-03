@@ -913,7 +913,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         button.addTarget(self, action: #selector(pauseTheRoute), for: .touchUpInside)
         
-        
         return button
     }()
     

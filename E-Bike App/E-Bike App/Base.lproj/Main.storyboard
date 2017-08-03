@@ -84,7 +84,7 @@
         <scene sceneID="V1C-m9-MmD">
             <objects>
                 <collectionViewController id="zmZ-5H-2pp" customClass="HistoryViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="UxB-Cu-Yzr">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="UxB-Cu-Yzr">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -128,10 +128,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <connections>
+                        <segue destination="pVP-ZR-IT5" kind="show" identifier="rideStatusViewSegue" id="eTj-oQ-WWt"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mcE-1Q-oJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1920.8" y="2148.5757121439283"/>
+            <point key="canvasLocation" x="2009" y="2023"/>
         </scene>
         <!--Rider Status View Controller-->
         <scene sceneID="ekP-He-UAc">
@@ -200,7 +203,7 @@
         <scene sceneID="bUw-FJ-Mkz">
             <objects>
                 <navigationController id="tYU-W1-K7i" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="T0U-x1-o9M">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="T0U-x1-o9M">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -359,7 +362,7 @@
             <objects>
                 <navigationController storyboardIdentifier="MenuNavigationController" id="bDM-ta-5li" customClass="MenuNavigationViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="s1C-SG-AYX">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="s1C-SG-AYX">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -376,7 +379,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4Zi-NT-XUS" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="OEl-Zg-xsb">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="OEl-Zg-xsb">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -397,7 +400,8 @@
         <image name="getDirectionArrow" width="778" height="768"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QJr-Kw-PYn"/>
         <segue reference="rS7-at-CCz"/>
+        <segue reference="QJr-Kw-PYn"/>
+        <segue reference="eTj-oQ-WWt"/>
     </inferredMetricsTieBreakers>
 </document>

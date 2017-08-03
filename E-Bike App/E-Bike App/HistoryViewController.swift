@@ -18,7 +18,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     
     var arrayRide: [Ride]?
     
-    
+    //rideStatusViewSegue
     
     
     private let cellId = "cellId"
