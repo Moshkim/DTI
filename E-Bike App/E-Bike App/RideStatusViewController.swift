@@ -11,6 +11,7 @@ import UIKit
 import GoogleMaps
 import GooglePlaces
 import CoreLocation
+import CoreData
 import HealthKit
 
 
@@ -1020,6 +1021,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }
     
     fileprivate func saveEbike(name: String) {
+        
         
         let newRide = Ride(context: CoreDataStack.context)
         newRide.distance = distance.value

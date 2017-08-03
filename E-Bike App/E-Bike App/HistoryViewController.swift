@@ -13,23 +13,34 @@ import GooglePlaces
 import CoreData
 
 class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UICollectionViewDelegateFlowLayout {
-    
-    var context: NSManagedObjectContext!
 
-    var listOfRoute: [Ride] = []
+    var location: [Locations]?
+    
+    var arrayRide: [Ride]?
+    
+
     
     
     private let cellId = "cellId"
-    
 
     
-    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
+        
+        if let count = arrayRide?.count {
+            return count
+        }
+        return 0
+        
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! RideCell
+        if let ride = arrayRide?[indexPath.item]{
+            cell.ride = ride
+        
+        }
+        
+        return cell
     }
     
     override func viewDidLoad() {
@@ -42,19 +53,13 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         navigationController?.navigationBar.barTintColor = UIColor.black
         navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
         
-        //let app = UIApplication.shared
-        //let appDelegate = app.delegate as! AppDelegate
-        
-        
-        print(fetchRecordsForEntity("Ride"))
-        
-        
-        
-        //collectionView?.backgroundColor = UIColor.DTIRed()
+
         collectionView?.register(RideCell.self, forCellWithReuseIdentifier: cellId)
         collectionView?.alwaysBounceVertical = true
-        collectionView?.alwaysBounceHorizontal = true
-        
+        collectionView?.alwaysBounceHorizontal = false
+
+        loadData()
+        //deleteData()
         
     }
     
@@ -64,11 +69,88 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     }
     
     
-    var count = 0
-    var booleanOfEntity = Bool()
+   
     
 
+
+    
+    func getContext () -> NSManagedObjectContext {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        return appDelegate.persistentContainer.viewContext
+    }
+    
+    
+    
+    
+    var numberOfHistory = Int()
+    
+    func loadData() {
+        let context = getContext()
+        let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
         
+        do {
+            arrayRide = try context.fetch(fetchRequest)
+            
+        } catch {
+            print("Error with request: \(error)")
+            
+        }
+        
+        
+    }
+    
+    
+    func deleteData() {
+        let context = getContext()
+        let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
+        
+        do {
+            let arrayRide = try getContext().fetch(fetchRequest)
+            
+            for ride in arrayRide{
+                
+                context.delete(ride)
+                
+            }
+            
+        } catch {
+            print("Error with request: \(error)")
+            
+        }
+        
+    }
+    
+
+    /*
+    
+    func loadData() {
+        let delegate = UIApplication.shared.delegate as? AppDelegate
+        
+        if let context = delegate?.persistentContainer.viewContext {
+        
+            
+            
+            do {
+                let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Ride")
+                let rides = try(context.execute(fetchRequest) as? [Ride])
+                
+                for ride in rides! {
+                    context.delete(ride)
+                }
+                
+                try(context.save())
+                
+            } catch let err{
+                print(err)
+            
+            }
+        
+        
+        }
+    
+    
+    }
+    */
     private func fetchRecordsForEntity(_ entity: String) -> [NSManagedObject] {
         // Create Fetch Request
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
@@ -114,9 +196,24 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
 
 
 class RideCell: BaseCells {
-
     
+    var ride: Ride? {
     
+        didSet{
+            
+            nameOfTheRoute.text = ride?.name
+            
+            if let date = ride?.timestamp {
+                let formatedDate = FormatDisplay.date(date as Date?)
+                dateOfRoute.text = formatedDate
+            }
+            
+            let formattedDistance = FormatDisplay.distance((ride?.distance)!)
+            distance.text = formattedDistance
+            
+        }
+    
+    }
     
     
     let nameOfTheRoute: UILabel = {
@@ -130,15 +227,15 @@ class RideCell: BaseCells {
     let dateOfRoute: UILabel = {
         let date = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
         date.textColor = UIColor.darkGray
-        date.text = "1 July, 2017"
+        //date.text = "1 July, 2017"
         return date
         
     }()
     
-    let distance: UILabel = {
+    var distance: UILabel = {
         let totalLength = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
         totalLength.textColor = UIColor.darkGray
-        totalLength.text = "30 mph"
+        //totalLength.text = "30 mph"
         return totalLength
     }()
     
@@ -167,6 +264,8 @@ class RideCell: BaseCells {
         return view
     }()
     
+    
+    
     override func setupViews() {
         backgroundColor = UIColor(red:0.95, green:0.95, blue:0.96, alpha:1.00)
         
@@ -187,7 +286,7 @@ class RideCell: BaseCells {
         addConstraintsWithFormat(format: "V:[v0(1)]|", views: dividerLineView)
 
         
-        
+        //loadData()
         
         
     }
@@ -218,7 +317,7 @@ class RideCell: BaseCells {
         
         
         
-        containerView.addConstraintsWithFormat(format: "H:|-120-[v0(100)]|", views: dateOfRoute)
+        containerView.addConstraintsWithFormat(format: "H:|-120-[v0(150)]|", views: dateOfRoute)
         containerView.addConstraintsWithFormat(format: "V:|-40-[v0(20)]|", views: dateOfRoute)
     }
 
