@@ -18,7 +18,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     
     var arrayRide: [Ride]?
     
-
+    
     
     
     private let cellId = "cellId"
@@ -59,7 +59,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         collectionView?.alwaysBounceHorizontal = false
 
         loadData()
-        //deleteData()
+        //clearData()
         
     }
     
@@ -82,11 +82,13 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     
     
     
-    var numberOfHistory = Int()
+    //var numberOfHistory = Int()
     
     func loadData() {
+        
         let context = getContext()
         let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
         
         do {
             arrayRide = try context.fetch(fetchRequest)
@@ -99,80 +101,29 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         
     }
     
+    func clearData() {
     
-    func deleteData() {
         let context = getContext()
         let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
         
         do {
-            let arrayRide = try getContext().fetch(fetchRequest)
+            let Rides = try context.fetch(fetchRequest)
             
-            for ride in arrayRide{
-                
+            for ride in Rides {
                 context.delete(ride)
-                
+            
             }
+            
+            try(context.save())
             
         } catch {
             print("Error with request: \(error)")
             
         }
-        
+    
     }
     
 
-    /*
-    
-    func loadData() {
-        let delegate = UIApplication.shared.delegate as? AppDelegate
-        
-        if let context = delegate?.persistentContainer.viewContext {
-        
-            
-            
-            do {
-                let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Ride")
-                let rides = try(context.execute(fetchRequest) as? [Ride])
-                
-                for ride in rides! {
-                    context.delete(ride)
-                }
-                
-                try(context.save())
-                
-            } catch let err{
-                print(err)
-            
-            }
-        
-        
-        }
-    
-    
-    }
-    */
-    private func fetchRecordsForEntity(_ entity: String) -> [NSManagedObject] {
-        // Create Fetch Request
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        
-        // Helpers
-        var result = [NSManagedObject]()
-        
-        do {
-            // Execute Fetch Request
-            let objResult = try fetchRequest.execute()
-            //let records = try managedObjectContext.fetch(fetchRequest)
-            
-            if let records = objResult as? [NSManagedObject] {
-                result = records
-            }
-            
-        } catch {
-            NSLog("Error fetching entity: %@", error.localizedDescription)
-        }
-        print(result)
-        return result
-    }
 
 
     /*
@@ -197,6 +148,8 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
 
 class RideCell: BaseCells {
     
+    fileprivate let path = GMSMutablePath()
+    
     var ride: Ride? {
     
         didSet{
@@ -211,14 +164,59 @@ class RideCell: BaseCells {
             let formattedDistance = FormatDisplay.distance((ride?.distance)!)
             distance.text = formattedDistance
             
+            DrawPath(ride: ride!)
+            
+            
         }
     
     }
     
     
+    func DrawPath(ride: Ride){
+        
+        
+        var bounds = GMSCoordinateBounds()
+        
+        guard let locations = ride.locations,
+            locations.count > 0
+            else {
+                /*
+                let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                present(alert, animated: true)*/
+                print("Error")
+                return
+        }
+        
+        let locationPoints = ride.locations?.array as! [Locations]
+        
+        for i in 0..<locationPoints.count{
+            let lat = locationPoints[i].latitude
+            let long = locationPoints[i].longitude
+            let position = CLLocationCoordinate2D(latitude: lat, longitude: long)
+            
+            path.add(position)
+            bounds = bounds.includingPath(path)
+            
+        }
+        
+        let update = GMSCameraUpdate.fit(bounds, withPadding: 15.0)
+        
+        let polyline = GMSPolyline(path: path)
+        polyline.geodesic = true
+        polyline.strokeWidth = 1
+        polyline.strokeColor = UIColor.DTIRed()
+        polyline.map = self.mapView
+        
+        
+        mapView.animate(with: update)
+        
+    }
+    
     let nameOfTheRoute: UILabel = {
         let name = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
-        name.text = "MoMo Trip1"
+        //name.text = "MoMo Trip1"
+        name.textColor = UIColor.white
         return name
     }()
     
@@ -226,7 +224,7 @@ class RideCell: BaseCells {
     
     let dateOfRoute: UILabel = {
         let date = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
-        date.textColor = UIColor.darkGray
+        date.textColor = UIColor.white
         //date.text = "1 July, 2017"
         return date
         
@@ -234,7 +232,7 @@ class RideCell: BaseCells {
     
     var distance: UILabel = {
         let totalLength = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
-        totalLength.textColor = UIColor.darkGray
+        totalLength.textColor = UIColor.white
         //totalLength.text = "30 mph"
         return totalLength
     }()
@@ -248,10 +246,10 @@ class RideCell: BaseCells {
 
     let mapView: GMSMapView = {
         let map = GMSMapView()
-        map.contentMode = .scaleAspectFill
         map.mapType = .normal
-        map.setMinZoom(5, maxZoom: 18)
-        map.autoresizingMask = [.flexibleWidth,.flexibleHeight]
+        map.setMinZoom(5, maxZoom: 30)
+        map.contentMode = .scaleAspectFit
+        //map.autoresizingMask = [.flexibleWidth,.flexibleHeight]
         map.layer.cornerRadius = 25
         return map
     }()
@@ -265,14 +263,30 @@ class RideCell: BaseCells {
     }()
     
     
+    let lightBackgroundView: UIImageView = {
+        
+        let image = UIImage(named: "light")
+        let imageView = UIImageView(image: image)
+        imageView.layer.zPosition = 0
+        imageView.contentMode = .scaleToFill
+        imageView.layer.opacity = 0.5
+        return imageView
+    }()
     
     override func setupViews() {
-        backgroundColor = UIColor(red:0.95, green:0.95, blue:0.96, alpha:1.00)
+        backgroundColor = UIColor.black
+            //UIColor(red:0.95, green:0.95, blue:0.96, alpha:1.00)
         
+        addSubview(lightBackgroundView)
         addSubview(mapView)
         addSubview(dividerLineView)
         
         setupContainerView()
+        
+        
+        // light Background image constraints
+        addConstraintsWithFormat(format: "H:|[v0]|", views: lightBackgroundView)
+        addConstraintsWithFormat(format: "V:|[v0]|", views: lightBackgroundView)
         
         
         // mapView constraints in the UICollectionView
@@ -300,7 +314,6 @@ class RideCell: BaseCells {
         addConstraintsWithFormat(format: "V:[v0(80)]", views: containerView)
         
         addConstraints([NSLayoutConstraint(item: containerView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)])
-        
         
         containerView.addSubview(nameOfTheRoute)
         containerView.addSubview(distance)
