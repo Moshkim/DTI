@@ -112,6 +112,30 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         return label
     }()
+    
+    
+    var averageSpeedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.text = "Time: "
+        
+        return label
+    }()
+    
+    
+    var averageMovingSpeedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.text = "Time: "
+        
+        return label
+    }()
 
     var addressLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
@@ -209,7 +233,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         graphView.lineWidth = 2
         graphView.lineColor = UIColor.colorFromHex(hexString: "#777777")
-        graphView.lineStyle = ScrollableGraphViewLineStyle.smooth
+        graphView.lineStyle = ScrollableGraphViewLineStyle.straight
         
         graphView.shouldFill = true
         graphView.fillType = ScrollableGraphViewFillType.gradient
@@ -294,8 +318,6 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         graphView = createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 200))
         
-
-        
         view.backgroundColor = UIColor.black
         
         mapView.delegate = self
@@ -332,6 +354,12 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         // Time
         view.addSubview(timeLabel)
         
+        // Average Speed
+        view.addSubview(averageSpeedLabel)
+        
+        
+        // Average Moving Speed
+        view.addSubview(averageMovingSpeedLabel)
         
         // Address
         view.addSubview(addressLabel)
@@ -354,12 +382,17 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: timeLabel.leftAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 20)
+        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: timeLabel.leftAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
         
-        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: distanceLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 20)
+        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: distanceLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
         
         
-        _ = addressLabel.anchor(timeLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 20)
+        _ = averageSpeedLabel.anchor(distanceLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: averageMovingSpeedLabel.leftAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        
+        _ = averageMovingSpeedLabel.anchor(timeLabel.bottomAnchor, left: averageSpeedLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        
+        
+        _ = addressLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 15)
         
         
         
@@ -380,9 +413,12 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         let distance = Measurement(value: ride.distance, unit: UnitLength.meters)
         let seconds = Int(ride.duration)
+        let movingSeconds = Int(ride.movingduration)
         let formattedDistance = FormatDisplay.distance(distance)
         let formattedDate = FormatDisplay.date(ride.timestamp as Date?)
         let formattedTime = FormatDisplay.time(seconds)
+        let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
+        let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
         
         
         if let name = ride.name {
@@ -396,6 +432,8 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         distanceLabel.text = "Distance:  \(formattedDistance)"
         dateLabel.text = formattedDate
         timeLabel.text = "Time:  \(formattedTime)"
+        averageSpeedLabel.text = "A.Speed: \(formattedPace)"
+        averageMovingSpeedLabel.text = "A.M.Speed: \(formattedMovingPace)"
         
 
         

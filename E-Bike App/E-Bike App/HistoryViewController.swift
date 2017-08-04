@@ -269,9 +269,14 @@ class RideCell: BaseCells {
                 dateOfRoute.text = formatedDate
             }
             
+            let dist = Measurement(value: (ride?.distance)!, unit: UnitLength.meters)
+            let seconds = Int((ride?.duration)!)
             let formattedDistance = FormatDisplay.distance((ride?.distance)!)
-            distance.text = formattedDistance
+            let formattedTime = FormatDisplay.time(seconds)
             
+            distance.text = formattedDistance
+            averageSpeed.text = FormatDisplay.pace(distance: dist, seconds: seconds, outputUnit: .milesPerHour)
+            duration.text = formattedTime
             DrawPath(ride: ride!)
             
             
@@ -345,6 +350,21 @@ class RideCell: BaseCells {
         return totalLength
     }()
     
+    
+    var averageSpeed: UILabel = {
+        let speed = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
+        speed.textColor = UIColor.white
+        //totalLength.text = "30 mph"
+        return speed
+    }()
+    
+    var duration: UILabel = {
+        let second = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
+        second.textColor = UIColor.white
+        //totalLength.text = "30 mph"
+        return second
+    }()
+    
     let timeStamp: UILabel = {
         let time = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
         time.textColor = UIColor.white
@@ -408,8 +428,6 @@ class RideCell: BaseCells {
         addConstraintsWithFormat(format: "V:[v0(1)]|", views: dividerLineView)
 
         
-        //loadData()
-        
         
     }
     
@@ -426,20 +444,33 @@ class RideCell: BaseCells {
         containerView.addSubview(nameOfTheRoute)
         containerView.addSubview(distance)
         containerView.addSubview(dateOfRoute)
+        containerView.addSubview(averageSpeed)
+        containerView.addSubview(duration)
         
-        
+        // nameLabel constraints
         containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: nameOfTheRoute)
-        containerView.addConstraintsWithFormat(format: "V:|-10-[v0(20)]|", views: nameOfTheRoute)
+        containerView.addConstraintsWithFormat(format: "V:|-5-[v0(20)]|", views: nameOfTheRoute)
         
         
-        
+        // distanceLabel constraints
         containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: distance)
-        containerView.addConstraintsWithFormat(format: "V:|-40-[v0(20)]|", views: distance)
+        containerView.addConstraintsWithFormat(format: "V:|-30-[v0(20)]|", views: distance)
         
         
+        // date Label constraints
+        containerView.addConstraintsWithFormat(format: "H:|-120-[v0(100)]|", views: dateOfRoute)
+        containerView.addConstraintsWithFormat(format: "V:|-30-[v0(20)]|", views: dateOfRoute)
         
-        containerView.addConstraintsWithFormat(format: "H:|-120-[v0(150)]|", views: dateOfRoute)
-        containerView.addConstraintsWithFormat(format: "V:|-40-[v0(20)]|", views: dateOfRoute)
+        
+        // speed Label constraints
+        containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: averageSpeed)
+        containerView.addConstraintsWithFormat(format: "V:|-55-[v0(20)]|", views: averageSpeed)
+    
+    
+        // Duratin Label constraints
+        containerView.addConstraintsWithFormat(format: "H:|-120-[v0(100)]|", views: duration)
+        containerView.addConstraintsWithFormat(format: "V:|-55-[v0(20)]|", views: duration)
+        
     }
 
 }

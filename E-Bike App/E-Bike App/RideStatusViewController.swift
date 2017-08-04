@@ -23,13 +23,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate var address: [String] = []
     fileprivate var locationList: [CLLocation] = []
     fileprivate var timer: Timer?
+    fileprivate var totalMovingTimer: Timer?
+    
     fileprivate let locationManager = LocationManager.shared
     fileprivate var seconds = 0
     fileprivate var startLocation: CLLocation!
     fileprivate var lastLocation: CLLocation!
     fileprivate var totalTravelDistance: Double = 0
-    fileprivate var timeOfMoving:[Double] = []
-    
+    fileprivate var movingSeconds = 0
     
     let path = GMSMutablePath()
     
@@ -38,7 +39,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let infoMarker = GMSMarker()
     
-    
+    var totalMovingTime: Int?
     
     let labelArray = ["Speed", "Consumption", "Distance", "Time", "Calories(KCal)", "Heart", "Battery Life"]
     
@@ -55,6 +56,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     var screenFive = ["image1": "1", "label1": Double.self, "description1": "Rider Power(W)","image2": "1", "label2": Double.self, "description2": "Motor Power(W)","image3": "1", "label3": Double.self, "description3": "Speed(mph)", "image4": "1", "label4": Double.self, "description4": "Consumption(Wh/mi)","image5": "1", "label5": Double.self, "description5": "Distance(mi)"] as [String : Any]
     
+
     
     var featureArray = [Dictionary<String, Any>]()
     
@@ -753,9 +755,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }
 
     
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 
-            
+        
             if startLocation == nil {
                 startLocation = locations.first
                 path.add(startLocation.coordinate)
@@ -765,11 +768,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 print("Traveled Distance:",  totalTravelDistance)
                 print("Straight Distance:", startLocation.distance(from: locations.last!))
                 
-                speedLabel.text = "\(location.speed)/mph"
-                thirdData.text = "\(location.speed)/mph"
-                thirdDataSecond.text = "\(location.speed)/mph"
-                thirdDataThird.text = "\(location.speed)/mph"
                 
+                let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+                speedLabel.text = "\(msTomph)/mph"
+                thirdData.text = "\(msTomph)/mph"
+                thirdDataSecond.text = "\(msTomph)/mph"
+                thirdDataThird.text = "\(msTomph)/mph"
+                
+                
+                
+                trackingMovingTime(speed: location.speed as Double!)
                 
                 path.add((locations.last?.coordinate)!)
                 
@@ -788,6 +796,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             drawPath(path: path)
         
     }
+    
     
     func drawPath(path: GMSPath) {
     
@@ -949,6 +958,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         seconds = 0
         
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true){ _ in
             self.seconds += 1
             let formattedDistance = FormatDisplay.distance(self.distance)
@@ -961,6 +971,18 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     }
 
+    
+    fileprivate func trackingMovingTime(speed: Double) {
+        totalMovingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true){ _ in
+            
+            if speed < 0 {
+                self.movingSeconds += 0
+            }
+            else if speed > 0 {
+                self.movingSeconds += 1
+            }
+        }
+    }
     
     fileprivate func alertView() {
         let alertController = UIAlertController(title: "End Ride?", message: "Do you want to end your ride?", preferredStyle: .alert)
@@ -1028,7 +1050,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         newRide.duration = Int16(seconds)
         newRide.timestamp = Date() as NSDate?
         newRide.name = name
-        newRide.avgspeed = distance.value/Double(seconds)
+        newRide.movingduration = Int16(movingSeconds)
         
         
         for i in 0..<address.count{
