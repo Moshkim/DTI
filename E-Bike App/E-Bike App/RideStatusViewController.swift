@@ -28,6 +28,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate var startLocation: CLLocation!
     fileprivate var lastLocation: CLLocation!
     fileprivate var totalTravelDistance: Double = 0
+    fileprivate var timeOfMoving:[Double] = []
     
     
     let path = GMSMutablePath()
@@ -1027,6 +1028,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         newRide.duration = Int16(seconds)
         newRide.timestamp = Date() as NSDate?
         newRide.name = name
+        newRide.avgspeed = distance.value/Double(seconds)
         
         
         for i in 0..<address.count{

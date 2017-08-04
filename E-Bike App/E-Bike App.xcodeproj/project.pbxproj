@@ -73,7 +73,6 @@
 		A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */; };
 		A6F1C4181F1FD29F000B03AE /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = A6F1C4171F1FD29F000B03AE /* style.json */; };
 		A6F1C41A1F201063000B03AE /* EbikeDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */; };
-		A6F1C41C1F201699000B03AE /* NewRunViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F1C41B1F201699000B03AE /* NewRunViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -149,7 +148,6 @@
 		A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuButton.swift; sourceTree = "<group>"; };
 		A6F1C4171F1FD29F000B03AE /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = style.json; path = "E-Bike App/style.json"; sourceTree = SOURCE_ROOT; };
 		A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EbikeDetailsViewController.swift; path = "E-Bike App/EbikeDetailsViewController.swift"; sourceTree = SOURCE_ROOT; };
-		A6F1C41B1F201699000B03AE /* NewRunViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewRunViewController.swift; path = "E-Bike App/NewRunViewController.swift"; sourceTree = SOURCE_ROOT; };
 		ACF4783236EC3749D3BED074 /* Pods-E-Bike App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E-Bike App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-E-Bike App/Pods-E-Bike App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -334,7 +332,6 @@
 				A661BF131F1002410029A905 /* RideStatusViewController.swift */,
 				A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */,
 				A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */,
-				A6F1C41B1F201699000B03AE /* NewRunViewController.swift */,
 				A6664F0A1F2FED47007316AA /* HistoryViewController.swift */,
 			);
 			name = Controller;
@@ -596,7 +593,6 @@
 				A68447FB1F02C8A400B90B79 /* TableViewCell.swift in Sources */,
 				A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */,
 				A6C7BFAF1F1933C10000E66A /* CircleMenu.swift in Sources */,
-				A6F1C41C1F201699000B03AE /* NewRunViewController.swift in Sources */,
 				A68447F21F02C8A400B90B79 /* UIVisualEffectViewX.swift in Sources */,
 				A6303E051EE9F34800A57596 /* SettingsLauncher.swift in Sources */,
 				A6A72E0D1EF3048900FB5CCE /* RouteStore.swift in Sources */,
