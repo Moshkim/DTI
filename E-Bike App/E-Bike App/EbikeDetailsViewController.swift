@@ -38,7 +38,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
     lazy var data: [Double] = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,14,15,15,15,20]
         //self.generateRandomData(self.numberOfDataItems, max: 50)
     //[29.9, 30, 30, 30, 30, 30, 30, 30, 30]
-    lazy var labels: [String] = self.generateSequentialLabels(self.numberOfDataItems, text: "Elev.")
+    lazy var labels: [String] = self.generateSequentialLabels(self.numberOfDataItems, text: "")
     //["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
     
@@ -237,14 +237,18 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         graphView.shouldFill = true
         graphView.fillType = ScrollableGraphViewFillType.gradient
-        graphView.fillColor = UIColor.colorFromHex(hexString: "#555555")
+        graphView.fillColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
+            
+            //UIColor.colorFromHex(hexString: "#555555")
         graphView.fillGradientType = ScrollableGraphViewGradientType.linear
-        graphView.fillGradientStartColor = UIColor.colorFromHex(hexString: "#555555")
-        graphView.fillGradientEndColor = UIColor.colorFromHex(hexString: "#444444")
+        graphView.fillGradientStartColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
+            //UIColor.colorFromHex(hexString: "#555555")
+        graphView.fillGradientEndColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
+            //UIColor.colorFromHex(hexString: "#444444")
         
-        graphView.dataPointSpacing = 50
+        graphView.dataPointSpacing = 20
         graphView.dataPointSize = 4
-        graphView.dataPointFillColor = UIColor.white
+        graphView.dataPointFillColor = UIColor(red:0.99, green:0.10, blue:0.56, alpha:1.00)
         
         graphView.referenceLineLabelFont = UIFont.boldSystemFont(ofSize: 8)
         graphView.referenceLineColor = UIColor.white.withAlphaComponent(0.2)
