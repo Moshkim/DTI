@@ -666,7 +666,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     
-    let toolBox: UIToolbar = {
+    lazy var toolBox: UIToolbar = {
         let box = UIToolbar(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
         box.backgroundColor = UIColor.black
             //UIColor(red:0.21, green:0.27, blue:0.31, alpha:1.00)
@@ -1003,7 +1003,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             self.saveNameOfRoute()
         }
         
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel) {
+            _ in
+            
+        
+        }
         
         alertController.view.tintColor = UIColor.DTIBlue()
         alertController.view.layer.cornerRadius = 25

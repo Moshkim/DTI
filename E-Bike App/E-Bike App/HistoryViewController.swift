@@ -19,9 +19,6 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     var arrayRide: [Ride]?
     
     
-    //rideStatusViewSegue
-    
-    
     private let cellId = "cellId"
 
     
@@ -310,29 +307,30 @@ class RideCell: BaseCells {
                 return
         }
         
-        let locationPoints = ride.locations?.array as! [Locations]
+        if let locationPoints = ride.locations?.array as! [Locations]? {
+            for i in 0..<locationPoints.count{
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                
+                path.add(position)
+                bounds = bounds.includingPath(path)
+                
+            }
+            
+            let update = GMSCameraUpdate.fit(bounds, withPadding: 0.5)
+            
+            let polyline = GMSPolyline(path: path)
+            polyline.geodesic = true
+            polyline.strokeWidth = 1
+            polyline.strokeColor = UIColor.DTIRed()
+            polyline.map = self.mapView
+            
+            
+            mapView.animate(with: update)
         
-        for i in 0..<locationPoints.count{
-            let lat = locationPoints[i].latitude
-            let long = locationPoints[i].longitude
-            let position = CLLocationCoordinate2D(latitude: lat, longitude: long)
-            
-            path.add(position)
-            bounds = bounds.includingPath(path)
-            
         }
-        
-        let update = GMSCameraUpdate.fit(bounds, withPadding: 15.0)
-        
-        let polyline = GMSPolyline(path: path)
-        polyline.geodesic = true
-        polyline.strokeWidth = 1
-        polyline.strokeColor = UIColor.DTIRed()
-        polyline.map = self.mapView
-        
-        
-        mapView.animate(with: update)
-        
+
     }
     
     let nameOfTheRoute: UILabel = {
@@ -457,7 +455,7 @@ class RideCell: BaseCells {
         containerView.addSubview(duration)
         
         // nameLabel constraints
-        containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: nameOfTheRoute)
+        containerView.addConstraintsWithFormat(format: "H:|-10-[v0(200)]|", views: nameOfTheRoute)
         containerView.addConstraintsWithFormat(format: "V:|-5-[v0(20)]|", views: nameOfTheRoute)
         
         
