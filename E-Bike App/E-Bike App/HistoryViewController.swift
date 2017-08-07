@@ -44,6 +44,14 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         return cell
     }
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let layout = UICollectionViewFlowLayout()
+        let controller = HistoryDetailViewController(collectionViewLayout: layout)
+        controller.ride = arrayRide?[indexPath.item]
+        navigationController?.pushViewController(controller, animated: true)
+        
+    }
+    
     
     let segmentedControl: UISegmentedControl = {
         

@@ -981,6 +981,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             else if speed > 0 {
                 self.movingSeconds += 1
             }
+            else {
+                //self.movingSeconds += 1
+            }
         }
     }
     
