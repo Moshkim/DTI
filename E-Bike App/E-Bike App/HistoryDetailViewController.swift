@@ -11,8 +11,8 @@ import UIKit
 
 
 
-//
-class HistoryDetailViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout{
+// UICollectionViewController, UICollectionViewDelegateFlowLayout
+class HistoryDetailViewController: UIViewController{
 
     
     var ride: Ride? {
@@ -26,7 +26,8 @@ class HistoryDetailViewController: UICollectionViewController, UICollectionViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView?.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.black
+        //collectionView?.backgroundColor = UIColor.white
     }
 
 }

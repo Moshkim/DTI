@@ -45,10 +45,11 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let layout = UICollectionViewFlowLayout()
-        let controller = HistoryDetailViewController(collectionViewLayout: layout)
-        controller.ride = arrayRide?[indexPath.item]
-        navigationController?.pushViewController(controller, animated: true)
+        //let layout = UICollectionViewFlowLayout()
+        //let controller = HistoryDetailViewController(collectionViewLayout: layout)
+        let control = HistoryDetailViewController()
+        control.ride = arrayRide?[indexPath.item]
+        navigationController?.pushViewController(control, animated: true)
         
     }
     
