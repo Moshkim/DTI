@@ -12,7 +12,9 @@ import GoogleMaps
 import GooglePlaces
 import CoreLocation
 import CoreData
-import HealthKit
+
+import LocalAuthentication
+
 
 
 class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleMenuDelegate, CLLocationManagerDelegate, GMSMapViewDelegate{
@@ -1110,6 +1112,33 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        
+        let authenticaitonContext = LAContext()
+        
+        var error: NSError?
+        if authenticaitonContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error){
+        
+            authenticaitonContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Verification"){
+             (success, error) in
+                if success {
+                
+                    print("User has authenticated!")
+                } else {
+                    if let err = error {
+                        print(err)
+                    } else {
+                        print("did not authenticated")
+                    }
+                
+                }
+            
+            
+            }
+        } else {
+        
+            print("Device does not have touch id!")
+        }
         
         
         locationManager.delegate = self
