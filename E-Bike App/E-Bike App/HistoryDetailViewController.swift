@@ -32,7 +32,15 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
             let formattedTime = FormatDisplay.time(seconds)
             let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
             let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
-            let address = ride?.address
+            if let address = ride?.address {
+                addressLabel.text = address
+            }
+            
+            distanceLabel.text = "Distance:  \(formattedDistance)"
+            dateLabel.text = formattedDate
+            timeLabel.text = "Time:  \(formattedTime)"
+            averageSpeedLabel.text = "A.Speed: \(formattedPace)"
+            averageMovingSpeedLabel.text = "A.M.Speed: \(formattedMovingPace)"
             
             DrawPath()
             
@@ -75,11 +83,170 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         return button
     }()
     
+    var dateLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.backgroundColor = UIColor.clear
+        label.text = "Date"
+        
+        return label
+    }()
+    
+    var distanceLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.text = "Distance"
+        
+        return label
+    }()
+    
+    var timeLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.text = "Time: "
+        
+        return label
+    }()
+    
+    
+    var averageSpeedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.text = "Time: "
+        
+        return label
+    }()
+    
+    
+    var averageMovingSpeedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.text = "Time: "
+        
+        return label
+    }()
+    
+    var addressLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.text = "Address: "
+        label.numberOfLines = 2
+        
+        return label
+    }()
+    
+    
+    
     
     func shareInfoAndExport() {
-    
         
+        let exportString = createExportString()
+
+        saveAndExport(exportString: exportString)
     
+    }
+    
+    func saveAndExport(exportString: String) {
+    
+        var name: String?
+        if let titleName = ride?.name{
+            name = titleName
+        }
+        
+        let exportFilePath = NSTemporaryDirectory() + "\(name!).csv"
+        let exportFileURL = NSURL(fileURLWithPath: exportFilePath)
+        //FileManager.default.createFile(atPath: exportFilePath, contents: Data?, attributes: nil)
+    
+
+        do {
+        
+           try exportString.write(to: exportFileURL as URL, atomically: true, encoding: String.Encoding.utf8)
+            let vc = UIActivityViewController(activityItems: [exportFileURL], applicationActivities: nil)
+            
+            vc.excludedActivityTypes = [
+                UIActivityType.assignToContact,
+                UIActivityType.saveToCameraRoll,
+                UIActivityType.postToVimeo,
+                UIActivityType.postToWeibo,
+                UIActivityType.postToFlickr,
+                UIActivityType.postToTwitter,
+                UIActivityType.postToTencentWeibo
+            ]
+            
+            self.present(vc, animated: true, completion: nil)
+            
+        } catch {
+            print("Failed to create file \(LocalizedError.self)")
+        
+        }
+    }
+    
+    
+    func createExportString() -> String {
+        
+        let name: String?
+        let address: String?
+        let averageSpeed: String?
+        let date: String?
+        let duration: String?
+        let totalDistance: String?
+        
+        
+        var export: String = NSLocalizedString("Name, Date, Address, Duration, Total Distance, Average Speed \n", comment: "")
+        
+        if let nameOptional = ride?.name {
+            name = "\(nameOptional)"
+            export += name! + ","
+            
+        }
+        if let dateOptional = ride?.timestamp {
+            date = "\(dateOptional as NSDate)"
+            export += date! + ","
+        
+        }
+        if let addressOptional = ride?.address {
+            address = "\(addressOptional)"
+            export += addressOptional + ","
+        }
+        if let durationOptional = ride?.duration {
+            duration = "\(FormatDisplay.time(Int((durationOptional))))"
+            export += duration! + ","
+        }
+        if let totalDistanceOptional = ride?.distance {
+            totalDistance = "\(FormatDisplay.distance(Measurement(value: totalDistanceOptional, unit: UnitLength.meters)))"
+            export += totalDistance! + ","
+            
+        }
+        
+        if let averageSpeedOptional = ride?.duration {
+            if let averageSpeedOptional_1 = ride?.distance {
+                averageSpeed = "\(FormatDisplay.pace(distance: Measurement(value: averageSpeedOptional_1, unit: UnitLength.meters), seconds: Int(averageSpeedOptional), outputUnit: .milesPerHour))"
+                export += averageSpeed! + "\n"
+            }
+        }
+        
+        
+        
+        
+        //export += "\(name), \(date), \(address), \(duration), \(totalDistance), \(averageSpeed) \n"
+        return export
     }
     
     func alertView() {
@@ -199,7 +366,46 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         view.addSubview(mapView)
         
         
+        // Date
+        view.addSubview(dateLabel)
+        
+        
+        // Distance
+        view.addSubview(distanceLabel)
+        
+        
+        // Time
+        view.addSubview(timeLabel)
+        
+        // Average Speed
+        view.addSubview(averageSpeedLabel)
+        
+        
+        // Average Moving Speed
+        view.addSubview(averageMovingSpeedLabel)
+        
+        // Address
+        view.addSubview(addressLabel)
+        
+        
         _ = mapView.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 80, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 250)
+        
+        _ = dateLabel.anchor(mapView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 20)
+        dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        
+        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: timeLabel.leftAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        
+        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: distanceLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        
+        
+        _ = averageSpeedLabel.anchor(distanceLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: averageMovingSpeedLabel.leftAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        
+        _ = averageMovingSpeedLabel.anchor(timeLabel.bottomAnchor, left: averageSpeedLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        
+        
+        _ = addressLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 15)
+        
         
     }
 

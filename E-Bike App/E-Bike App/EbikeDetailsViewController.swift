@@ -324,8 +324,6 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         view.backgroundColor = UIColor.black
         
-        mapView.delegate = self
-        
         
         // Back Button
         view.addSubview(backButton)

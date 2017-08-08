@@ -828,8 +828,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                             if place.locality == nil {
                                 self.address.append("\(place.country)")
                             
-                            } else {
-                                self.address.append("\(place.locality!), \(place.country!)")
+                            } else if place.locality != nil {
+                                self.address.append("\(place.locality!)")
                             }
                             
                         } else {
