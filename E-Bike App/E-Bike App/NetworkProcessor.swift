@@ -20,9 +20,8 @@ class NetworkProcessor {
         self.url = url
     }
     
-    // https://api.darksky.net/forecast/d224f7da1fbbabe89fd206fcfbcf4868
     
-    // https://api.darksky.net/forecast/d224f7da1fbbabe89fd206fcfbcf4868/37.8267,-122.4233
+    // api.darksky.net/forecast/d224f7da1fbbabe89fd206fcfbcf4868/37.8267,-122.4233
     
     
     typealias JSONDictionaryHandler = (([String : Any]?) -> Void)

@@ -15,18 +15,22 @@ class CurrentWeather {
     
     let temperature: Double?
     let summary: String?
-    
+    let weatherStatus: String?
+    let humidity: Double?
     
     struct WeatherKey{
-    
         static let temperature = "temperature"
-        static let sumary = "summary"
-        
+        static let summary = "summary"
+        static let weatherStatus = "icon"
+        static let humidity = "humidity"
     }
     
     init(weatherDictionary: [String : Any]) {
         temperature = weatherDictionary[WeatherKey.temperature] as? Double
-        summary = weatherDictionary[WeatherKey.sumary] as? String
+        summary = weatherDictionary[WeatherKey.summary] as? String
+        weatherStatus = weatherDictionary[WeatherKey.weatherStatus] as? String
+        humidity = weatherDictionary[WeatherKey.humidity] as? Double
     }
 
 }
+
