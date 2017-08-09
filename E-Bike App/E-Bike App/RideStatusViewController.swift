@@ -1112,7 +1112,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        /*
         
         let authenticaitonContext = LAContext()
         
@@ -1139,7 +1139,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
             print("Device does not have touch id!")
         }
-        
+        */
         
         locationManager.delegate = self
         locationManager.activityType = .fitness

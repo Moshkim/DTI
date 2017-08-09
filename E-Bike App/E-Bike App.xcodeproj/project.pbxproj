@@ -27,6 +27,9 @@
 		A629C8A01F269499002924DE /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C89E1F269499002924DE /* CoreDataStack.swift */; };
 		A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C8A11F269521002924DE /* FormatDisplay.swift */; };
 		A630165C1F3A30D1006C0B7F /* Location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = A630165B1F3A30D1006C0B7F /* Location.gpx */; };
+		A630165E1F3A6972006C0B7F /* NetworkProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */; };
+		A63016601F3A741E006C0B7F /* ForecastService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165F1F3A741E006C0B7F /* ForecastService.swift */; };
+		A63016621F3A7831006C0B7F /* CurrentWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63016611F3A7831006C0B7F /* CurrentWeather.swift */; };
 		A6301CF81EEF1D170005EA12 /* SettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CF71EEF1D170005EA12 /* SettingCell.swift */; };
 		A6301CFA1EEF4A2E0005EA12 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */; };
 		A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFB1EEF57170005EA12 /* PageCell.swift */; };
@@ -55,10 +58,6 @@
 		A68447F21F02C8A400B90B79 /* UIVisualEffectViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D81F02C8A400B90B79 /* UIVisualEffectViewX.swift */; };
 		A68447F31F02C8A400B90B79 /* UISliderX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D91F02C8A400B90B79 /* UISliderX.swift */; };
 		A68447F51F02C8A400B90B79 /* FloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447DC1F02C8A400B90B79 /* FloatingActionButton.swift */; };
-		A68447F61F02C8A400B90B79 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447DE1F02C8A400B90B79 /* Model.swift */; };
-		A68447F71F02C8A400B90B79 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447DF1F02C8A400B90B79 /* Data.swift */; };
-		A68447F81F02C8A400B90B79 /* DayWeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447E01F02C8A400B90B79 /* DayWeatherModel.swift */; };
-		A68447FB1F02C8A400B90B79 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447E51F02C8A400B90B79 /* TableViewCell.swift */; };
 		A68447FD1F02C8A400B90B79 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447E81F02C8A400B90B79 /* MenuViewController.swift */; };
 		A684A5E41F0AC1E6007C6FCC /* ConfirmActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A684A5E31F0AC1E6007C6FCC /* ConfirmActionButton.swift */; };
 		A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68573F11EF084FD005C96CC /* LoginPage.swift */; };
@@ -104,6 +103,9 @@
 		A629C89E1F269499002924DE /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		A629C8A11F269521002924DE /* FormatDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormatDisplay.swift; sourceTree = "<group>"; };
 		A630165B1F3A30D1006C0B7F /* Location.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Location.gpx; path = "E-Bike App/Location.gpx"; sourceTree = SOURCE_ROOT; };
+		A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkProcessor.swift; path = "E-Bike App/NetworkProcessor.swift"; sourceTree = SOURCE_ROOT; };
+		A630165F1F3A741E006C0B7F /* ForecastService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForecastService.swift; path = "E-Bike App/ForecastService.swift"; sourceTree = SOURCE_ROOT; };
+		A63016611F3A7831006C0B7F /* CurrentWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CurrentWeather.swift; path = "E-Bike App/CurrentWeather.swift"; sourceTree = SOURCE_ROOT; };
 		A6301CF71EEF1D170005EA12 /* SettingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingCell.swift; sourceTree = "<group>"; };
 		A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/LoginViewController.swift"; sourceTree = "<group>"; };
 		A6301CFB1EEF57170005EA12 /* PageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageCell.swift; sourceTree = "<group>"; };
@@ -132,10 +134,6 @@
 		A68447D81F02C8A400B90B79 /* UIVisualEffectViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVisualEffectViewX.swift; sourceTree = "<group>"; };
 		A68447D91F02C8A400B90B79 /* UISliderX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UISliderX.swift; sourceTree = "<group>"; };
 		A68447DC1F02C8A400B90B79 /* FloatingActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
-		A68447DE1F02C8A400B90B79 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		A68447DF1F02C8A400B90B79 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
-		A68447E01F02C8A400B90B79 /* DayWeatherModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DayWeatherModel.swift; sourceTree = "<group>"; };
-		A68447E51F02C8A400B90B79 /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		A68447E81F02C8A400B90B79 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		A684A5E31F0AC1E6007C6FCC /* ConfirmActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmActionButton.swift; sourceTree = "<group>"; };
 		A68573F11EF084FD005C96CC /* LoginPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
@@ -304,9 +302,9 @@
 		A68447E11F02C8A400B90B79 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				A68447DE1F02C8A400B90B79 /* Model.swift */,
-				A68447DF1F02C8A400B90B79 /* Data.swift */,
-				A68447E01F02C8A400B90B79 /* DayWeatherModel.swift */,
+				A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */,
+				A630165F1F3A741E006C0B7F /* ForecastService.swift */,
+				A63016611F3A7831006C0B7F /* CurrentWeather.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -315,7 +313,6 @@
 		A68447E61F02C8A400B90B79 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				A68447E51F02C8A400B90B79 /* TableViewCell.swift */,
 				A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */,
 				A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */,
 				A6F1C4171F1FD29F000B03AE /* style.json */,
@@ -580,6 +577,7 @@
 				A6F1C41A1F201063000B03AE /* EbikeDetailsViewController.swift in Sources */,
 				A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */,
 				A6144FA81EDE243200204D02 /* TileView.swift in Sources */,
+				A63016601F3A741E006C0B7F /* ForecastService.swift in Sources */,
 				A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */,
 				A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */,
 				A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */,
@@ -588,17 +586,15 @@
 				A6301D001EF068680005EA12 /* Extensions.swift in Sources */,
 				A68447EB1F02C8A400B90B79 /* UITextFieldX.swift in Sources */,
 				A6BD1C6C1EF842A100E5D8EE /* NSTimerEx.swift in Sources */,
+				A630165E1F3A6972006C0B7F /* NetworkProcessor.swift in Sources */,
+				A63016621F3A7831006C0B7F /* CurrentWeather.swift in Sources */,
 				A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */,
-				A68447F61F02C8A400B90B79 /* Model.swift in Sources */,
 				A6BD1C6D1EF842A100E5D8EE /* SpinerLayer.swift in Sources */,
 				A6301CFA1EEF4A2E0005EA12 /* LoginViewController.swift in Sources */,
 				A68447F51F02C8A400B90B79 /* FloatingActionButton.swift in Sources */,
 				A6301CFE1EF05A190005EA12 /* Page.swift in Sources */,
-				A68447F81F02C8A400B90B79 /* DayWeatherModel.swift in Sources */,
 				A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */,
-				A68447F71F02C8A400B90B79 /* Data.swift in Sources */,
 				A68447FD1F02C8A400B90B79 /* MenuViewController.swift in Sources */,
-				A68447FB1F02C8A400B90B79 /* TableViewCell.swift in Sources */,
 				A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */,
 				A6C7BFAF1F1933C10000E66A /* CircleMenu.swift in Sources */,
 				A68447F21F02C8A400B90B79 /* UIVisualEffectViewX.swift in Sources */,
