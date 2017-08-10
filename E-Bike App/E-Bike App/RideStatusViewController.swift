@@ -41,6 +41,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate let forecastAPIKey = "d224f7da1fbbabe89fd206fcfbcf4868"
     fileprivate var currentTemperature: Double?
     fileprivate var currentWeatherIcon: String?
+    fileprivate var currentWeatherSummary: String?
     
     
     
@@ -815,12 +816,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         case .authorizedAlways: fallthrough
             
         case .authorizedWhenInUse:
-            
-            locationManager.startUpdatingLocation()
+            //locationManager.startUpdatingLocation()
             mapView.isMyLocationEnabled = true
-            
         }
     }
+    
     
     // This function is called whenever current location is changed
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -859,6 +859,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
             lastLocation = locations.last
             locationList.append(lastLocation)
+        
+            if locationList.count == 1 {
+                getWeatherInfo()
+            }
         
             drawPath(path: path)
         
@@ -963,20 +967,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     // MARK - Specific Info View while riding on the bike
 
     
-    let backButton: UIButtonY = {
-    
-        let cancelButton: UIImage = resizeImage.resizeImageWith(image: (UIImage(named: "backButton")?.withRenderingMode(.alwaysTemplate))!, newSize: CGSize(width: 30, height: 30))
-        let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 35, height: 35))
-        
-        button.setImage(cancelButton, for: .normal)
-        button.tintColor = UIColor.white
-       
-        return button
-    }()
-    
-
-    
-    
     lazy var startButton: UIButtonY = {
     
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
@@ -1004,6 +994,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             
             sender.setTitle("Stop", for: .normal)
             sender.tag = 2
+            //weatherAlert()
             startEbike()
             
         
@@ -1020,41 +1011,34 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     // FIXIT: I am working on the weather forcast session!
     
-    fileprivate func weatherAlert(sender: UIButtonY) {
-    
-        let alertController = UIAlertController(title: "Weather", message: "Do you want to end your ride?", preferredStyle: .alert)
-        let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 20)]
-        let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 18)]
+    fileprivate func weatherAlert() {
         
-        let attributedTitle = NSMutableAttributedString(string: "End Ride?", attributes: titleFont)
-        let attributedMessage = NSMutableAttributedString(string: "Do you want to save your ride?", attributes: messageFont)
         
-        alertController.setValue(attributedTitle, forKey: "attributedTitle")
-        alertController.setValue(attributedMessage, forKey: "attributedMessage")
+        //setWeatherIcon()
+        if let temp = currentTemperature {
+            if let summary = currentWeatherSummary {
+                let alertController = UIAlertController(title: "Weather", message: "\(temp)° \n \(summary)", preferredStyle: .alert)
+                
+                let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+                
+                alertController.view.tintColor = UIColor.DTIBlue()
+                alertController.view.layer.cornerRadius = 25
+                alertController.view.backgroundColor = UIColor.darkGray
+                
+                
+                alertController.addAction(cancelButton)
+                present(alertController, animated: true, completion: nil)
+            }
+        } else {
         
-        let saveButton = UIAlertAction(title: "Save The Route", style: .default) {
-            _ in
-            sender.setTitle("Start", for: .normal)
-            sender.tag = 1
-            self.saveNameOfRoute()
-        }
-        
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel) {
-            _ in
+            let alertController = UIAlertController(title: "Weather is not available", message: "-° \n -", preferredStyle: .alert)
             
-            
+            let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+
+            alertController.addAction(cancelButton)
+            present(alertController, animated: true, completion: nil)
+        
         }
-        
-        alertController.view.tintColor = UIColor.DTIBlue()
-        alertController.view.layer.cornerRadius = 25
-        alertController.view.backgroundColor = UIColor.darkGray
-        
-        
-        alertController.addAction(saveButton)
-        alertController.addAction(cancelButton)
-        present(alertController, animated: true, completion: nil)
-    
-    
     }
 
     
@@ -1087,14 +1071,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             //weatherIcon.setImage(UIImage(named: "clear")?.withRenderingMode(.alwaysTemplate), for: .normal)
             print("There is no weather icon")
         }
+        weatherIcon.isHidden = false
     
     }
     
     fileprivate func startEbike() {
-    
-        weatherIcon.isHidden = false
-        //locationManager.startUpdatingLocation()
         
+        locationManager.startUpdatingLocation()
         distance = Measurement(value: 0, unit: UnitLength.meters)
         locationList.removeAll()
         
@@ -1147,11 +1130,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             self.saveNameOfRoute()
         }
         
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel) {
-            _ in
-            
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
         
-        }
         
         alertController.view.tintColor = UIColor.DTIBlue()
         alertController.view.layer.cornerRadius = 25
@@ -1245,7 +1225,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             
         } catch {
             
-            NSLog("One or more of the map style failed to load. \(error)")
             print("One or more of the map style failed to load. \(error)")
         }
     }
@@ -1256,13 +1235,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     func getWeatherInfo() {
     
         
-        let currentLocationLat: CLLocationDegrees?
-        let currentLocationLong: CLLocationDegrees?
+        let currentLocationLat: Double?
+        let currentLocationLong: Double?
         let forecastService = ForecastService(APIKey: forecastAPIKey)
         //let currentTemperature: Double?
         //var weatherStatus: String?
         
-        if let currentLocation = locationList.last {
+        if let currentLocation = locationList.first {
             
             currentLocationLat = currentLocation.coordinate.latitude
             currentLocationLong = currentLocation.coordinate.longitude
@@ -1273,12 +1252,22 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     DispatchQueue.main.async {
                         if let temperature = currentWeather.temperature {
                             self.currentTemperature = temperature
+                            
+                            if let summary = currentWeather.summary {
+                                self.currentWeatherSummary = summary
+                                
+                            }
                             if let icon = currentWeather.weatherStatus{
-                                //weatherStatus = icon
                                 self.currentWeatherIcon = icon
+                                self.weatherAlert()
+                                self.setWeatherIcon()
                             }
                         }
                     }
+                } else {
+                
+                    self.currentTemperature = 0
+                
                 }
             }
         } else {
@@ -1319,6 +1308,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             print("Device does not have touch id!")
         }
         */
+        //locationManager.startUpdatingLocation()
         
         locationManager.delegate = self
         locationManager.activityType = .fitness
@@ -1333,18 +1323,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         view.backgroundColor = UIColor.black
         
         view.addSubview(mainTitle)
-        //view.addSubview(backButton)
         view.addSubview(ScrollView)
         view.addSubview(statusViewControl)
         view.addSubview(addressLabel)
         view.addSubview(startButton)
         view.addSubview(weatherIcon)
         weatherIcon.isHidden = true
-        
         view.addSubview(toolBox)
         
-
-        getWeatherInfo()
         mapStyle()
         featureViewController()
         loadFeatures()
@@ -1354,7 +1340,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: nil, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 25, heightConstant: 25)
+        _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 25, heightConstant: 25)
         
         //_ = backButton.anchor(self.view.topAnchor, left: self.view.leftAnchor, bottom: ScrollView.topAnchor, right: nil, topConstant: 20, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
         
@@ -1400,10 +1386,7 @@ extension RiderStatusViewController {
         case thunderstorm = "thunderstorm"
         case tornado = "tornado"
     }
-
-
 }
-
 
 extension RiderStatusViewController: SegueHandlerType {
     
@@ -1420,12 +1403,8 @@ extension RiderStatusViewController: SegueHandlerType {
             destination.ride = ride
             
         case .history:
-            let destionation = segue.destination as! UINavigationController
-            //destionation.ride = ride
+            _ = segue.destination as! UINavigationController
         }
-        
-        
     }
-
 }
 
