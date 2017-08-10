@@ -87,7 +87,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
         let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 400))
         
-        view.backgroundColor = UIColor(red:0.27, green:0.27, blue:0.31, alpha:1.00)
+        view.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
         
         return view
     
@@ -539,28 +539,43 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 let speedButton = UIButton()
                 speedButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
-                speedButton.backgroundColor = UIColor.darkGray
+                speedButton.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
                 speedButton.layer.cornerRadius = speedButton.frame.width/2
                 speedButton.layer.borderColor = UIColor.DTIRed().cgColor
                 speedButton.layer.borderWidth = 3
                 speedButton.isHighlighted = true
                 speedButton.titleLabel?.textAlignment = .center
-                speedButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+                speedButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13)
                 speedButton.setTitle(labelArray[0], for: .normal)
                 speedButton.tag = 0
                 speedButton.addTarget(self, action: #selector(moveToPopUp), for: .touchUpInside)
                 
                 
                 
+                let distanceButton = UIButton()
+                distanceButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
+                distanceButton.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+                distanceButton.layer.cornerRadius = speedButton.frame.width/2
+                distanceButton.layer.borderColor = UIColor.DTIRed().cgColor
+                distanceButton.layer.borderWidth = 3
+                distanceButton.isHighlighted = true
+                distanceButton.titleLabel?.textAlignment = .center
+                distanceButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13)
+                distanceButton.setTitle(labelArray[2], for: .normal)
+                distanceButton.tag = 2
+                distanceButton.addTarget(self, action: #selector(moveToPopUp), for: .touchUpInside)
+                
+                
+                
                 let timeButton = UIButton()
                 timeButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
-                timeButton.backgroundColor = UIColor.darkGray
+                timeButton.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
                 timeButton.layer.cornerRadius = speedButton.frame.width/2
                 timeButton.layer.borderColor = UIColor.DTIRed().cgColor
                 timeButton.layer.borderWidth = 3
                 timeButton.isHighlighted = true
                 timeButton.titleLabel?.textAlignment = .center
-                timeButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+                timeButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13)
                 timeButton.setTitle(labelArray[3], for: .normal)
                 timeButton.tag = 3
                 timeButton.addTarget(self, action: #selector(moveToPopUp), for: .touchUpInside)
@@ -578,6 +593,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 ScrollView.addSubview(mainFrameOfView)
                 mainFrameOfView.addSubview(middleFrameOfView)
                 ScrollView.addSubview(speedButton)
+                ScrollView.addSubview(distanceButton)
                 ScrollView.addSubview(timeButton)
             
                 
@@ -588,6 +604,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 _ = speedButton.anchor(middleFrameOfView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 80, heightConstant: 80)
                 speedButton.centerXAnchor.constraint(equalTo: middleFrameOfView.centerXAnchor).isActive = true
+                
+                _ = distanceButton.anchor(nil, left: middleFrameOfView.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 80, heightConstant: 80)
+                distanceButton.centerYAnchor.constraint(equalTo: middleFrameOfView.centerYAnchor).isActive = true
                 
                 
                 _ = timeButton.anchor(nil, left: nil, bottom: nil, right: middleFrameOfView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 80, heightConstant: 80)
@@ -674,6 +693,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }()
     
     
+    let totalDistanceLabel: UILabelX = {
+        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+        label.font = UIFont.boldSystemFont(ofSize: 30)
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        label.backgroundColor = UIColor.clear
+        
+        return label
+    }()
+    
+    
     let addressLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
         label.textAlignment = .center
@@ -717,8 +747,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         historyButton.tag = 1
         box.setItems([historyButton], animated: true)
         box.isMultipleTouchEnabled = true
-        
-        //box.items = [historyButton]
     
         return box
     }()
@@ -763,6 +791,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         if sender.tag == 0 {
             timeLabel.removeFromSuperview()
+            totalDistanceLabel.removeFromSuperview()
             infoView.addSubview(speedLabel)
             
             _ = speedLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
@@ -771,11 +800,22 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             
         }
         
-        if sender.tag == 3 {
+        if sender.tag == 2{
+            timeLabel.removeFromSuperview()
             speedLabel.removeFromSuperview()
             
+            infoView.addSubview(totalDistanceLabel)
             
-            //timeLabel.text = "\(0):\(0):\(0)"
+            _ = totalDistanceLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
+            totalDistanceLabel.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
+            totalDistanceLabel.centerYAnchor.constraint(equalTo: infoView.centerYAnchor).isActive = true
+        
+        }
+        
+        if sender.tag == 3 {
+            speedLabel.removeFromSuperview()
+            totalDistanceLabel.removeFromSuperview()
+
             infoView.addSubview(timeLabel)
             
             _ = timeLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
@@ -807,7 +847,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         case .denied:
             
             print("User denied access to locaiton.")
-            //mapView.isHidden = false
             
         case .notDetermined:
             
@@ -816,7 +855,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         case .authorizedAlways: fallthrough
             
         case .authorizedWhenInUse:
-            //locationManager.startUpdatingLocation()
             mapView.isMyLocationEnabled = true
         }
     }
@@ -1019,7 +1057,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             if let summary = currentWeatherSummary {
                 let alertController = UIAlertController(title: "Weather", message: "\(temp)° \n \(summary)", preferredStyle: .alert)
                 
-                let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+                let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
                 
                 alertController.view.tintColor = UIColor.DTIBlue()
                 alertController.view.layer.cornerRadius = 25
@@ -1033,7 +1071,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
             let alertController = UIAlertController(title: "Weather is not available", message: "-° \n -", preferredStyle: .alert)
             
-            let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+            let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
 
             alertController.addAction(cancelButton)
             present(alertController, animated: true, completion: nil)
@@ -1092,6 +1130,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             self.timeFromStart.text = "\(formattedTime)"
             self.timeLabel.text = "\(formattedTime)"
             self.distanceLabel.text = "\(formattedDistance)"
+            self.totalDistanceLabel.text = "\(formattedDistance)"
         }
     
     }
@@ -1336,15 +1375,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         loadFeatures()
         
         
-        _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 30)
+        _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 30)
         mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 25, heightConstant: 25)
+        _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 30, heightConstant: 30)
         
-        //_ = backButton.anchor(self.view.topAnchor, left: self.view.leftAnchor, bottom: ScrollView.topAnchor, right: nil, topConstant: 20, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
-        
-        _ = ScrollView.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 50, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
+        _ = ScrollView.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 60, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
         ScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = statusViewControl.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 20)
