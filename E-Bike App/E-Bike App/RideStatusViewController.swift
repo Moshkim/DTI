@@ -42,6 +42,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate var currentTemperature: Double?
     fileprivate var currentWeatherIcon: String?
     fileprivate var currentWeatherSummary: String?
+    fileprivate var iconString: String?
     
     
     
@@ -627,12 +628,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
         button.cornerRadius = button.frame.width/2
-        button.setTitle("Cancel", for: .normal)
-        button.tintColor = UIColor.black
-        button.borderWidth = 1
-        button.borderColor = UIColor.darkGray
-        button.backgroundColor = UIColor.white
-        button.alpha = 0.7
+        //button.setTitle("Cancel", for: .normal)
+        button.setImage(UIImage(named: "cancelButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.tintColor = UIColor.white
+        button.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
         button.titleLabel?.textColor = UIColor.DTIRed()
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
         button.addTarget(self, action: #selector(dismissPopUp), for: .touchUpInside)
@@ -663,7 +663,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let titleLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
-        label.font = UIFont.boldSystemFont(ofSize: 25)
+        label.font = UIFont.boldSystemFont(ofSize: 40)
         label.textColor = UIColor.white
         label.textAlignment = .center
         label.backgroundColor = UIColor.clear
@@ -781,7 +781,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         infoView.centerYAnchor.constraint(equalTo: rideView.centerYAnchor).isActive = true
         
         
-        _ = titleLabel.anchor(nil, left: nil, bottom: infoView.centerYAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 20, rightConstant: 0, widthConstant: 150, heightConstant: 50)
+        _ = titleLabel.anchor(nil, left: nil, bottom: infoView.centerYAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 20, rightConstant: 0, widthConstant: 200, heightConstant: 50)
         titleLabel.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
         
         
@@ -1045,9 +1045,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
     }
     
-    
-    
-    // FIXIT: I am working on the weather forcast session!
+
     
     fileprivate func weatherAlert() {
         
@@ -1055,7 +1053,28 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         //setWeatherIcon()
         if let temp = currentTemperature {
             if let summary = currentWeatherSummary {
-                let alertController = UIAlertController(title: "Weather", message: "\(temp)° \n \(summary)", preferredStyle: .alert)
+                let alertController = UIAlertController(title: "Weather", message: "\(temp)F° \(summary)", preferredStyle: .alert)
+                
+                let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18)]
+                let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 16)]
+                
+                
+                let attributedTitle = NSMutableAttributedString(string: "Weather", attributes: titleFont)
+                let attributedMessage = NSMutableAttributedString(string: "\(temp)F° \(summary)", attributes: messageFont)
+                
+                alertController.setValue(attributedTitle, forKey: "attributedTitle")
+                alertController.setValue(attributedMessage, forKey: "attributedMessage")
+                
+                let image = UIImage(named: "clear")
+                //imageView.image = image
+                
+                //imageView.center
+                
+                
+                let action = UIAlertAction(title: "Let's get some rides!", style: .default, handler: nil)
+                action.setValue(image, forKey: "image")
+                
+                alertController.addAction(action)
                 
                 let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
                 
@@ -1085,22 +1104,31 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             switch icon as String {
             case CurrentWeatherStatus.rain.rawValue:
                 weatherIcon.setImage(UIImage(named: "rain")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "rain"
             case CurrentWeatherStatus.clearDay.rawValue:
                 weatherIcon.setImage(UIImage(named: "clear")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "clear"
             case CurrentWeatherStatus.clearNight.rawValue:
                 weatherIcon.setImage(UIImage(named: "clear")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "clear"
             case CurrentWeatherStatus.someCloudDay.rawValue:
                 weatherIcon.setImage(UIImage(named: "cloudy")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "cloudy"
             case CurrentWeatherStatus.someCouldNight.rawValue:
                 weatherIcon.setImage(UIImage(named: "cloudy")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "cloudy"
             case CurrentWeatherStatus.sleet.rawValue:
                 weatherIcon.setImage(UIImage(named: "sleet")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "sleet"
             case CurrentWeatherStatus.cloudy.rawValue:
                 weatherIcon.setImage(UIImage(named: "cloudy")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "cloudy"
             case CurrentWeatherStatus.snow.rawValue:
                 weatherIcon.setImage(UIImage(named: "snow")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "snow"
             case CurrentWeatherStatus.wind.rawValue:
                 weatherIcon.setImage(UIImage(named: "wind")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                iconString = "wind"
             default:
                 break
             }
@@ -1220,7 +1248,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         newRide.duration = Int16(seconds)
         newRide.timestamp = Date() as NSDate?
         newRide.name = name
-        newRide.movingduration = Int16(movingSeconds)
+        //newRide.movingduration = Int16(movingSeconds)
         
         
         for i in 0..<address.count{

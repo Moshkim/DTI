@@ -415,12 +415,12 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         let distance = Measurement(value: ride.distance, unit: UnitLength.meters)
         let seconds = Int(ride.duration)
-        let movingSeconds = Int(ride.movingduration)
+        //let movingSeconds = Int(ride.movingduration)
         let formattedDistance = FormatDisplay.distance(distance)
         let formattedDate = FormatDisplay.date(ride.timestamp as Date?)
         let formattedTime = FormatDisplay.time(seconds)
         let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
-        let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
+        //let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
         
         
         if let name = ride.name {
@@ -435,7 +435,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         dateLabel.text = formattedDate
         timeLabel.text = "Time:  \(formattedTime)"
         averageSpeedLabel.text = "A.Speed: \(formattedPace)"
-        averageMovingSpeedLabel.text = "A.M.Speed: \(formattedMovingPace)"
+        //averageMovingSpeedLabel.text = "A.M.Speed: \(formattedMovingPace)"
         
 
         
