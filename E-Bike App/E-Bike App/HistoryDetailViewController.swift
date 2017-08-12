@@ -169,8 +169,10 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         if let titleName = ride?.name{
             name = titleName
         }
+        //NSTemporaryDirectory()
         
-        let exportFilePath = NSTemporaryDirectory() + "\(name!).csv"
+        //Temporary I save csv file to the desktop to see if it is really export
+        let exportFilePath = "/Users/Moses/Desktop/" + "\(name!).csv"
         let exportFileURL = NSURL(fileURLWithPath: exportFilePath)
         //FileManager.default.createFile(atPath: exportFilePath, contents: Data?, attributes: nil)
     

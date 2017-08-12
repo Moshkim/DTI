@@ -28,12 +28,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate var timer: Timer?
     fileprivate var totalMovingTimer: Timer?
     
+    
     fileprivate let locationManager = LocationManager.shared
     fileprivate var seconds = 0
     fileprivate var startLocation: CLLocation!
     fileprivate var lastLocation: CLLocation!
     fileprivate var totalTravelDistance: Double = 0
     fileprivate var movingSeconds = 0
+    fileprivate var speedTag = 0
+    
     
 
     // Weather Infomation Variables
@@ -875,6 +878,26 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 
                 let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+                
+                if msTomph > 50.0 && speedTag == 0{
+                    let alertController = UIAlertController(title: "Warning!", message: "You might want to slow down to save battery life", preferredStyle: .alert)
+                    
+                    let cancelAction = UIAlertAction(title: "OK", style: .cancel)
+                    
+                    alertController.addAction(cancelAction)
+                    
+                    alertController.view.tintColor = UIColor.DTIRed()
+                    alertController.view.backgroundColor = UIColor.black
+                    alertController.view.layer.cornerRadius = 25
+                    speedTag = 1
+                    
+                    present(alertController, animated: true, completion: nil)
+                }
+                
+                if msTomph < 50.0 {
+                    speedTag = 0
+                }
+                
                 speedLabel.text = "\(msTomph)/mph"
                 thirdData.text = "\(msTomph)/mph"
                 thirdDataSecond.text = "\(msTomph)/mph"
@@ -1053,14 +1076,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         //setWeatherIcon()
         if let temp = currentTemperature {
             if let summary = currentWeatherSummary {
-                let alertController = UIAlertController(title: "Weather", message: "\(temp)F° \(summary)", preferredStyle: .alert)
+                let alertController = UIAlertController(title: "Weather", message: "Temperature: \(temp)F° \n Condition: \(summary)", preferredStyle: .alert)
                 
                 let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18)]
                 let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 16)]
                 
                 
                 let attributedTitle = NSMutableAttributedString(string: "Weather", attributes: titleFont)
-                let attributedMessage = NSMutableAttributedString(string: "\(temp)F° \(summary)", attributes: messageFont)
+                let attributedMessage = NSMutableAttributedString(string: "Temperature: \(temp)F° \n Condition: \(summary)", attributes: messageFont)
                 
                 alertController.setValue(attributedTitle, forKey: "attributedTitle")
                 alertController.setValue(attributedMessage, forKey: "attributedMessage")
@@ -1236,7 +1259,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     fileprivate func stopEbike() {
-        
+        timer?.invalidate()
         locationManager.stopUpdatingLocation()
     }
     
@@ -1428,9 +1451,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        timer?.invalidate()
-        locationManager.stopUpdatingLocation()
+        //timer?.invalidate()
+        //locationManager.stopUpdatingLocation()
     }
+    
 
 }
 
