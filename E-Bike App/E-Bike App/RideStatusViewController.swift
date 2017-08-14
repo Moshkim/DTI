@@ -65,6 +65,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     
+    
+    
+    var indexForFeature: Int!
+    
+    
+    
+    var thirdData = UILabel()
+    var thirdDataSecond = UILabel()
+    var thirdDataThird = UILabel()
+    var timeFromStart = UILabel()
+    var distanceLabel = UILabel()
+    
+    
+    
     // Labels of Display dock
     
     let labelArray = ["Speed", "Consumption", "Distance", "Time", "Calories(KCal)", "Heart", "Battery Life"]
@@ -122,11 +136,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     let mapView: GMSMapView = {
         
         let view = GMSMapView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-        
+        view.layer.cornerRadius = 25
         view.mapType = .normal
         view.isBuildingsEnabled = true
         view.autoresizesSubviews = true
-        view.settings.indoorPicker = true
+        //view.settings.indoorPicker = true
         view.settings.zoomGestures = true
         view.settings.compassButton = true
         view.settings.zoomGestures = true
@@ -141,6 +155,30 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }()
     
     
+    lazy var myLocationButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
+        button.layer.cornerRadius = button.frame.width/2
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.DTIBlue()
+        button.tintColor = UIColor.white
+        //button.layer.borderWidth = 1
+        //button.layer.borderColor = UIColor.DTIRed().cgColor
+
+        button.setImage(UIImage(named: "myLocation")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.addTarget(self, action: #selector(zoomToMyLocation), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    
+    @objc fileprivate func zoomToMyLocation(sender: UIButton) {
+        guard let lat = self.mapView.myLocation?.coordinate.latitude,
+            let long = self.mapView.myLocation?.coordinate.longitude else { return }
+    
+        let camera = GMSCameraPosition.camera(withTarget: CLLocationCoordinate2D(latitude: lat, longitude: long), zoom: 15)
+        self.mapView.animate(to: camera)
+    }
+    
     
     func featureViewController() {
         featureArray = [screenOne,screenTwo, screenThree, screenFour, screenFive]
@@ -151,16 +189,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         ScrollView.delegate = self
     }
     
-    
-    var indexForFeature: Int!
-    
-    
-    
-    var thirdData = UILabel()
-    var thirdDataSecond = UILabel()
-    var thirdDataThird = UILabel()
-    var timeFromStart = UILabel()
-    var distanceLabel = UILabel()
+
     
 
     func loadFeatures() {
@@ -513,11 +542,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 ScrollView.addSubview(mainFrameOfView)
                 ScrollView.addSubview(mapView)
+                mapView.addSubview(myLocationButton)
                 
-                
-                _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height - 50)
+                _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height - 40)
                 mapView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
                 mapView.centerYAnchor.constraint(equalTo: mainFrameOfView.centerYAnchor).isActive = true
+                
+                _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 45, heightConstant: 45)
+                
                 
                 
             
@@ -1369,6 +1401,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         
         /*
         
