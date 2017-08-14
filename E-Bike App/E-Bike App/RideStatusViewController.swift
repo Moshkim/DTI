@@ -54,6 +54,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     let path = GMSMutablePath()
     
     
+    let placesClient = GMSPlacesClient.shared()
+    
+    
+    
+    // Camera Tag
+    
+    var cameraTag = 0
+    
+    
     
     // Map View POI - later
     var likeltPlaces: [GMSPlace] = []
@@ -174,6 +183,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     @objc fileprivate func zoomToMyLocation(sender: UIButton) {
         guard let lat = self.mapView.myLocation?.coordinate.latitude,
             let long = self.mapView.myLocation?.coordinate.longitude else { return }
+        self.cameraTag = 0
     
         let camera = GMSCameraPosition.camera(withTarget: CLLocationCoordinate2D(latitude: lat, longitude: long), zoom: 15)
         self.mapView.animate(to: camera)
@@ -895,6 +905,18 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }
     
     
+    func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
+        infoMarker.map = nil
+    }
+    
+    func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
+        
+        if (gesture) {
+            cameraTag = 1
+            print(gesture)
+        }
+    }
+    
     // This function is called whenever current location is changed
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 
@@ -911,8 +933,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
                 
-                if msTomph > 50.0 && speedTag == 0{
-                    let alertController = UIAlertController(title: "Warning!", message: "You might want to slow down to save battery life", preferredStyle: .alert)
+                if msTomph > 20.0 && speedTag == 0{
+                    let alertController = UIAlertController(title: "Warning!", message: "You might want to slow down for your safety", preferredStyle: .alert)
                     
                     let cancelAction = UIAlertAction(title: "OK", style: .cancel)
                     
@@ -926,7 +948,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     present(alertController, animated: true, completion: nil)
                 }
                 
-                if msTomph < 50.0 {
+                if msTomph < 20.0 {
                     speedTag = 0
                 }
                 
@@ -946,8 +968,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 let camera = GMSCameraPosition(target: location.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
                 
-                mapView.animate(to: camera)
-                reverseGeocodeCoordinate(coordinate: location.coordinate)
+                if cameraTag == 0{
+                    mapView.animate(to: camera)
+                    reverseGeocodeCoordinate(coordinate: location.coordinate)
+                }
             }
         
             lastLocation = locations.last
@@ -1021,21 +1045,43 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }
     
     
+    
+    
     func mapView(_ mapView: GMSMapView, didTapPOIWithPlaceID placeID: String, name: String, location: CLLocationCoordinate2D) {
-        infoMarker.snippet = "\(location.latitude), \(location.longitude)"
+        
+        
+        placesClient.lookUpPlaceID(placeID, callback:{ (place, error) -> Void in
+            if let error = error {
+                print("lookup place id query error: \(error.localizedDescription)")
+                return
+            }
+            
+            
+            guard let place = place else {return}
+            guard let placeName = place.formattedAddress else {return}
+            
+            self.infoMarker.snippet = "\(placeName)"
+            
+        
+        })
+        
+        
+        
+        
+        //infoMarker.snippet = "\(location.latitude), \(location.longitude)"
         infoMarker.layer.cornerRadius = 25
         infoMarker.position = location
         infoMarker.title = name
-        infoMarker.opacity = 0.7
+        infoMarker.opacity = 1
         infoMarker.infoWindowAnchor.y = 1
         infoMarker.map = mapView
         infoMarker.appearAnimation = GMSMarkerAnimation.pop
         infoMarker.isTappable = true
         mapView.selectedMarker = infoMarker
         
-        locationManager.stopUpdatingLocation()
-        let camera = GMSCameraPosition(target: location, zoom: 15, bearing: 0, viewingAngle: 0)
-        mapView.animate(to: camera)
+        //locationManager.stopUpdatingLocation()
+        //let camera = GMSCameraPosition(target: location, zoom: 15, bearing: 0, viewingAngle: 0)
+        //mapView.animate(to: camera)
     }
     
     
@@ -1189,7 +1235,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             }
         
         } else {
-            //weatherIcon.setImage(UIImage(named: "clear")?.withRenderingMode(.alwaysTemplate), for: .normal)
             print("There is no weather icon")
         }
         weatherIcon.isHidden = false

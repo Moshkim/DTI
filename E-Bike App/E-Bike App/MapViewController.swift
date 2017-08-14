@@ -373,12 +373,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         //mapView.animate(toLocation: coordinate)
     }
-    
-    func didTapLocationButton(for mapView: GMSMapView) -> Bool {
-        mapView.isMyLocationEnabled = true
-        mapView.selectedMarker = nil
-        return false
-    }
+
     
     func reverseGeocodeCoordinate(coordinate: CLLocationCoordinate2D) {
         

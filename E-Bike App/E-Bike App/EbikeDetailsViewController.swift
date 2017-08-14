@@ -259,7 +259,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         graphView.shouldAnimateOnStartup = true
         graphView.shouldAdaptRange = true
         graphView.adaptAnimationType = ScrollableGraphViewAnimationType.easeOut
-        graphView.animationDuration = 1.5
+        graphView.animationDuration = 0.5
         graphView.rangeMax = 50
         graphView.shouldRangeAlwaysStartAtZero = true
         

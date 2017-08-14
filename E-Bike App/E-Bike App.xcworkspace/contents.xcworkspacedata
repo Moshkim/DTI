@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:E-Bike App/Location.gpx">
-   </FileRef>
-   <FileRef
       location = "group:E-Bike App.xcodeproj">
    </FileRef>
    <FileRef

@@ -26,7 +26,6 @@
 		A625DDEA1EC623B600DB521E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */; };
 		A629C8A01F269499002924DE /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C89E1F269499002924DE /* CoreDataStack.swift */; };
 		A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C8A11F269521002924DE /* FormatDisplay.swift */; };
-		A630165C1F3A30D1006C0B7F /* Location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = A630165B1F3A30D1006C0B7F /* Location.gpx */; };
 		A630165E1F3A6972006C0B7F /* NetworkProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */; };
 		A63016601F3A741E006C0B7F /* ForecastService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165F1F3A741E006C0B7F /* ForecastService.swift */; };
 		A63016621F3A7831006C0B7F /* CurrentWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63016611F3A7831006C0B7F /* CurrentWeather.swift */; };
@@ -102,7 +101,6 @@
 		A625DDEB1EC623B600DB521E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A629C89E1F269499002924DE /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		A629C8A11F269521002924DE /* FormatDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormatDisplay.swift; sourceTree = "<group>"; };
-		A630165B1F3A30D1006C0B7F /* Location.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Location.gpx; path = "E-Bike App/Location.gpx"; sourceTree = SOURCE_ROOT; };
 		A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkProcessor.swift; path = "E-Bike App/NetworkProcessor.swift"; sourceTree = SOURCE_ROOT; };
 		A630165F1F3A741E006C0B7F /* ForecastService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForecastService.swift; path = "E-Bike App/ForecastService.swift"; sourceTree = SOURCE_ROOT; };
 		A63016611F3A7831006C0B7F /* CurrentWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CurrentWeather.swift; path = "E-Bike App/CurrentWeather.swift"; sourceTree = SOURCE_ROOT; };
@@ -335,7 +333,6 @@
 				A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */,
 				A6664F0A1F2FED47007316AA /* HistoryViewController.swift */,
 				A64966461F3583240039D768 /* HistoryDetailViewController.swift */,
-				A630165B1F3A30D1006C0B7F /* Location.gpx */,
 			);
 			name = Controller;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -497,7 +494,6 @@
 			files = (
 				A625DDEA1EC623B600DB521E /* LaunchScreen.storyboard in Resources */,
 				A625DDE71EC623B600DB521E /* Assets.xcassets in Resources */,
-				A630165C1F3A30D1006C0B7F /* Location.gpx in Resources */,
 				A625DDE21EC623B600DB521E /* Main.storyboard in Resources */,
 				A6F1C4181F1FD29F000B03AE /* style.json in Resources */,
 			);
