@@ -10,14 +10,24 @@ import Foundation
 import UIKit
 import GoogleMaps
 import GooglePlaces
+import GooglePlacesSearchController
 import CoreLocation
 import CoreData
 import LocalAuthentication
 
 
-
 class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleMenuDelegate, CLLocationManagerDelegate, GMSMapViewDelegate{
 
+    // JSON format for the get direction between two points
+    
+    
+    enum JSONError: String, Error {
+        case NoData = "Error: No Data"
+        case ConversionFailed = "Error: Conversion from JSON failed"
+    
+    }
+
+    
     
     // Core Data stack infomation variables
     
@@ -54,6 +64,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     let path = GMSMutablePath()
     
     
+    // Overall Path between two points
+    var polyPath = GMSPolyline()
+    
+    
     let placesClient = GMSPlacesClient.shared()
     
     
@@ -68,7 +82,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     var likeltPlaces: [GMSPlace] = []
     var selectedPlace: GMSPlace?
     
-    let infoMarker = GMSMarker()
+    var infoMarker = GMSMarker()
     
     var totalMovingTime: Int?
     
@@ -147,18 +161,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         let view = GMSMapView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         view.layer.cornerRadius = 25
         view.mapType = .normal
-        view.isBuildingsEnabled = true
-        view.autoresizesSubviews = true
-        //view.settings.indoorPicker = true
-        view.settings.zoomGestures = true
-        view.settings.compassButton = true
-        view.settings.zoomGestures = true
-        view.settings.rotateGestures = true
-        view.settings.scrollGestures = true
-        view.settings.tiltGestures = true
-        view.setMinZoom(10, maxZoom: 18)
-        view.accessibilityElementsHidden = false
+        view.settings.setAllGesturesEnabled(true)
+        
+        view.setMinZoom(5, maxZoom: 20)
         view.autoresizingMask = [.flexibleWidth,.flexibleHeight]
+        let mapInsets = UIEdgeInsets(top: 0, left: 0, bottom:0, right: 0)
+        view.padding = mapInsets
+        
         
         return view
     }()
@@ -170,8 +179,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.DTIBlue()
         button.tintColor = UIColor.white
-        //button.layer.borderWidth = 1
-        //button.layer.borderColor = UIColor.DTIRed().cgColor
 
         button.setImage(UIImage(named: "myLocation")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(zoomToMyLocation), for: .touchUpInside)
@@ -187,6 +194,157 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
         let camera = GMSCameraPosition.camera(withTarget: CLLocationCoordinate2D(latitude: lat, longitude: long), zoom: 15)
         self.mapView.animate(to: camera)
+    }
+    
+    
+    lazy var mySearchButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
+        button.layer.cornerRadius = button.frame.width/2
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.DTIBlue()
+        button.tintColor = UIColor.white
+        
+        button.setImage(UIImage(named: "searchButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.addTarget(self, action: #selector(searchAddressForDirection), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    
+
+    
+    // Auto SearchBar for the google places
+    fileprivate let controller = GooglePlacesSearchController(
+        apiKey: "AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA",
+        placeType: PlaceType.address,
+        radius: 1000
+    )
+
+    
+    @objc fileprivate func searchAddressForDirection(sender: UIButton) {
+        infoMarker.map = nil
+        
+        controller.didSelectGooglePlace{(place) -> Void in
+            print(place.description)
+            
+            let position = place.coordinate
+            self.infoMarker = GMSMarker(position: position)
+            self.infoMarker.title = place.name
+            self.infoMarker.snippet = place.formattedAddress
+            self.infoMarker.map = self.mapView
+            
+            let camera = GMSCameraPosition.camera(withTarget: place.coordinate, zoom: 10)
+            self.mapView.animate(to: camera)
+            
+            self.drawRouteBetweenTwoPoints(coordinate: place.coordinate)
+            
+            
+            self.controller.isActive = false
+            
+        }
+        present(controller, animated: true, completion: nil)
+    
+    }
+    
+    func drawRouteBetweenTwoPoints(coordinate: CLLocationCoordinate2D) {
+        
+        guard let lat = mapView.myLocation?.coordinate.latitude else {return}
+        guard let long = mapView.myLocation?.coordinate.longitude else {return}
+
+        
+        let aPointCoordinate = "\(lat),\(long)"
+    
+        let bPointCoordinate = "\(coordinate.latitude),\(coordinate.longitude)"
+        
+        let url = "http://maps.googleapis.com/maps/api/directions/json?origin=\(aPointCoordinate)&destination=\(bPointCoordinate)&sensor=false&mode=bicycling"
+        
+        guard let urlString = URL(string: url) else {
+            print("Error: Cannot create URL")
+            return
+        }
+        
+        let urlRequest = URLRequest(url: urlString)
+        
+        
+        // Set up the session
+        
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        
+        // Make the request
+        
+        
+        let task = session.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
+            
+            do{
+                
+                if error != nil{
+                    print("Error: \(error?.localizedDescription)")
+                    
+                } else {
+                
+                    guard let data = data else {
+                    
+                        throw JSONError.NoData
+                    }
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary else {
+                        throw JSONError.ConversionFailed
+                    }
+                    
+                    print(json)
+                    
+                    
+                    let arrayRoutes = json["routes"] as! NSArray
+                    let arrayLegs = (arrayRoutes[0] as! NSDictionary).object(forKey: "legs") as! NSArray
+                    let arraySteps = arrayLegs[0] as! NSDictionary
+                    
+                    
+                    let dicDistance = arraySteps["distance"] as! NSDictionary
+                    let totalDistance = dicDistance["text"] as! String
+                    
+                    let dicDuration = arraySteps["duration"] as! NSDictionary
+                    let totalDuration = dicDuration["text"] as! String
+                    
+                    
+                    
+                    self.totalDistanceToDestination.text = "Distance = \(totalDistance)"
+                    self.totalDurationToDestination.text = "Duration = \(totalDuration)"
+                    
+                    print("\(totalDistance), \(totalDuration)")
+                    
+                    DispatchQueue.global(qos: .background).async {
+                        let array = json["routes"] as! NSArray
+                        let dic = array[0] as! NSDictionary
+                        let dic1 = dic["overview_polyline"] as! NSDictionary
+                        let points = dic1["points"] as! String
+                        print(points)
+                        
+                        
+                        DispatchQueue.main.async {
+                            let path = GMSPath(fromEncodedPath: points)
+                            self.polyPath.map = nil
+                            self.polyPath = GMSPolyline(path: path)
+                            self.polyPath.strokeWidth = 4
+                            self.polyPath.strokeColor = UIColor.darkGray
+                            self.polyPath.map = self.mapView
+                            
+                        }
+                        
+                    }
+                    
+                }
+            
+            }catch let error as JSONError {
+                print(error.rawValue)
+            }catch let error as NSError {
+                print(error.debugDescription)
+            
+            }
+        
+        
+        })
+        task.resume()
+    
     }
     
     
@@ -553,6 +711,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 ScrollView.addSubview(mainFrameOfView)
                 ScrollView.addSubview(mapView)
                 mapView.addSubview(myLocationButton)
+                mapView.addSubview(mySearchButton)
                 
                 _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height - 40)
                 mapView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
@@ -560,7 +719,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 45, heightConstant: 45)
                 
-                
+                _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 45, heightConstant: 45)
                 
             
             }
@@ -753,9 +912,30 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.font = UIFont.boldSystemFont(ofSize: 12)
         label.backgroundColor = UIColor.clear
-        label.numberOfLines = 2
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    
+    let totalDistanceToDestination: UILabel = {
+        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 10)
+        label.backgroundColor = UIColor.clear
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    let totalDurationToDestination: UILabel = {
+        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 10)
+        label.backgroundColor = UIColor.clear
+        label.numberOfLines = 1
         return label
     }()
     
@@ -878,6 +1058,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         }
         
     }
+    
 
     
     // Once the user allowed us to track then we let the system to start updating the the current location and track it
@@ -1108,7 +1289,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     lazy var startButton: UIButtonY = {
     
-        let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
+        let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.setTitle("Start", for: .normal)
         button.cornerRadius = button.frame.width/2
         button.borderWidth = 2
@@ -1146,60 +1327,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
     }
     
-
-    
-    fileprivate func weatherAlert() {
-        
-        
-        //setWeatherIcon()
-        if let temp = currentTemperature {
-            if let summary = currentWeatherSummary {
-                let alertController = UIAlertController(title: "Weather", message: "Temperature: \(temp)F° \n Condition: \(summary)", preferredStyle: .alert)
-                
-                let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18)]
-                let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 16)]
-                
-                
-                let attributedTitle = NSMutableAttributedString(string: "Weather", attributes: titleFont)
-                let attributedMessage = NSMutableAttributedString(string: "Temperature: \(temp)F° \n Condition: \(summary)", attributes: messageFont)
-                
-                alertController.setValue(attributedTitle, forKey: "attributedTitle")
-                alertController.setValue(attributedMessage, forKey: "attributedMessage")
-                
-                let image = UIImage(named: "clear")
-                //imageView.image = image
-                
-                //imageView.center
-                
-                
-                let action = UIAlertAction(title: "Let's get some rides!", style: .default, handler: nil)
-                action.setValue(image, forKey: "image")
-                
-                alertController.addAction(action)
-                
-                let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
-                
-                alertController.view.tintColor = UIColor.DTIBlue()
-                alertController.view.layer.cornerRadius = 25
-                alertController.view.backgroundColor = UIColor.darkGray
-                
-                
-                alertController.addAction(cancelButton)
-                present(alertController, animated: true, completion: nil)
-            }
-        } else {
-        
-            let alertController = UIAlertController(title: "Weather is not available", message: "-° \n -", preferredStyle: .alert)
-            
-            let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
-
-            alertController.addAction(cancelButton)
-            present(alertController, animated: true, completion: nil)
-        
-        }
-    }
-
-    
     fileprivate func setWeatherIcon() {
         if let icon = currentWeatherIcon {
             switch icon as String {
@@ -1233,17 +1360,104 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             default:
                 break
             }
-        
+            
         } else {
             print("There is no weather icon")
         }
         weatherIcon.isHidden = false
-    
+        
     }
+    
+
+    
+    fileprivate func weatherAlert() {
+        
+        
+        //setWeatherIcon()
+        if let temp = currentTemperature {
+            if let summary = currentWeatherSummary {
+                let alertController = UIAlertController(title: "Weather", message: "Temperature: \(temp)F° \n Condition: \(summary)", preferredStyle: .alert)
+                
+                let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18)]
+                let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 16)]
+                
+                
+                let attributedTitle = NSMutableAttributedString(string: "Weather", attributes: titleFont)
+                let attributedMessage = NSMutableAttributedString(string: "Temperature: \(temp)F° \n Condition: \(summary)", attributes: messageFont)
+                
+                alertController.setValue(attributedTitle, forKey: "attributedTitle")
+                alertController.setValue(attributedMessage, forKey: "attributedMessage")
+                
+                guard let icon = iconString else {return}
+                
+                let image = UIImage(named: icon)
+                //imageView.image = image
+                
+                //imageView.center
+                
+                
+
+                switch icon {
+                case "clear":
+                    let action = UIAlertAction(title: "Let's get go wild!", style: .default, handler: nil)
+                    action.setValue(image, forKey: "image")
+                    alertController.addAction(action)
+                case "cloudy":
+                    let action = UIAlertAction(title: "Nice weather to ride but becareful", style: .default, handler: nil)
+                    action.setValue(image, forKey: "image")
+                    alertController.addAction(action)
+                case "rain":
+                    let action = UIAlertAction(title: "Let's take next round :/", style: .default, handler: nil)
+                    action.setValue(image, forKey: "image")
+                case "snow":
+                    let action = UIAlertAction(title: "Not today... :/", style: .default, handler: nil)
+                    action.setValue(image, forKey: "image")
+                    alertController.addAction(action)
+                case "sun":
+                    let action = UIAlertAction(title: "Don't forget a sunblock!! :P", style: .default, handler: nil)
+                    action.setValue(image, forKey: "image")
+                    alertController.addAction(action)
+                    
+                case "wind":
+                    let action = UIAlertAction(title: "Windy, becareful!", style: .default, handler: nil)
+                    action.setValue(image, forKey: "image")
+                    alertController.addAction(action)
+                default:
+                    break
+                }
+                
+
+            
+                
+                let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
+                
+                alertController.view.tintColor = UIColor.DTIBlue()
+                alertController.view.layer.cornerRadius = 25
+                alertController.view.backgroundColor = UIColor.darkGray
+                
+                
+                alertController.addAction(cancelButton)
+                present(alertController, animated: true, completion: nil)
+            }
+        } else {
+        
+            let alertController = UIAlertController(title: "Weather is not available", message: "-° \n -", preferredStyle: .alert)
+            
+            let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
+
+            alertController.addAction(cancelButton)
+            present(alertController, animated: true, completion: nil)
+        
+        }
+    }
+
+    
+
     
     fileprivate func startEbike() {
         
         locationManager.startUpdatingLocation()
+        mySearchButton.isHidden = true
         distance = Measurement(value: 0, unit: UnitLength.meters)
         locationList.removeAll()
         
@@ -1297,7 +1511,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             self.saveNameOfRoute()
         }
         
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        let cancelButton = UIAlertAction(title: "Resume", style: .cancel)
         
         
         alertController.view.tintColor = UIColor.DTIBlue()
@@ -1336,6 +1550,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     fileprivate func stopEbike() {
+        mySearchButton.isHidden = false
         timer?.invalidate()
         locationManager.stopUpdatingLocation()
     }
@@ -1426,8 +1641,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                             }
                             if let icon = currentWeather.weatherStatus{
                                 self.currentWeatherIcon = icon
-                                self.weatherAlert()
                                 self.setWeatherIcon()
+                                self.weatherAlert()
                             }
                         }
                     }
@@ -1478,6 +1693,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         }
         */
         //locationManager.startUpdatingLocation()
+
         
         locationManager.delegate = self
         locationManager.activityType = .fitness
@@ -1495,6 +1711,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         view.addSubview(ScrollView)
         view.addSubview(statusViewControl)
         view.addSubview(addressLabel)
+        view.addSubview(totalDistanceToDestination)
+        view.addSubview(totalDurationToDestination)
+        
         view.addSubview(startButton)
         view.addSubview(weatherIcon)
         weatherIcon.isHidden = true
@@ -1517,14 +1736,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         _ = statusViewControl.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 20)
         statusViewControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
-        _ = addressLabel.anchor(statusViewControl.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 50)
+        _ = addressLabel.anchor(statusViewControl.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 30)
         
-        _ = startButton.anchor(addressLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 60, heightConstant: 60)
+        _ = totalDistanceToDestination.anchor(addressLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: totalDurationToDestination.leftAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width/2-20, heightConstant: 30)
+        
+        _ = totalDurationToDestination.anchor(addressLabel.bottomAnchor, left: totalDistanceToDestination.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width/2-20, heightConstant: 30)
+        
+        _ = startButton.anchor(totalDistanceToDestination.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
         startButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        
-        _ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 50)
+        _ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
 
     }
     
@@ -1534,6 +1756,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         //locationManager.stopUpdatingLocation()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        mapView.isMyLocationEnabled = true
+        mapView.settings.compassButton = true
+    }
 
 }
 
