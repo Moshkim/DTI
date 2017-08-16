@@ -29,6 +29,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
 
     
     
+    // Google API info between two points
+    
+    fileprivate var remainingDistance: Int = 0
+    fileprivate var remainingDuration: Int = 0
+    
+    
     // Core Data stack infomation variables
     
     fileprivate var ride:Ride?
@@ -173,6 +179,33 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }()
     
     
+    lazy var coffeSearchButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+        button.layer.cornerRadius = button.frame.width/2
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.DTIBlue()
+        button.tintColor = UIColor.white
+        
+        button.setImage(UIImage(named: "coffeePlaces")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.addTarget(self, action: #selector(POIForCoffee), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    
+    func POIForCoffee() {
+        guard let lat = mapView.myLocation?.coordinate.latitude else {return}
+        guard let long = mapView.myLocation?.coordinate.longitude else {return}
+        let coffee = "cafe"
+        
+        let jsonURLRequest = RequestCoffeeNearby()
+        
+        jsonURLRequest.getForecast(lat: lat, long: long, type: coffee)
+        
+    
+    }
+    
+    
     lazy var myLocationButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
         button.layer.cornerRadius = button.frame.width/2
@@ -284,7 +317,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 } else {
                 
                     guard let data = data else {
-                    
                         throw JSONError.NoData
                     }
                     guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary else {
@@ -296,19 +328,24 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     
                     let arrayRoutes = json["routes"] as! NSArray
                     let arrayLegs = (arrayRoutes[0] as! NSDictionary).object(forKey: "legs") as! NSArray
+                    print(arrayLegs)
                     let arraySteps = arrayLegs[0] as! NSDictionary
                     
                     
                     let dicDistance = arraySteps["distance"] as! NSDictionary
                     let totalDistance = dicDistance["text"] as! String
+                    self.remainingDistance = Int(dicDistance["value"] as! Int)
+                    print(self.remainingDistance)
                     
                     let dicDuration = arraySteps["duration"] as! NSDictionary
                     let totalDuration = dicDuration["text"] as! String
+                    self.remainingDuration = Int(dicDuration["value"] as! Int)
+                    print(self.remainingDuration)
                     
                     
                     
-                    self.totalDistanceToDestination.text = "Distance = \(totalDistance)"
-                    self.totalDurationToDestination.text = "Duration = \(totalDuration)"
+                    self.totalDistanceToDestination.text = "Remaining Distance = \(totalDistance)"
+                    self.totalDurationToDestination.text = "Remaining Duration = \(totalDuration)"
                     
                     print("\(totalDistance), \(totalDuration)")
                     
@@ -318,6 +355,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                         let dic1 = dic["overview_polyline"] as! NSDictionary
                         let points = dic1["points"] as! String
                         print(points)
+                        
+                        
                         
                         
                         DispatchQueue.main.async {
@@ -712,12 +751,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 ScrollView.addSubview(mapView)
                 mapView.addSubview(myLocationButton)
                 mapView.addSubview(mySearchButton)
+                mapView.addSubview(coffeSearchButton)
                 
                 _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height - 40)
                 mapView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
                 mapView.centerYAnchor.constraint(equalTo: mainFrameOfView.centerYAnchor).isActive = true
                 
                 _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 45, heightConstant: 45)
+                
+                _ = coffeSearchButton.anchor(mapView.topAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
                 
                 _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 45, heightConstant: 45)
                 
@@ -1663,7 +1705,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         super.viewDidLoad()
         
         
-        
         /*
         
         let authenticaitonContext = LAContext()
@@ -1752,8 +1793,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //timer?.invalidate()
-        //locationManager.stopUpdatingLocation()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {

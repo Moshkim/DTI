@@ -18,6 +18,7 @@
 		A6144FA81EDE243200204D02 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA71EDE243200204D02 /* TileView.swift */; };
 		A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */; };
 		A61680651F1EA82D00CE39D3 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A61680641F1EA82D00CE39D3 /* MapKit.framework */; };
+		A6201F981F439DFF001AD3F1 /* NearPlaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6201F971F439DFF001AD3F1 /* NearPlaces.swift */; };
 		A625DDDD1EC623B600DB521E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDC1EC623B600DB521E /* AppDelegate.swift */; };
 		A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDE1EC623B600DB521E /* MapViewController.swift */; };
 		A625DDE21EC623B600DB521E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE01EC623B600DB521E /* Main.storyboard */; };
@@ -26,6 +27,7 @@
 		A625DDEA1EC623B600DB521E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */; };
 		A629C8A01F269499002924DE /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C89E1F269499002924DE /* CoreDataStack.swift */; };
 		A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C8A11F269521002924DE /* FormatDisplay.swift */; };
+		A62CFE121F44CDAB00CD4CB2 /* RequestCoffeeNearby.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62CFE111F44CDAB00CD4CB2 /* RequestCoffeeNearby.swift */; };
 		A630165E1F3A6972006C0B7F /* NetworkProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */; };
 		A63016601F3A741E006C0B7F /* ForecastService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165F1F3A741E006C0B7F /* ForecastService.swift */; };
 		A63016621F3A7831006C0B7F /* CurrentWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63016611F3A7831006C0B7F /* CurrentWeather.swift */; };
@@ -91,6 +93,7 @@
 		A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnimateButtonController.swift; path = "E-Bike App/AnimateButtonController.swift"; sourceTree = SOURCE_ROOT; };
 		A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "E-Bike App.entitlements"; sourceTree = "<group>"; };
 		A61680641F1EA82D00CE39D3 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		A6201F971F439DFF001AD3F1 /* NearPlaces.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NearPlaces.swift; path = "E-Bike App/NearPlaces.swift"; sourceTree = SOURCE_ROOT; };
 		A625DDD91EC623B600DB521E /* E-Bike App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E-Bike App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A625DDDC1EC623B600DB521E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A625DDDE1EC623B600DB521E /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MapViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/MapViewController.swift"; sourceTree = "<group>"; };
@@ -101,6 +104,7 @@
 		A625DDEB1EC623B600DB521E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A629C89E1F269499002924DE /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		A629C8A11F269521002924DE /* FormatDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormatDisplay.swift; sourceTree = "<group>"; };
+		A62CFE111F44CDAB00CD4CB2 /* RequestCoffeeNearby.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequestCoffeeNearby.swift; path = "E-Bike App/RequestCoffeeNearby.swift"; sourceTree = SOURCE_ROOT; };
 		A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkProcessor.swift; path = "E-Bike App/NetworkProcessor.swift"; sourceTree = SOURCE_ROOT; };
 		A630165F1F3A741E006C0B7F /* ForecastService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForecastService.swift; path = "E-Bike App/ForecastService.swift"; sourceTree = SOURCE_ROOT; };
 		A63016611F3A7831006C0B7F /* CurrentWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CurrentWeather.swift; path = "E-Bike App/CurrentWeather.swift"; sourceTree = SOURCE_ROOT; };
@@ -303,6 +307,8 @@
 				A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */,
 				A630165F1F3A741E006C0B7F /* ForecastService.swift */,
 				A63016611F3A7831006C0B7F /* CurrentWeather.swift */,
+				A6201F971F439DFF001AD3F1 /* NearPlaces.swift */,
+				A62CFE111F44CDAB00CD4CB2 /* RequestCoffeeNearby.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -586,6 +592,7 @@
 				A63016621F3A7831006C0B7F /* CurrentWeather.swift in Sources */,
 				A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */,
 				A6BD1C6D1EF842A100E5D8EE /* SpinerLayer.swift in Sources */,
+				A62CFE121F44CDAB00CD4CB2 /* RequestCoffeeNearby.swift in Sources */,
 				A6301CFA1EEF4A2E0005EA12 /* LoginViewController.swift in Sources */,
 				A68447F51F02C8A400B90B79 /* FloatingActionButton.swift in Sources */,
 				A6301CFE1EF05A190005EA12 /* Page.swift in Sources */,
@@ -601,6 +608,7 @@
 				A69FDB041F0D6DC8003D7D15 /* UIColor+colorFromHex.swift in Sources */,
 				A6144FA01EDDF7DB00204D02 /* AnimatedUILogoView.swift in Sources */,
 				A60DBB101F0D6B6E00AAD99D /* GraphViewController.swift in Sources */,
+				A6201F981F439DFF001AD3F1 /* NearPlaces.swift in Sources */,
 				A6144FA61EDE242B00204D02 /* TileGridView.swift in Sources */,
 				A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */,
 				A68447EF1F02C8A400B90B79 /* UIViewControllerX.swift in Sources */,

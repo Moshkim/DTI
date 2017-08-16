@@ -26,6 +26,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSPlacesClient.provideAPIKey(googleMapsApiKey)
         UIApplication.shared.statusBarStyle = .lightContent
 
+        
+        
+        
+        //let foreCast = ForecastForNearbyPlaces()
+        
+        //foreCast.getForecastNearby(lat: -33.8670522, long: 151.1957362, type: "cafe"){ (nearbyPlace) in
+            
+        //}
+
+        
         //UserDefaults.standard.set(nil, forKey: "name") as? String
         
         //UserDefaults.standard.set(nil, forKey: "name")
