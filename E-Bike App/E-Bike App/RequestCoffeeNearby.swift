@@ -11,6 +11,10 @@ import Foundation
 
 class RequestCoffeeNearby {
     
+    
+    static var arrayOfLocations = [[Double(),Double()]]
+    static var arrayOfNames = [String()]
+    
     func getForecast(lat: Double, long: Double, type: String) {
     
         let jsonURLString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&radius=3200&type=\(type)&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
@@ -42,13 +46,12 @@ class RequestCoffeeNearby {
                         
                         guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? NSDictionary else { return }
                         
-                        print(json)
+                        //print(json)
                 
                         let arrayPlaces = json["results"] as! NSArray
-                        print(arrayPlaces)
+                        //print(arrayPlaces)
                         
-                        var arrayOfLocations = [[Double(),Double()]]
-                        var arrayOfNames = [String()]
+                        
                         
                         for i in 0..<arrayPlaces.count {
                             
@@ -57,20 +60,19 @@ class RequestCoffeeNearby {
                             let arrayForName = (arrayPlaces[i] as! NSDictionary).object(forKey: "name") as! String
                             
                             
-                            arrayOfNames.append(arrayForName)
+                            RequestCoffeeNearby.arrayOfNames.append(arrayForName)
                             
-                            arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
+                            RequestCoffeeNearby.arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
                         
                         }
                         //for i in 0..<arrayPlaces.count {
                         
                             //arrayLocations.adding((arrayPlaces[i] as! NSDictionary).object(forKey: "geometry") as! NSArray)
                         //}
-                        print(arrayOfLocations)
-                        print(arrayOfNames)
+                        print(RequestCoffeeNearby.arrayOfLocations)
+                        print(RequestCoffeeNearby.arrayOfNames)
                         
-                        //let arrayCoordinates = arrayPlaces[]
-                        //print(arrayCoordinates)
+                        
                         
                     }catch let error as NSError {
                         print(error.debugDescription)

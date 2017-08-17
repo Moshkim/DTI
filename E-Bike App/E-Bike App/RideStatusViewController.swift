@@ -198,16 +198,125 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         guard let long = mapView.myLocation?.coordinate.longitude else {return}
         let coffee = "cafe"
         
-        let jsonURLRequest = RequestCoffeeNearby()
         
-        jsonURLRequest.getForecast(lat: lat, long: long, type: coffee)
+        var arrayOfLocations = [[Double(),Double()]]
+        var arrayOfNames = [String()]
         
-    
+        var name = String()
+        
+        var latitude = CLLocationDegrees()
+        var longitude = CLLocationDegrees()
+        
+        let jsonURLString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&radius=3200&type=\(coffee)&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
+        
+        guard let urlString = URL(string: jsonURLString) else {
+            print("Error: Cannot create URL")
+            return
+        }
+        
+        let markerImage = UIImage(named: "dot")?.withRenderingMode(.alwaysTemplate)
+        let markerView = UIImageView(image: markerImage)
+        markerView.tintColor = UIColor.DTIBlue()
+        
+        let urlRequest = URLRequest(url: urlString)
+        
+        
+        // Set up the session
+        
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        
+        
+        let task = session.dataTask(with: urlRequest) { (data, response, error) in
+            
+            
+            guard let httpResponse = response as? HTTPURLResponse else { return }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                do{
+                    
+                    guard let data = data else { return }
+                    
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? NSDictionary else { return }
+                    
+                    //print(json)
+                    
+                    DispatchQueue.global(qos: .background).async {
+                    
+                        let arrayPlaces = json["results"] as! NSArray
+                        //print(arrayPlaces)
+                        
+                        
+                        
+                        
+                        for i in 0..<arrayPlaces.count {
+                            
+                            let arrayForLocations = (((arrayPlaces[i] as! NSDictionary).object(forKey: "geometry") as! NSDictionary).object(forKey: "location") as! NSDictionary)
+                            
+                            let arrayForName = (arrayPlaces[i] as! NSDictionary).object(forKey: "name") as! String
+                            
+                            
+                            arrayOfNames.append(arrayForName)
+                            
+                            arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
+                            
+                        }
+
+                        
+                        
+                        
+                        DispatchQueue.main.async {
+                            print(arrayOfLocations)
+                            print(arrayOfNames)
+                            for i in 1..<arrayOfLocations.count{
+                                let nearbyMarker = GMSMarker()
+                                    nearbyMarker.iconView = markerView
+                                for j in 0..<arrayOfLocations[i].count {
+                                    
+                                    
+                                    if j == 0 {
+                                        latitude = arrayOfLocations[i][j]
+                                    }
+                                    if j == 1 {
+                                        longitude = arrayOfLocations[i][j]
+                                    }
+                                    
+                                    nearbyMarker.position = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                                }
+                                
+                                name = arrayOfNames[i]
+                                nearbyMarker.title = name
+                                nearbyMarker.map = self.mapView
+                                
+                            }
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                }catch let error as NSError {
+                    print(error.debugDescription)
+                }
+                
+                
+                
+            default:
+                print("HTTP Reponse Code: \(httpResponse.statusCode)")
+                
+            }
+            
+        }
+        task.resume()
+        
+        
     }
     
     
     lazy var myLocationButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         button.layer.cornerRadius = button.frame.width/2
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.DTIBlue()
@@ -231,7 +340,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     lazy var mySearchButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         button.layer.cornerRadius = button.frame.width/2
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.DTIBlue()
@@ -757,11 +866,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 mapView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
                 mapView.centerYAnchor.constraint(equalTo: mainFrameOfView.centerYAnchor).isActive = true
                 
-                _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 45, heightConstant: 45)
+                _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 40, heightConstant: 40)
                 
                 _ = coffeSearchButton.anchor(mapView.topAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
                 
-                _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 45, heightConstant: 45)
+                _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 40, heightConstant: 40)
                 
             
             }
