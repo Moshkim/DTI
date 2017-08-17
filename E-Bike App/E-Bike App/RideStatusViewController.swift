@@ -65,6 +65,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     
+    
+    // Direction to Coffee places
+    
+    var latDirection = Double()
+    var longDirection = Double()
+    
+    
+    
     // Map View Polyline
     
     let path = GMSMutablePath()
@@ -192,6 +200,48 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         return button
     }()
     
+    
+    lazy var directionToDestButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+        button.layer.cornerRadius = button.frame.width/2
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.DTIBlue()
+        button.tintColor = UIColor.white
+        
+        button.setImage(UIImage(named: "direction")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.addTarget(self, action: #selector(directionToDest), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    func directionToDest() {
+        
+        let lat = latDirection
+        let long = longDirection
+        let position = CLLocationCoordinate2DMake(lat, long)
+        drawRouteBetweenTwoPoints(coordinate: position)
+    
+    }
+    
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        latDirection = marker.position.latitude
+        longDirection = marker.position.longitude
+        print("wow")
+        directionToDestButton.isHidden = false
+        
+        return false
+    }
+    /*
+    
+    func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
+        latDirection = marker.position.latitude
+        longDirection = marker.position.longitude
+        print("Come in here ")
+        directionToDestButton.isHidden = false
+        
+        
+    }
+    */
     
     func POIForCoffee() {
         guard let lat = mapView.myLocation?.coordinate.latitude else {return}
@@ -857,6 +907,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 mapView.addSubview(myLocationButton)
                 mapView.addSubview(mySearchButton)
                 mapView.addSubview(coffeSearchButton)
+                mapView.addSubview(directionToDestButton)
+                
+                directionToDestButton.isHidden = true
+                
                 
                 _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height - 40)
                 mapView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
@@ -865,6 +919,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 40, heightConstant: 40)
                 
                 _ = coffeSearchButton.anchor(mapView.topAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
+                
+                _ = directionToDestButton.anchor(coffeSearchButton.bottomAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
                 
                 _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 40, heightConstant: 40)
                 
