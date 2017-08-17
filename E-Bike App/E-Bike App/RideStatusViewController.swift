@@ -201,6 +201,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         var arrayOfLocations = [[Double(),Double()]]
         var arrayOfNames = [String()]
+        var arrayOfAddress = [String()]
         
         var name = String()
         
@@ -245,30 +246,24 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     DispatchQueue.global(qos: .background).async {
                     
                         let arrayPlaces = json["results"] as! NSArray
-                        //print(arrayPlaces)
-                        
-                        
-                        
                         
                         for i in 0..<arrayPlaces.count {
                             
                             let arrayForLocations = (((arrayPlaces[i] as! NSDictionary).object(forKey: "geometry") as! NSDictionary).object(forKey: "location") as! NSDictionary)
                             
                             let arrayForName = (arrayPlaces[i] as! NSDictionary).object(forKey: "name") as! String
-                            
+                            let arrayForAddress = (arrayPlaces[i] as! NSDictionary).object(forKey: "vicinity") as! String
                             
                             arrayOfNames.append(arrayForName)
+                            arrayOfAddress.append(arrayForAddress)
                             
                             arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
                             
                         }
 
-                        
-                        
-                        
                         DispatchQueue.main.async {
-                            print(arrayOfLocations)
-                            print(arrayOfNames)
+                            //print(arrayOfLocations)
+                            //print(arrayOfNames)
                             for i in 1..<arrayOfLocations.count{
                                 let nearbyMarker = GMSMarker()
                                     nearbyMarker.iconView = markerView
@@ -287,6 +282,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                                 
                                 name = arrayOfNames[i]
                                 nearbyMarker.title = name
+                                nearbyMarker.snippet = arrayOfAddress[i]
                                 nearbyMarker.map = self.mapView
                                 
                             }
