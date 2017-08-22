@@ -61,9 +61,10 @@
 		A68447FD1F02C8A400B90B79 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447E81F02C8A400B90B79 /* MenuViewController.swift */; };
 		A684A5E41F0AC1E6007C6FCC /* ConfirmActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A684A5E31F0AC1E6007C6FCC /* ConfirmActionButton.swift */; };
 		A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68573F11EF084FD005C96CC /* LoginPage.swift */; };
+		A690D5701F47722100C75280 /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = A690D56F1F47722100C75280 /* APIKey.swift */; };
+		A690D5721F4774F200C75280 /* RouteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A690D5711F4774F200C75280 /* RouteStore.swift */; };
 		A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */; };
 		A69FDB041F0D6DC8003D7D15 /* UIColor+colorFromHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */; };
-		A6A72E0D1EF3048900FB5CCE /* RouteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A72E0C1EF3048900FB5CCE /* RouteStore.swift */; };
 		A6BD1C6A1EF842A100E5D8EE /* CGRectEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C651EF842A100E5D8EE /* CGRectEx.swift */; };
 		A6BD1C6B1EF842A100E5D8EE /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C661EF842A100E5D8EE /* FadeTransition.swift */; };
 		A6BD1C6C1EF842A100E5D8EE /* NSTimerEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C671EF842A100E5D8EE /* NSTimerEx.swift */; };
@@ -137,9 +138,10 @@
 		A68447E81F02C8A400B90B79 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		A684A5E31F0AC1E6007C6FCC /* ConfirmActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmActionButton.swift; sourceTree = "<group>"; };
 		A68573F11EF084FD005C96CC /* LoginPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
+		A690D56F1F47722100C75280 /* APIKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = APIKey.swift; path = "E-Bike App/APIKey.swift"; sourceTree = SOURCE_ROOT; };
+		A690D5711F4774F200C75280 /* RouteStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteStore.swift; sourceTree = "<group>"; };
 		A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableGraphView.swift; sourceTree = "<group>"; };
 		A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+colorFromHex.swift"; sourceTree = "<group>"; };
-		A6A72E0C1EF3048900FB5CCE /* RouteStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteStore.swift; sourceTree = "<group>"; };
 		A6BD1C651EF842A100E5D8EE /* CGRectEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGRectEx.swift; sourceTree = "<group>"; };
 		A6BD1C661EF842A100E5D8EE /* FadeTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
 		A6BD1C671EF842A100E5D8EE /* NSTimerEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSTimerEx.swift; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 				A630165F1F3A741E006C0B7F /* ForecastService.swift */,
 				A63016611F3A7831006C0B7F /* CurrentWeather.swift */,
 				A6201F971F439DFF001AD3F1 /* NearPlaces.swift */,
+				A690D56F1F47722100C75280 /* APIKey.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -367,8 +370,8 @@
 		A68573F51EF0A2A6005C96CC /* Map */ = {
 			isa = PBXGroup;
 			children = (
+				A690D5711F4774F200C75280 /* RouteStore.swift */,
 				A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */,
-				A6A72E0C1EF3048900FB5CCE /* RouteStore.swift */,
 			);
 			name = Map;
 			sourceTree = "<group>";
@@ -563,6 +566,7 @@
 				A6BD1C6B1EF842A100E5D8EE /* FadeTransition.swift in Sources */,
 				A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */,
 				A625DDE51EC623B600DB521E /* E_Bike_App.xcdatamodeld in Sources */,
+				A690D5701F47722100C75280 /* APIKey.swift in Sources */,
 				A68447EE1F02C8A400B90B79 /* UIViewAnchorPoint.swift in Sources */,
 				A6144F9C1EDDF23C00204D02 /* Constant.swift in Sources */,
 				A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */,
@@ -595,10 +599,10 @@
 				A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */,
 				A68447FD1F02C8A400B90B79 /* MenuViewController.swift in Sources */,
 				A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */,
+				A690D5721F4774F200C75280 /* RouteStore.swift in Sources */,
 				A6C7BFAF1F1933C10000E66A /* CircleMenu.swift in Sources */,
 				A68447F21F02C8A400B90B79 /* UIVisualEffectViewX.swift in Sources */,
 				A6303E051EE9F34800A57596 /* SettingsLauncher.swift in Sources */,
-				A6A72E0D1EF3048900FB5CCE /* RouteStore.swift in Sources */,
 				A661BF141F1002410029A905 /* RideStatusViewController.swift in Sources */,
 				A663974D1F265B9F009D3C96 /* StoryboardSupport.swift in Sources */,
 				A69FDB041F0D6DC8003D7D15 /* UIColor+colorFromHex.swift in Sources */,

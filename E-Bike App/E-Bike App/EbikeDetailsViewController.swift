@@ -12,28 +12,39 @@ import CoreLocation
 import GoogleMaps
 import GooglePlaces
 
-class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
+class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate {
     
     
     // ScrollView for the graph
     
     lazy var graphView: ScrollableGraphView = {
         var view = ScrollableGraphView(frame: CGRect(x: 0, y: 0, width: 100, height: 150))
-
+        view.backgroundColor = UIColor.white
         return view
     }()
     
-    
+    var locationAltitude = [Double()]
     
     var graphConstraints = [NSLayoutConstraint]()
     
     var label = UILabel()
     var labelConstraints = [NSLayoutConstraint]()
     
+    var stringURL = String()
+    
     
     
     // Data
     let numberOfDataItems = 20
+    
+    
+    lazy var elevationData = [Double]()
+    lazy var elevationLabels = [Double]()
+    
+    
+    var locationsOfElevationSamples = [CLLocation]()
+    var distanceRelateToElevation = [Double]()
+    
     
     lazy var data: [Double] = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,14,15,15,15,20]
         //self.generateRandomData(self.numberOfDataItems, max: 50)
@@ -192,7 +203,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         let locationPoints = ride.locations?.array as! [Locations]
         
 
-        print(locations.array as! [Locations])
+        //print(locations.array as! [Locations])
         
         for i in 0..<locationPoints.count{
             let lat = locationPoints[i].latitude
@@ -240,13 +251,13 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         graphView.fillColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
             
             //UIColor.colorFromHex(hexString: "#555555")
-        graphView.fillGradientType = ScrollableGraphViewGradientType.linear
+        graphView.fillGradientType = ScrollableGraphViewGradientType.radial
         graphView.fillGradientStartColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
             //UIColor.colorFromHex(hexString: "#555555")
         graphView.fillGradientEndColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
             //UIColor.colorFromHex(hexString: "#444444")
         
-        graphView.dataPointSpacing = 20
+        graphView.dataPointSpacing = 25
         graphView.dataPointSize = 4
         graphView.dataPointFillColor = UIColor(red:0.99, green:0.10, blue:0.56, alpha:1.00)
         
@@ -260,8 +271,13 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         graphView.shouldAdaptRange = true
         graphView.adaptAnimationType = ScrollableGraphViewAnimationType.easeOut
         graphView.animationDuration = 0.5
-        graphView.rangeMax = 50
+        graphView.rangeMax = 1000
         graphView.shouldRangeAlwaysStartAtZero = true
+        graphView.showsVerticalScrollIndicator = true
+        graphView.showsHorizontalScrollIndicator = true
+        graphView.shouldAutomaticallyDetectRange = true
+        
+        graphView.shouldShowLabels = true
         
         return graphView
     }
@@ -316,11 +332,187 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
     }
     
     
+    
+    func getElevationInfo() {
+        
+        //let basedURL = "https://maps.googleapis.com/maps/api/elevation/json?path=37.33165083,-122.03029752%7C37.3304353,-122.02993796&samples=3&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
+        
+        
+        /*
+         let request = NSMutableURLRequest(url: NSURL(string: "https://maps.googleapis.com/maps/api/elevation/json?path=37.33165083%2C-122.03029752%7C37.3304353%2C-122.02993796&samples=3&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA")! as URL,
+         cachePolicy: .useProtocolCachePolicy,
+         timeoutInterval: 10.0)
+         */
+        
+        
+        
+        //var trackingIndexNumber = 0
+        //var indexIntervalForElevationDevision = 0
+        /*
+         if locationPoints.count%2 == 0 {
+         indexIntervalForElevationDevision = locationPoints.count/4
+         }
+         if locationPoints.count%3 == 0 {
+         indexIntervalForElevationDevision = locationPoints.count/3
+         }
+         
+         for i in 0..<locationPoints.count {
+         locationAltitude.append(locationPoints[i].elevation)
+         
+         
+         if i == trackingIndexNumber {
+         if i == locationPoints.count - 1{
+         stringURL += "\(locationPoints[i].latitude),\(locationPoints[i].longitude)"
+         break
+         } else {
+         stringURL += "\(locationPoints[i].latitude),\(locationPoints[i].longitude)%7C"
+         trackingIndexNumber += indexIntervalForElevationDevision
+         }
+         }
+         }
+         */
+        
+        
+        
+        guard let locations = ride.locations, locations.count > 0 else { return }
+        
+        let locationPoints = locations.array as! [Locations]
+        
+
+        
+        
+        
+        let basedURL = "https://maps.googleapis.com/maps/api/elevation/json?path="
+        stringURL += basedURL
+
+        
+        guard let firstLat = locationPoints.first?.latitude else { return }
+        guard let firstLong = locationPoints.first?.longitude else { return }
+        guard let lastLat = locationPoints.last?.latitude else { return }
+        guard let lastLong = locationPoints.last?.longitude else { return }
+
+        
+        stringURL += "\(firstLat)%2C\(firstLong)%7C\(locationPoints[locationPoints.count/2].latitude)%2C\(locationPoints[locationPoints.count/2].longitude)%7C\(lastLat)%2C\(lastLong)"
+        
+        stringURL += "&samples=20&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
+        
+
+        print(stringURL)
+        guard let urlString = URL(string: stringURL) else {
+            
+            print("Error: Cannot create URL")
+            return
+        }
+        
+        let urlRequest = URLRequest(url: urlString)
+        
+        //let config = URLSessionConfiguration.default
+        
+        
+        let session = URLSession.shared
+        
+        let task = session.dataTask(with: urlRequest) { (data, response, error) in
+            
+            guard let httpResponse = response as? HTTPURLResponse else { return }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                do{
+                    
+                    
+                    guard let data = data else {
+                        print("Error there is no data")
+                        return
+                    }
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? NSDictionary else {
+                        print("the json rawvalue can not be convert to human readable format!")
+                        
+                        return
+                    }
+                    print(json)
+                    
+                    DispatchQueue.global(qos: .background).async {
+                        let arrayElevations = json["results"] as! NSArray
+                        print(arrayElevations)
+                        
+                        for i in 0..<arrayElevations.count {
+                            
+                            let arrayForElevation = (arrayElevations[i] as! NSDictionary).object(forKey: "elevation") as! Double
+                            self.elevationData.append(arrayForElevation)
+                            
+                            let lat = ((arrayElevations[i] as! NSDictionary).object(forKey: "location") as! NSDictionary).object(forKey: "lat") as! Double
+                            let long = ((arrayElevations[i] as! NSDictionary).object(forKey: "location") as! NSDictionary).object(forKey: "lng") as! Double
+                            let location = CLLocation(latitude: lat, longitude: long)
+                            
+                            self.locationsOfElevationSamples.append(location)
+                        }
+                        
+                        print(self.elevationData)
+                        
+                        var dist = 0.0
+                        for i in 0..<self.locationsOfElevationSamples.count {
+                            if i == 0 {
+                                self.distanceRelateToElevation.append(0.0)
+                            } else {
+                                dist += self.locationsOfElevationSamples[i].distance(from: self.locationsOfElevationSamples[i-1])
+                                self.distanceRelateToElevation.append(dist)
+                            }
+                        }
+                        
+                        
+                        print(self.distanceRelateToElevation)
+                        self.labels.removeAll()
+                        
+                        for i in 0..<self.distanceRelateToElevation.count {
+                            self.labels.append("\(Int(self.distanceRelateToElevation[i]))")
+                        }
+                        
+                        
+                        DispatchQueue.main.async {
+                            // Graph View
+                            
+                            self.graphView.set(data: self.elevationData, withLabels: self.labels)
+                        }
+                        
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                } catch let error as NSError{
+                    print(error.debugDescription)
+                }
+                
+            default:
+                print("HTTP Response Code: \(httpResponse.statusCode)")
+                
+            }
+            
+            
+        }
+        task.resume()
+        
+
+
+    
+    }
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+
+        getElevationInfo()
+       
         graphView = createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 200))
+        
+        
         
         view.backgroundColor = UIColor.black
         
@@ -341,8 +533,9 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         view.addSubview(mapView)
         
         
-        // Graph View
+        
         view.addSubview(graphView)
+        
         
         
         // Date
@@ -371,13 +564,13 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         _ = nameOfTheRoute.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 60)
         
         
+        
+        _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
+        
         _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
         
         _ = graphLabel.anchor(mapView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 20)
         graphLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        
-        _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
         
         
         _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 20)
@@ -407,7 +600,6 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         
         
         // Set the constraints of the scrollview of the graph
-        //setupConstraints()
         
     }
     
@@ -437,10 +629,8 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate {
         averageSpeedLabel.text = "A.Speed: \(formattedPace)"
         //averageMovingSpeedLabel.text = "A.M.Speed: \(formattedMovingPace)"
         
-
-        
         graphView.set(data: data, withLabels: labels)
-        
+
     }
 
 

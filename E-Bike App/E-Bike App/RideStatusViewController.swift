@@ -41,6 +41,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate var distance = Measurement(value: 0, unit: UnitLength.miles)
     fileprivate var address: [String] = []
     fileprivate var locationList: [CLLocation] = []
+    fileprivate var locationListWithDistance = [[CLLocation(),Double()]]
     fileprivate var timer: Timer?
     fileprivate var totalMovingTimer: Timer?
     
@@ -164,6 +165,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         label.textColor = UIColor.white
         label.backgroundColor = UIColor.clear
         label.layer.zPosition = 2
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -181,7 +183,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         view.autoresizingMask = [.flexibleWidth,.flexibleHeight]
         let mapInsets = UIEdgeInsets(top: 0, left: 0, bottom:0, right: 0)
         view.padding = mapInsets
-        
+        view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
     }()
@@ -193,6 +195,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.DTIBlue()
         button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
         
         button.setImage(UIImage(named: "coffeePlaces")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(POIForCoffee), for: .touchUpInside)
@@ -207,6 +210,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.DTIBlue()
         button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
         
         button.setImage(UIImage(named: "direction")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(directionToDest), for: .touchUpInside)
@@ -220,7 +224,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         let long = longDirection
         let position = CLLocationCoordinate2DMake(lat, long)
         drawRouteBetweenTwoPoints(coordinate: position)
+        locationManager.startUpdatingHeading()
+        
+        
+        let currentLocation = mapView.myLocation?.coordinate
     
+        let camera = GMSCameraPosition.camera(withTarget: currentLocation!, zoom: 15, bearing: 0, viewingAngle: 45)
+        mapView.animate(to: camera)
     }
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
@@ -229,7 +239,23 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         print("wow")
         directionToDestButton.isHidden = false
         
+        
         return false
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        let heading = newHeading.magneticHeading
+        let heading2 = newHeading.trueHeading
+        let heading2_2 = heading2*M_PI/180
+        self.mapView.transform = CGAffineTransform(rotationAngle: CGFloat(heading2_2))
+        let headingDegrees = (heading*M_PI/180)
+        print(heading2)
+        print(headingDegrees)
+        let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: heading2, viewingAngle: 20)
+        mapView.animate(to: camera)
+        //mapView.animate(toBearing: headingDegrees)
+        //let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: heading, viewingAngle: 45)
+        //mapView.animate(toBearing: heading)
     }
     /*
     
@@ -258,6 +284,26 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         var latitude = CLLocationDegrees()
         var longitude = CLLocationDegrees()
         
+        
+        /*
+         let request = NSMutableURLRequest(url: NSURL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.33165083%2C-122.03029752&radius=3200&type=cafe&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA")! as URL,
+                                            cachePolicy: .useProtocolCachePolicy,
+                                            timeoutInterval: 10.0)
+         request.httpMethod = "GET"
+         request.allHTTPHeaderFields = headers
+         
+         let session = URLSession.shared
+         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+            if (error != nil) {
+                print(error)
+            } else {
+                let httpResponse = response as? HTTPURLResponse
+                print(httpResponse)
+            }
+         })
+         
+         dataTask.resume()
+         */
         let jsonURLString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&radius=3200&type=\(coffee)&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
         
         guard let urlString = URL(string: jsonURLString) else {
@@ -367,6 +413,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.DTIBlue()
         button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
 
         button.setImage(UIImage(named: "myLocation")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(zoomToMyLocation), for: .touchUpInside)
@@ -391,6 +438,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.DTIBlue()
         button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
         
         button.setImage(UIImage(named: "searchButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(searchAddressForDirection), for: .touchUpInside)
@@ -869,7 +917,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     _ = thirdDataThird.anchor(thirdLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 50)
                     thirdDataThird.centerXAnchor.constraint(equalTo: thirdViewOfMain.centerXAnchor).isActive = true
                     
-                    
+                    // Center button in view
+                    /*
+                    NSLayoutConstraint.activate([
+                        thirdLabel.topAnchor.constraint(equalTo: secondLabel.bottomAnchor),
+                        
+                        
+                        ])
+                    */
+                    //
                     
                     // Fourth element view constraints
                     _ = fourthViewOfMain.anchor(thirdViewOfMain.bottomAnchor, left: mainFrameOfView.leftAnchor, bottom: nil, right: mainFrameOfView.centerXAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (mainFrameOfView.frame.width/2)-15, heightConstant: (mainFrameOfView.frame.height/3)-15)
@@ -1042,6 +1098,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         button.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
         button.titleLabel?.textColor = UIColor.DTIRed()
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(dismissPopUp), for: .touchUpInside)
     
         return button
@@ -1070,6 +1127,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let titleLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 40)
         label.textColor = UIColor.white
         label.textAlignment = .center
@@ -1081,6 +1139,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let speedLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
         label.textColor = UIColor.white
         label.textAlignment = .center
@@ -1091,6 +1150,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let timeLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
         label.textColor = UIColor.white
         label.textAlignment = .center
@@ -1102,6 +1162,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let totalDistanceLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
         label.textColor = UIColor.white
         label.textAlignment = .center
@@ -1113,6 +1174,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let addressLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 12)
@@ -1124,6 +1186,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let totalDistanceToDestination: UILabel = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 10)
@@ -1134,6 +1197,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     let totalDurationToDestination: UILabel = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 10)
@@ -1281,7 +1345,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             
             print("Location status not determined.")
             
-        case .authorizedAlways: fallthrough
+        case .authorizedAlways:
+            
+            guard CLLocationManager.headingAvailable() else {
+                print("Heading is not available right now")
+                return }
+            locationManager.headingFilter = 5
+            locationManager.startUpdatingHeading()
             
         case .authorizedWhenInUse:
             mapView.isMyLocationEnabled = true
@@ -1308,12 +1378,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             if startLocation == nil {
                 startLocation = locations.first
                 path.add(startLocation.coordinate)
+                locationListWithDistance[0] = [startLocation,0]
                 
             } else if let location = locations.last {
                 totalTravelDistance += lastLocation.distance(from: location)
+                
+                
+                locationListWithDistance.append([lastLocation,totalTravelDistance])
+                
                 print("Traveled Distance:",  totalTravelDistance)
                 print("Straight Distance:", startLocation.distance(from: locations.last!))
-                
+                print("Elevation:", location.altitude)
                 
                 let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
                 
@@ -1350,7 +1425,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                 
                 distance = Measurement(value: totalTravelDistance, unit: UnitLength.meters)
                 
-                let camera = GMSCameraPosition(target: location.coordinate, zoom: 15, bearing: 0, viewingAngle: 0)
+                let camera = GMSCameraPosition(target: location.coordinate, zoom: 15, bearing: 30, viewingAngle: 20)
                 
                 if cameraTag == 0{
                     mapView.animate(to: camera)
@@ -1660,6 +1735,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate func startEbike() {
         
         locationManager.startUpdatingLocation()
+        
         mySearchButton.isHidden = true
         distance = Measurement(value: 0, unit: UnitLength.meters)
         locationList.removeAll()
@@ -1756,7 +1832,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         mySearchButton.isHidden = false
         timer?.invalidate()
         locationManager.stopUpdatingLocation()
+        locationManager.stopUpdatingHeading()
+        
+        
     }
+
     
     fileprivate func saveEbike(name: String) {
         
@@ -1778,11 +1858,36 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         for location in locationList {
             let locationObject = Locations(context: CoreDataStack.context)
+            locationObject.elevation = location.altitude as Double
+            print(location.altitude)
             locationObject.timestamp = location.timestamp as NSDate?
             locationObject.latitude = location.coordinate.latitude
             locationObject.longitude = location.coordinate.longitude
             newRide.addToLocations(locationObject)
         }
+        /*
+        for i in 0..<locationListWithDistance.count{
+            
+            let locationObj = Locations(context: CoreDataStack.context)
+            for j in 0..<locationListWithDistance[i].count{
+                if j == 0 {
+                    var locObj = CLLocation()
+                    locObj = locationListWithDistance[i][0] as! CLLocation
+                    locationObj.elevation = locObj.altitude
+                    locationObj.latitude = locObj.coordinate.latitude
+                    locationObj.longitude = locObj.coordinate.longitude
+                    locationObj.timestamp = locObj.timestamp as NSDate?
+                    
+                }
+                if j == 1 {
+                    var locObjDistance = Double()
+                    locObjDistance = locationListWithDistance[i][1] as! Double
+                    locationObj.distanceFromStart = locObjDistance
+                }
+                newRide.addToLocations(locationObj)
+            }
+        }
+        */
         CoreDataStack.saveContext()
         ride = newRide
         
@@ -1896,7 +2001,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         */
         //locationManager.startUpdatingLocation()
 
-        
+        //locationManager.startUpdatingHeading()
         locationManager.delegate = self
         locationManager.activityType = .fitness
         locationManager.requestWhenInUseAuthorization()
