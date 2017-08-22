@@ -30,11 +30,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     
     // Google API info between two points
+    // Direction to Destination
+    fileprivate var destinationTag = 0
+    fileprivate var totalremainingDistance = Double()
+    fileprivate var totalremainingDuration = Double()
     
-    fileprivate var remainingDistance: Int = 0
-    fileprivate var remainingDuration: Int = 0
-    
-    
+
     // Core Data stack infomation variables
     
     fileprivate var ride:Ride?
@@ -72,6 +73,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     var latDirection = Double()
     var longDirection = Double()
     
+
     
     
     // Map View Polyline
@@ -203,7 +205,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         return button
     }()
     
-    
+
     lazy var directionToDestButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         button.layer.cornerRadius = button.frame.width/2
@@ -211,32 +213,58 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         button.backgroundColor = UIColor.DTIBlue()
         button.tintColor = UIColor.white
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.tag = 0
         
-        button.setImage(UIImage(named: "direction")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(directionToDest), for: .touchUpInside)
         
         return button
     }()
     
-    func directionToDest() {
+    
+    
+    func directionToDest(sender: UIButton) {
         
         let lat = latDirection
         let long = longDirection
         let position = CLLocationCoordinate2DMake(lat, long)
-        drawRouteBetweenTwoPoints(coordinate: position)
         locationManager.startUpdatingHeading()
         
+        if sender.tag == 0 {
+            sender.tag = 1
+            sender.setImage(UIImage(named: "direction")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            drawRouteBetweenTwoPoints(coordinate: position)
+        }
+        if sender.tag == 1 {
+            sender.tag = 0
+            
+            
+            // MARK - Destination tag should be on in order to keep track remaining distance and time
+            destinationTag = 1
+            
+            startButton.setTitle("Stop", for: .normal)
+            startButton.tag = 2
+            //weatherAlert()
+            startEbike()
+            //let currentLocation = mapView.myLocation?.coordinate
+            //let camera = GMSCameraPosition.camera(withTarget: currentLocation!, zoom: 15, bearing: 45, viewingAngle: 20)
+            //self.mapView.animate(to: camera)
+            
+            
         
-        let currentLocation = mapView.myLocation?.coordinate
-    
-        let camera = GMSCameraPosition.camera(withTarget: currentLocation!, zoom: 15, bearing: 0, viewingAngle: 45)
-        mapView.animate(to: camera)
+        }
+        
+        
+        //sender.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        
+        
     }
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         latDirection = marker.position.latitude
         longDirection = marker.position.longitude
         print("wow")
+        directionToDestButton.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
         directionToDestButton.isHidden = false
         
         
@@ -484,6 +512,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     func drawRouteBetweenTwoPoints(coordinate: CLLocationCoordinate2D) {
         
+        
+        
+        
         guard let lat = mapView.myLocation?.coordinate.latitude else {return}
         guard let long = mapView.myLocation?.coordinate.longitude else {return}
 
@@ -537,40 +568,55 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     
                     let dicDistance = arraySteps["distance"] as! NSDictionary
                     let totalDistance = dicDistance["text"] as! String
-                    self.remainingDistance = Int(dicDistance["value"] as! Int)
-                    print(self.remainingDistance)
+                    self.totalremainingDistance = dicDistance["value"] as! Double
+
                     
                     let dicDuration = arraySteps["duration"] as! NSDictionary
                     let totalDuration = dicDuration["text"] as! String
-                    self.remainingDuration = Int(dicDuration["value"] as! Int)
-                    print(self.remainingDuration)
+                    self.totalremainingDuration = dicDuration["value"] as! Double
+
+
                     
                     
-                    
-                    self.totalDistanceToDestination.text = "Remaining Distance = \(totalDistance)"
-                    self.totalDurationToDestination.text = "Remaining Duration = \(totalDuration)"
                     
                     print("\(totalDistance), \(totalDuration)")
                     
                     DispatchQueue.global(qos: .background).async {
                         let array = json["routes"] as! NSArray
                         let dic = array[0] as! NSDictionary
+                        
+                        //Getting overview bound of the path
+                        /*
+                        let overViewBoundOfNortheastLatitude = ((dic["bounds"] as! NSDictionary).object(forKey: "northeast") as! NSDictionary).object(forKey: "lat") as! Double
+                        let overViewBoundOfNortheastLongitude = ((dic["bounds"] as! NSDictionary).object(forKey: "northeast") as! NSDictionary).object(forKey: "lng") as! Double
+                        let overViewBoundOfSouthwestLatitude = ((dic["bounds"] as! NSDictionary).object(forKey: "southwest") as! NSDictionary).object(forKey: "lat") as! Double
+                        let overViewBoundOfSouthwestLongitude = ((dic["bounds"] as! NSDictionary).object(forKey: "southwest") as! NSDictionary).object(forKey: "lng") as! Double
+                        
+                        let northeastBound = CLLocationCoordinate2DMake(overViewBoundOfNortheastLatitude, overViewBoundOfNortheastLongitude)
+                        let southwestBound = CLLocationCoordinate2DMake(overViewBoundOfSouthwestLatitude, overViewBoundOfSouthwestLongitude)
+                        
+                        */
+                        
                         let dic1 = dic["overview_polyline"] as! NSDictionary
                         let points = dic1["points"] as! String
                         print(points)
                         
-                        
-                        
-                        
                         DispatchQueue.main.async {
+                            
+                            self.totalDistanceToDestination.text = "Remaining Distance = \(totalDistance)"
+                            self.totalDurationToDestination.text = "Remaining Duration = \(totalDuration)"
+                            
                             let path = GMSPath(fromEncodedPath: points)
                             self.polyPath.map = nil
                             self.polyPath = GMSPolyline(path: path)
                             self.polyPath.strokeWidth = 4
                             self.polyPath.strokeColor = UIColor.darkGray
                             self.polyPath.map = self.mapView
+
                             
                         }
+                        
+                    
                         
                     }
                     
@@ -1361,6 +1407,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         infoMarker.map = nil
+        
     }
     
     func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
@@ -1383,6 +1430,30 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
             } else if let location = locations.last {
                 totalTravelDistance += lastLocation.distance(from: location)
                 
+                // Since we search for the place and set the destination we should start tracking
+                if destinationTag == 1 {
+                    
+                    
+                    // FIXIT - I need to fix the Alert View
+                    if (totalremainingDistance/1000)*1.61 < 0.05{
+                        totalDistanceToDestination.text = "Remaining Distance = \(0.0)mi"
+                        destinationTag = 0
+                        
+                        let destinationAlertView = UIAlertController(title: "Destination!", message: "We are here :)", preferredStyle: .alert)
+                        
+                        let cancel = UIAlertAction(title: "Alright", style: .default)
+                        
+                        destinationAlertView.addAction(cancel)
+                        
+                        present(destinationAlertView, animated: true, completion: nil)
+                        
+                    } else if (totalremainingDistance/1000)*1.61 > 0.05 {
+                    
+                        totalremainingDistance -= lastLocation.distance(from: location)
+                        totalDistanceToDestination.text = "Remaining Distance = \(String(format: "%.2f",(totalremainingDistance/1000)*1.61))mi"
+                    }
+                }
+                
                 
                 locationListWithDistance.append([lastLocation,totalTravelDistance])
                 
@@ -1398,7 +1469,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     let cancelAction = UIAlertAction(title: "OK", style: .cancel)
                     
                     alertController.addAction(cancelAction)
-                    
                     alertController.view.tintColor = UIColor.DTIRed()
                     alertController.view.backgroundColor = UIColor.black
                     alertController.view.layer.cornerRadius = 25

@@ -91,6 +91,16 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         return label
     }()
     
+    let x_axisLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 4)
+        label.text = "km"
+    
+        return label
+    }()
+    
     var dateLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .center
@@ -394,7 +404,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         stringURL += "\(firstLat)%2C\(firstLong)%7C\(locationPoints[locationPoints.count/2].latitude)%2C\(locationPoints[locationPoints.count/2].longitude)%7C\(lastLat)%2C\(lastLong)"
         
-        stringURL += "&samples=20&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
+        stringURL += "&samples=50&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
         
 
         print(stringURL)
@@ -533,8 +543,11 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         view.addSubview(mapView)
         
         
-        
+        // Elevation Graph View
         view.addSubview(graphView)
+        
+        // Elevation Graph x-axis Label
+        graphView.addSubview(x_axisLabel)
         
         
         
@@ -566,6 +579,10 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         
         _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
+        
+        
+        _ = x_axisLabel.anchor(nil, left: graphView.leftAnchor, bottom: graphView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 3, bottomConstant: 3, rightConstant: 0, widthConstant: 10, heightConstant: 5)
+        
         
         _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
         
