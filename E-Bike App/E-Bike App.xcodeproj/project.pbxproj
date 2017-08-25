@@ -41,6 +41,8 @@
 		A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */; };
 		A64966471F3583240039D768 /* HistoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64966461F3583240039D768 /* HistoryDetailViewController.swift */; };
 		A64D79BC1ED4DBC800318A91 /* SearchResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */; };
+		A64E95A41F4F8CEF00E6C1C1 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64E95A31F4F8CEF00E6C1C1 /* Device.swift */; };
+		A64E95A61F50B6AA00E6C1C1 /* HeartRateMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64E95A51F50B6AA00E6C1C1 /* HeartRateMeasurement.swift */; };
 		A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65548571F02CAB400968564 /* MenuNavigationViewController.swift */; };
 		A661BF141F1002410029A905 /* RideStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A661BF131F1002410029A905 /* RideStatusViewController.swift */; };
 		A663974D1F265B9F009D3C96 /* StoryboardSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */; };
@@ -118,6 +120,8 @@
 		A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EbikeSettingViewController.swift; sourceTree = "<group>"; };
 		A64966461F3583240039D768 /* HistoryDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryDetailViewController.swift; path = "E-Bike App/HistoryDetailViewController.swift"; sourceTree = SOURCE_ROOT; };
 		A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsController.swift; sourceTree = "<group>"; };
+		A64E95A31F4F8CEF00E6C1C1 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Device.swift; path = "E-Bike App/Device.swift"; sourceTree = SOURCE_ROOT; };
+		A64E95A51F50B6AA00E6C1C1 /* HeartRateMeasurement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeartRateMeasurement.swift; sourceTree = "<group>"; };
 		A65548571F02CAB400968564 /* MenuNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuNavigationViewController.swift; sourceTree = "<group>"; };
 		A661BF131F1002410029A905 /* RideStatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RideStatusViewController.swift; path = "E-Bike App/RideStatusViewController.swift"; sourceTree = SOURCE_ROOT; };
 		A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardSupport.swift; sourceTree = "<group>"; };
@@ -309,6 +313,8 @@
 				A63016611F3A7831006C0B7F /* CurrentWeather.swift */,
 				A6201F971F439DFF001AD3F1 /* NearPlaces.swift */,
 				A690D56F1F47722100C75280 /* APIKey.swift */,
+				A64E95A31F4F8CEF00E6C1C1 /* Device.swift */,
+				A64E95A51F50B6AA00E6C1C1 /* HeartRateMeasurement.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -576,6 +582,7 @@
 				A68447EA1F02C8A400B90B79 /* UIViewXRadialGradient.swift in Sources */,
 				A6646FEE1ED360FC00B6FF30 /* enum.swift in Sources */,
 				A64D79BC1ED4DBC800318A91 /* SearchResultsController.swift in Sources */,
+				A64E95A41F4F8CEF00E6C1C1 /* Device.swift in Sources */,
 				A629C8A01F269499002924DE /* CoreDataStack.swift in Sources */,
 				A6F1C41A1F201063000B03AE /* EbikeDetailsViewController.swift in Sources */,
 				A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */,
@@ -618,6 +625,7 @@
 				A68447F11F02C8A400B90B79 /* UIViewX.swift in Sources */,
 				A6BD1C6A1EF842A100E5D8EE /* CGRectEx.swift in Sources */,
 				A663974F1F2661C1009D3C96 /* LocationManager.swift in Sources */,
+				A64E95A61F50B6AA00E6C1C1 /* HeartRateMeasurement.swift in Sources */,
 				A68447F01F02C8A400B90B79 /* UIImageViewX.swift in Sources */,
 				A6BD1C6E1EF842A100E5D8EE /* TransitionSubmitButton.swift in Sources */,
 				A6144F9A1EDDF1FC00204D02 /* SplashViewController.swift in Sources */,

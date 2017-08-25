@@ -13,10 +13,13 @@ import GooglePlaces
 import GooglePlacesSearchController
 import CoreLocation
 import CoreData
+import MapKit
 import LocalAuthentication
+import CoreBluetooth
 
 
-class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleMenuDelegate, CLLocationManagerDelegate, GMSMapViewDelegate{
+class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate, MKMapViewDelegate{
+
 
     // JSON format for the get direction between two points
     
@@ -26,7 +29,42 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         case ConversionFailed = "Error: Conversion from JSON failed"
     
     }
-
+    
+    /******************************************************************************************************/
+    
+    // Bluetooth Delegate
+    
+    var centralManager: CBCentralManager!
+    var deviceConnectTo: CBPeripheral?
+    
+    // Bluetooth status
+    var keepScanning = false
+    
+    // define our scanning interval times
+    let timerPauseInterval:TimeInterval = 10.0
+    let timerScanInterval:TimeInterval = 2.0
+    
+    //Temporary UUID or name
+    // FIXIT - We need to find the right devices to integrate with
+    let WahooHeartMonitorSensor = "TICKR 2DD7"
+    var hrSensorName: String?
+    
+    
+    let BEAN_SCRATCH_UUID = CBUUID(string: "a495ff21-c5b1-4b44-b512-1370f02d74de")
+    let BEAN_SERVICE_UUID = CBUUID(string: "a495ff21-c5b1-4b44-b512-1370f02d74de")
+    
+    
+    // Core Bluetooth properties
+    
+    var heartRateMonitorCharacteristic: CBCharacteristic?
+    
+    /******************************************************************************************************/
+    
+    
+    
+    // Changing the current location dot with our own icon or something!
+    var userCurrentLocationMarker = GMSMarker()
+    var GeoAngle = 0.0
     
     
     // Google API info between two points
@@ -54,7 +92,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     fileprivate var totalTravelDistance: Double = 0
     fileprivate var movingSeconds = 0
     fileprivate var speedTag = 0
-    
     
 
     // Weather Infomation Variables
@@ -94,8 +131,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     var cameraTag = 0
     
     
-    
-    // Map View POI - later
+
     var likeltPlaces: [GMSPlace] = []
     var selectedPlace: GMSPlace?
     
@@ -110,7 +146,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     var indexForFeature: Int!
     
     
-    
+    // Display on the dashboard
     var thirdData = UILabel()
     var thirdDataSecond = UILabel()
     var thirdDataThird = UILabel()
@@ -180,6 +216,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         view.layer.cornerRadius = 25
         view.mapType = .normal
         view.settings.setAllGesturesEnabled(true)
+        view.tintColor = UIColor.DTIBlue()
         
         view.setMinZoom(5, maxZoom: 20)
         view.autoresizingMask = [.flexibleWidth,.flexibleHeight]
@@ -189,7 +226,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         
         return view
     }()
-    
     
     lazy var coffeSearchButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
@@ -271,10 +307,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
         return false
     }
     
+    
+    
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         let heading = newHeading.magneticHeading
         let heading2 = newHeading.trueHeading
         let heading2_2 = heading2*M_PI/180
+        
+    
+        
         self.mapView.transform = CGAffineTransform(rotationAngle: CGFloat(heading2_2))
         let headingDegrees = (heading*M_PI/180)
         print(heading2)
@@ -1454,7 +1495,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
                     }
                 }
                 
-                
                 locationListWithDistance.append([lastLocation,totalTravelDistance])
                 
                 print("Traveled Distance:",  totalTravelDistance)
@@ -2040,7 +2080,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        centralManager = CBCentralManager(delegate: self, queue: nil, options: [
+            CBCentralManagerOptionShowPowerAlertKey: true
+            ])
         
+        userCurrentLocationMarker.map = mapView
         /*
         
         let authenticaitonContext = LAContext()
@@ -2139,6 +2183,367 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CircleM
     }
 
 }
+
+
+extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDelegate{
+    
+
+    
+    
+    
+    /*!
+     *  @method centralManagerDidUpdateState:
+     *
+     *  @param central  The central manager whose state has changed.
+     *
+     *  @discussion     Invoked whenever the central manager's state has been updated. Commands should only be issued when the state is
+     *                  <code>CBCentralManagerStatePoweredOn</code>. A state below <code>CBCentralManagerStatePoweredOn</code>
+     *                  implies that scanning has stopped and any connected peripherals have been disconnected. If the state moves below
+     *                  <code>CBCentralManagerStatePoweredOff</code>, all <code>CBPeripheral</code> objects obtained from this central
+     *                  manager become invalid and must be retrieved or discovered again.
+     *
+     *  @see            state
+     *
+     */
+    @available(iOS 5.0, *)
+    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        var showAlert = true
+        var message = String()
+        
+        switch central.state {
+        case .poweredOn:
+            
+            showAlert = false
+            keepScanning = true
+            
+            
+            message = "Bluetooth LE is turned on and ready for communication."
+            print(message)
+            
+            _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(pauseScan), userInfo: nil, repeats: false)
+            
+            
+            
+            
+            // Initiate Scan for Peripherals
+            //Option 1: Scan for all devices
+            self.centralManager.scanForPeripherals(withServices: ServiceUUID.uuids(enumNames: [.HeartRate]), options: nil)
+            
+            //let AdvertisingUUID = CBUUID(string:)
+            
+            
+            // Option 2: Scan for devices that have the service you're interested in...
+            //let sensorTagAdvertisingUUID = CBUUID(string: Device.SensorTagAdvertisingUUID)
+            //print("Scanning for SensorTag adverstising with UUID: \(sensorTagAdvertisingUUID)")
+            //centralManager.scanForPeripheralsWithServices([sensorTagAdvertisingUUID], options: nil)
+            
+        case .poweredOff:
+            message = "Bluetooth on this is currently powered off."
+        
+        case .unsupported:
+            message = "This device does not support Bluetooth Low Energy."
+            
+        case .unauthorized:
+            message = "This app is not authorized to use Bluetooth Low Energy."
+        
+        case .resetting:
+            message = "The BLE Manager is resetting; a state update is pending."
+            
+        case .unknown:
+            message = "The state of the BLE Manager is unknown."
+        }
+        
+        
+        if showAlert {
+            let alertViewController = UIAlertController(title: "Central Manger State", message: message, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "Sure", style: .cancel)
+            alertViewController.addAction(okAction)
+            present(alertViewController, animated: true, completion: nil)
+        }
+
+    }
+    
+    
+    // MARK: - Bluetooth scanning
+    
+    func pauseScan() {
+        // Scanning uses up battery on phone, so pause the scan process for the designated interval.
+        print("*** PAUSING SCAN...")
+        _ = Timer(timeInterval: timerPauseInterval, target: self, selector: #selector(resumeScan), userInfo: nil, repeats: false)
+        self.centralManager.stopScan()
+        //disconnectButton.enabled = true
+    }
+    
+    func resumeScan() {
+        if keepScanning {
+            // Start scanning again...
+            print("*** RESUMING SCAN!")
+            //disconnectButton.enabled = false
+            //temperatureLabel.font = UIFont(name: temperatureLabelFontName, size: temperatureLabelFontSizeMessage)
+            //temperatureLabel.text = "Searching"
+            _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(pauseScan), userInfo: nil, repeats: false)
+            self.centralManager.scanForPeripherals(withServices: ServiceUUID.uuids(enumNames: [.HeartRate]), options: nil)
+        } else {
+            print("You have found device and connected and there will be a button to disconnect bluetooth but it is recommended for your ebike efficiency")
+            //disconnectButton.enabled = true
+        }
+    }
+    
+    
+
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+
+        print("Central Manger didDiscoverPeripheral: \(peripheral), \(advertisementData), \(RSSI)")
+        
+        if let name = peripheral.name {
+            if hrSensorName != nil && name != self.hrSensorName{
+                return
+            }
+            
+            hrSensorName = name
+            
+        
+        }
+        //To be safe we need to use guard let
+        
+        if let advertisedServiceUUIDs = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID]{
+            
+            print("Servcies \(advertisedServiceUUIDs)")
+        }
+        
+        let deviceName = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString
+        
+        print("NEXT Peripheral name: \(deviceName)")
+        print("Next peripheral uuid: \(peripheral.identifier.uuidString)")
+        
+        
+        
+        if deviceName?.contains(WahooHeartMonitorSensor) == true {
+            print("We found device and connecting now!!")
+            // Stop scanning
+            keepScanning = false
+            //self.centralManager.stopScan()
+            
+            // Save a refence to the sensor tag
+            self.deviceConnectTo = peripheral
+            // set the delegate property to point to the view controller
+            self.deviceConnectTo?.delegate = self
+            
+            // Request a conncetion to the peripheral
+            centralManager.connect(self.deviceConnectTo!, options: nil)
+        }
+    }
+    
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("Seccessfully connected to the device")
+        
+        
+        // -NOTE: we pass nil to request ALL services be discovered.
+        // If there was a subset of services we were interested in, we could pass the UUIDs here.
+        // Doing so saves battery life and saves time.
+        
+        peripheral.discoverServices(ServiceUUID.uuids(enumNames: [.HeartRate, .DeviceInformation]))
+    }
+
+    // When bluetooth connection is failed!!
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        print("CONNECTION to heart rate monitor failed!", error.debugDescription)
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        // Core Bluetooth creates an array of CBService objects
+        // one for each service that is discovered on the peripheral
+        
+        //A026E01D-0A7D-4AB3-97FAF1500F9FEB8B
+        
+        if let services = peripheral.services {
+            
+            for service in services {
+            
+                switch service.uuid {
+                case ServiceUUID.uuid(enumName: .HeartRate):
+                    print("Discovered heart rate service!")
+                    peripheral.discoverCharacteristics(HeartRateCharacteristicUUID.uuids(enumNames: [.HeartRateMeasurement, .BodySensorLocation]), for: service)
+                case ServiceUUID.uuid(enumName: .DeviceInformation):
+                    print("Discovered device information service!")
+                    
+                default:
+                    print("unrecognized service: \(service.uuid)")
+                }
+            
+            }
+            
+            /*
+            for service in services{
+            
+                if service.uuid == CBUUID(string: Device.totalServiceUUID){
+                    print("We found the specific service we want and now let's find characteristics")
+                    peripheral.discoverCharacteristics(nil, for: service)
+                
+                }
+            }
+             */
+        
+        }
+
+    }
+    
+    
+    
+    /*
+     Invoked when you discover the characteristics of a specified service.
+     
+     If the characteristics of the specified service are successfully discovered, you can access
+     them through the service's characteristics property.
+     
+     If successful, the error parameter is nil.
+     If unsuccessful, the error parameter returns the cause of the failure.
+     */
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        
+        if error != nil {
+            print("Error Discovering Characteristics: \(error?.localizedDescription)")
+            return
+        
+        }
+        else {
+            guard let characteristics = service.characteristics else { return }
+            var enableValue:UInt8 = 1
+            let enableBytes = NSData(bytes: &enableValue, length: MemoryLayout<UInt8>.size)
+            
+            for characteristic in characteristics {
+            
+                if characteristic.uuid == HeartRateCharacteristicUUID.uuid(enumName: .HeartRateMeasurement){
+                
+                    
+                    if characteristic.properties.contains(.notify){
+                        self.deviceConnectTo?.setNotifyValue(true, for: characteristic)
+                    
+                    } else {
+                        print("HR sensor non-compliant with spec. HR measurement not NOTIFY capable")
+                    }
+                    
+                    //self.heartRateMonitorCharacteristic = characteristic
+                    //self.deviceConnectTo?.setNotifyValue(true, for: characteristic)
+                } else {
+                    if characteristic.properties.contains(.read){
+                    
+                        peripheral.readValue(for: characteristic)
+                    }
+                
+                }
+                
+            }
+            
+        
+        }
+        
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        
+        if error != nil {
+            print("Error on updating value for the characteristics: \(error?.localizedDescription)" )
+            return
+        }
+        
+        
+        guard let dataBytes = characteristic.value else {
+            
+            print("no value")
+            return
+        }
+        
+        print("hear rate measurement value is \(dataBytes)")
+        renderHeartRateMeasurement(value: dataBytes as NSData)
+        
+        if characteristic.uuid == CBUUID(string: Device.characteristicUUID){
+            displayHeartRate(data: dataBytes as NSData)
+        }
+        
+    }
+    
+    
+    func renderHeartRateMeasurement(value: NSData){
+    
+        
+    
+    }
+    
+    func displayHeartRate(data: NSData) {
+    
+        let dataLength = data.length / MemoryLayout<UInt16>.size
+    
+        var dataArray = [UInt16](repeating: 0, count: dataLength)
+        data.getBytes(&dataArray, length: dataLength * MemoryLayout<UInt16>.size)
+        
+        
+        //Output values for debugging/diagnostic purpose
+        for i in 0..<dataLength {
+        
+            let nextInt:UInt16 = dataArray[i]
+            print("Next Int: \(nextInt)")
+        }
+        
+        
+        
+    }
+    
+
+}
+
+
+extension RiderStatusViewController{
+
+    
+    func RadiansToDegrees(radians: Double) -> Double {
+        return (radians * 190.0/M_PI)
+    }
+    
+    func DegreesToRadians(degrees: Double) -> Double {
+    
+        return (degrees * M_PI/180.0)
+    }
+    
+    
+    /*
+    func imageRotatedByDegrees(degrees: CGFloat, image: UIImage) -> UIImage {
+    
+        var size = image.size
+        
+        
+        UIGraphicsBeginImageContext(size)
+        var context = UIGraphicsGetCurrentContext()
+        
+        //CGAffineTransform(
+        
+    }
+     */
+    
+    func setLatLongForBearingAngle(userLocation: CLLocation) -> Double {
+        let latForCurrentUserLocation = DegreesToRadians(degrees: (mapView.myLocation?.coordinate.latitude)!)
+        let longForCurrentUserLocation = DegreesToRadians(degrees: (mapView.myLocation?.coordinate.longitude)!)
+        
+        let latForHeading = DegreesToRadians(degrees: 37.7833)
+        let longForHeading = DegreesToRadians(degrees: -122.4167)
+        
+        let dLong = longForHeading - longForCurrentUserLocation
+        
+        let y = sin(dLong) * cos(latForHeading)
+        let x = cos(latForCurrentUserLocation) * sin(latForHeading) - sin(latForCurrentUserLocation) * cos(latForHeading) * cos(dLong)
+        
+        var radianBearing = atan2(y, x)
+        
+        if (radianBearing < 0.0) {
+            radianBearing += 2*M_PI
+        }
+        
+        return radianBearing
+    }
+    
+}
+
 
 
 extension RiderStatusViewController {
