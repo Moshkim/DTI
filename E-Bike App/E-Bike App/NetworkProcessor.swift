@@ -32,7 +32,7 @@ class NetworkProcessor {
         let dataTask = session.dataTask(with: request){ (data, response, error) in
         
             if error != nil{
-                print("Error: \(error?.localizedDescription)")
+                print("Error: \(String(describing: error?.localizedDescription))")
             
             } else {
                 if let httpResponse = response as? HTTPURLResponse {

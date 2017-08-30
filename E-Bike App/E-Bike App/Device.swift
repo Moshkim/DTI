@@ -31,12 +31,12 @@ enum ServiceUUID: String{
     case DeviceInformation  = "0x180A"
     
     static func uuid(enumName: ServiceUUID) -> CBUUID {
-        return CBUUID(String: enumName.rawValue)
+        return CBUUID(string: enumName.rawValue)
     }
     
     static func uuids(enumNames: [ServiceUUID]) -> [CBUUID]{
     
-        return enumNames.map {uuid($0)}
+        return enumNames.map {uuid(enumName: $0)}
     }
 }
 
@@ -52,7 +52,7 @@ enum HeartRateCharacteristicUUID: String {
     }
     
     static func uuids(enumNames: [HeartRateCharacteristicUUID]) -> [CBUUID] {
-        return enumNames.map {uuid($0)}
+        return enumNames.map {uuid(enumName: $0)}
     
     }
 }
@@ -71,7 +71,7 @@ enum DeviceInformationCharacteristicUUID : String{
     }
     
     static func uuids(enumNames: [DeviceInformationCharacteristicUUID]) -> [CBUUID] {
-        return enumNames.map {uuid($0)}
+        return enumNames.map {uuid(enumName: $0)}
         
     }
 

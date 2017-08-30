@@ -17,8 +17,8 @@
 		A6144FA61EDE242B00204D02 /* TileGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA51EDE242B00204D02 /* TileGridView.swift */; };
 		A6144FA81EDE243200204D02 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA71EDE243200204D02 /* TileView.swift */; };
 		A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */; };
-		A61680651F1EA82D00CE39D3 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A61680641F1EA82D00CE39D3 /* MapKit.framework */; };
 		A6201F981F439DFF001AD3F1 /* NearPlaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6201F971F439DFF001AD3F1 /* NearPlaces.swift */; };
+		A62487331F54D37F002D0D7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A62487321F54D37F002D0D7E /* GoogleService-Info.plist */; };
 		A625DDDD1EC623B600DB521E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDC1EC623B600DB521E /* AppDelegate.swift */; };
 		A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDE1EC623B600DB521E /* MapViewController.swift */; };
 		A625DDE21EC623B600DB521E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE01EC623B600DB521E /* Main.storyboard */; };
@@ -37,18 +37,24 @@
 		A6301D001EF068680005EA12 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6301CFF1EF068680005EA12 /* Extensions.swift */; };
 		A6303E051EE9F34800A57596 /* SettingsLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E041EE9F34800A57596 /* SettingsLauncher.swift */; };
 		A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6303E081EEB5BD100A57596 /* ResizeImage.swift */; };
+		A63417E71F561EE600F1CF99 /* DataServiceFirebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63417E61F561EE600F1CF99 /* DataServiceFirebase.swift */; };
 		A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */; };
 		A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */; };
 		A64966471F3583240039D768 /* HistoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64966461F3583240039D768 /* HistoryDetailViewController.swift */; };
 		A64D79BC1ED4DBC800318A91 /* SearchResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */; };
 		A64E95A41F4F8CEF00E6C1C1 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64E95A31F4F8CEF00E6C1C1 /* Device.swift */; };
 		A64E95A61F50B6AA00E6C1C1 /* HeartRateMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64E95A51F50B6AA00E6C1C1 /* HeartRateMeasurement.swift */; };
+		A64E95A81F548AE700E6C1C1 /* LoginAndOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64E95A71F548AE700E6C1C1 /* LoginAndOutViewController.swift */; };
 		A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65548571F02CAB400968564 /* MenuNavigationViewController.swift */; };
 		A661BF141F1002410029A905 /* RideStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A661BF131F1002410029A905 /* RideStatusViewController.swift */; };
 		A663974D1F265B9F009D3C96 /* StoryboardSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */; };
 		A663974F1F2661C1009D3C96 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A663974E1F2661C1009D3C96 /* LocationManager.swift */; };
 		A6646FEE1ED360FC00B6FF30 /* enum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6646FED1ED360FC00B6FF30 /* enum.swift */; };
 		A6664F0B1F2FED47007316AA /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6664F0A1F2FED47007316AA /* HistoryViewController.swift */; };
+		A667DF951F573233000FDC33 /* SignupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667DF941F573233000FDC33 /* SignupController.swift */; };
+		A667DF971F573580000FDC33 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A667DF961F573580000FDC33 /* AdSupport.framework */; };
+		A667DF991F57362A000FDC33 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A667DF981F57362A000FDC33 /* iAd.framework */; };
+		A667DF9B1F57446A000FDC33 /* EmailVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667DF9A1F57446A000FDC33 /* EmailVerification.swift */; };
 		A68447EA1F02C8A400B90B79 /* UIViewXRadialGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D01F02C8A400B90B79 /* UIViewXRadialGradient.swift */; };
 		A68447EB1F02C8A400B90B79 /* UITextFieldX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D11F02C8A400B90B79 /* UITextFieldX.swift */; };
 		A68447EC1F02C8A400B90B79 /* UIButtonX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D21F02C8A400B90B79 /* UIButtonX.swift */; };
@@ -96,6 +102,7 @@
 		A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "E-Bike App.entitlements"; sourceTree = "<group>"; };
 		A61680641F1EA82D00CE39D3 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		A6201F971F439DFF001AD3F1 /* NearPlaces.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NearPlaces.swift; path = "E-Bike App/NearPlaces.swift"; sourceTree = SOURCE_ROOT; };
+		A62487321F54D37F002D0D7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A625DDD91EC623B600DB521E /* E-Bike App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E-Bike App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A625DDDC1EC623B600DB521E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A625DDDE1EC623B600DB521E /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MapViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/MapViewController.swift"; sourceTree = "<group>"; };
@@ -116,18 +123,24 @@
 		A6301CFF1EF068680005EA12 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A6303E041EE9F34800A57596 /* SettingsLauncher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsLauncher.swift; sourceTree = "<group>"; };
 		A6303E081EEB5BD100A57596 /* ResizeImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResizeImage.swift; sourceTree = "<group>"; };
+		A63417E61F561EE600F1CF99 /* DataServiceFirebase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataServiceFirebase.swift; path = "E-Bike App/DataServiceFirebase.swift"; sourceTree = SOURCE_ROOT; };
 		A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignupViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/SignupViewController.swift"; sourceTree = "<group>"; };
 		A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EbikeSettingViewController.swift; sourceTree = "<group>"; };
 		A64966461F3583240039D768 /* HistoryDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryDetailViewController.swift; path = "E-Bike App/HistoryDetailViewController.swift"; sourceTree = SOURCE_ROOT; };
 		A64D79BB1ED4DBC800318A91 /* SearchResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsController.swift; sourceTree = "<group>"; };
 		A64E95A31F4F8CEF00E6C1C1 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Device.swift; path = "E-Bike App/Device.swift"; sourceTree = SOURCE_ROOT; };
 		A64E95A51F50B6AA00E6C1C1 /* HeartRateMeasurement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeartRateMeasurement.swift; sourceTree = "<group>"; };
+		A64E95A71F548AE700E6C1C1 /* LoginAndOutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginAndOutViewController.swift; path = "E-Bike App/LoginAndOutViewController.swift"; sourceTree = SOURCE_ROOT; };
 		A65548571F02CAB400968564 /* MenuNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuNavigationViewController.swift; sourceTree = "<group>"; };
 		A661BF131F1002410029A905 /* RideStatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RideStatusViewController.swift; path = "E-Bike App/RideStatusViewController.swift"; sourceTree = SOURCE_ROOT; };
 		A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardSupport.swift; sourceTree = "<group>"; };
 		A663974E1F2661C1009D3C96 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		A6646FED1ED360FC00B6FF30 /* enum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = enum.swift; sourceTree = "<group>"; };
 		A6664F0A1F2FED47007316AA /* HistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryViewController.swift; path = "E-Bike App/HistoryViewController.swift"; sourceTree = SOURCE_ROOT; };
+		A667DF941F573233000FDC33 /* SignupController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignupController.swift; path = "E-Bike App/SignupController.swift"; sourceTree = SOURCE_ROOT; };
+		A667DF961F573580000FDC33 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		A667DF981F57362A000FDC33 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
+		A667DF9A1F57446A000FDC33 /* EmailVerification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailVerification.swift; sourceTree = "<group>"; };
 		A68447D01F02C8A400B90B79 /* UIViewXRadialGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewXRadialGradient.swift; sourceTree = "<group>"; };
 		A68447D11F02C8A400B90B79 /* UITextFieldX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldX.swift; sourceTree = "<group>"; };
 		A68447D21F02C8A400B90B79 /* UIButtonX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButtonX.swift; sourceTree = "<group>"; };
@@ -164,8 +177,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A667DF991F57362A000FDC33 /* iAd.framework in Frameworks */,
+				A667DF971F573580000FDC33 /* AdSupport.framework in Frameworks */,
 				7811FA365087491747E10638 /* Pods_E_Bike_App.framework in Frameworks */,
-				A61680651F1EA82D00CE39D3 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +198,8 @@
 		54596950254F28FE3BCDFFDB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A667DF981F57362A000FDC33 /* iAd.framework */,
+				A667DF961F573580000FDC33 /* AdSupport.framework */,
 				A61680641F1EA82D00CE39D3 /* MapKit.framework */,
 				538CC959FD3D7DE95978EC3E /* Pods_E_Bike_App.framework */,
 			);
@@ -241,6 +257,7 @@
 				A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */,
 				A625DDE31EC623B600DB521E /* E_Bike_App.xcdatamodeld */,
 				A625DDEB1EC623B600DB521E /* Info.plist */,
+				A62487321F54D37F002D0D7E /* GoogleService-Info.plist */,
 				A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */,
 				A625DDDC1EC623B600DB521E /* AppDelegate.swift */,
 				A6144FA11EDDFC1800204D02 /* RootContainerViewController.swift */,
@@ -315,6 +332,7 @@
 				A690D56F1F47722100C75280 /* APIKey.swift */,
 				A64E95A31F4F8CEF00E6C1C1 /* Device.swift */,
 				A64E95A51F50B6AA00E6C1C1 /* HeartRateMeasurement.swift */,
+				A63417E61F561EE600F1CF99 /* DataServiceFirebase.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -335,14 +353,16 @@
 			isa = PBXGroup;
 			children = (
 				A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */,
+				A64E95A71F548AE700E6C1C1 /* LoginAndOutViewController.swift */,
+				A667DF941F573233000FDC33 /* SignupController.swift */,
+				A661BF131F1002410029A905 /* RideStatusViewController.swift */,
+				A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */,
 				A68447E81F02C8A400B90B79 /* MenuViewController.swift */,
 				A625DDDE1EC623B600DB521E /* MapViewController.swift */,
 				A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */,
 				A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */,
 				A60DBB0F1F0D6B6E00AAD99D /* GraphViewController.swift */,
-				A661BF131F1002410029A905 /* RideStatusViewController.swift */,
 				A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */,
-				A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */,
 				A6664F0A1F2FED47007316AA /* HistoryViewController.swift */,
 				A64966461F3583240039D768 /* HistoryDetailViewController.swift */,
 			);
@@ -369,6 +389,7 @@
 				A663974C1F265B9F009D3C96 /* StoryboardSupport.swift */,
 				A629C8A11F269521002924DE /* FormatDisplay.swift */,
 				A663974E1F2661C1009D3C96 /* LocationManager.swift */,
+				A667DF9A1F57446A000FDC33 /* EmailVerification.swift */,
 			);
 			name = "Extensions&HelpFunc";
 			sourceTree = "<group>";
@@ -506,6 +527,7 @@
 			files = (
 				A625DDEA1EC623B600DB521E /* LaunchScreen.storyboard in Resources */,
 				A625DDE71EC623B600DB521E /* Assets.xcassets in Resources */,
+				A62487331F54D37F002D0D7E /* GoogleService-Info.plist in Resources */,
 				A625DDE21EC623B600DB521E /* Main.storyboard in Resources */,
 				A6F1C4181F1FD29F000B03AE /* style.json in Resources */,
 			);
@@ -573,7 +595,9 @@
 				A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */,
 				A625DDE51EC623B600DB521E /* E_Bike_App.xcdatamodeld in Sources */,
 				A690D5701F47722100C75280 /* APIKey.swift in Sources */,
+				A64E95A81F548AE700E6C1C1 /* LoginAndOutViewController.swift in Sources */,
 				A68447EE1F02C8A400B90B79 /* UIViewAnchorPoint.swift in Sources */,
+				A667DF951F573233000FDC33 /* SignupController.swift in Sources */,
 				A6144F9C1EDDF23C00204D02 /* Constant.swift in Sources */,
 				A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */,
 				A6144FA21EDDFC1800204D02 /* RootContainerViewController.swift in Sources */,
@@ -601,6 +625,7 @@
 				A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */,
 				A6BD1C6D1EF842A100E5D8EE /* SpinerLayer.swift in Sources */,
 				A6301CFA1EEF4A2E0005EA12 /* LoginViewController.swift in Sources */,
+				A63417E71F561EE600F1CF99 /* DataServiceFirebase.swift in Sources */,
 				A68447F51F02C8A400B90B79 /* FloatingActionButton.swift in Sources */,
 				A6301CFE1EF05A190005EA12 /* Page.swift in Sources */,
 				A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */,
@@ -608,6 +633,7 @@
 				A6303E091EEB5BD100A57596 /* ResizeImage.swift in Sources */,
 				A690D5721F4774F200C75280 /* RouteStore.swift in Sources */,
 				A6C7BFAF1F1933C10000E66A /* CircleMenu.swift in Sources */,
+				A667DF9B1F57446A000FDC33 /* EmailVerification.swift in Sources */,
 				A68447F21F02C8A400B90B79 /* UIVisualEffectViewX.swift in Sources */,
 				A6303E051EE9F34800A57596 /* SettingsLauncher.swift in Sources */,
 				A661BF141F1002410029A905 /* RideStatusViewController.swift in Sources */,
@@ -762,6 +788,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -777,6 +804,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

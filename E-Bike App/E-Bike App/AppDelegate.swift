@@ -10,10 +10,11 @@ import UIKit
 import CoreData
 import GoogleMaps
 import GooglePlaces
-
+import GoogleSignIn
+import Firebase
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 
     var window: UIWindow?
 
@@ -26,8 +27,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSPlacesClient.provideAPIKey(googleMapsApiKey)
         UIApplication.shared.statusBarStyle = .lightContent
 
-        
-        
+
+        FirebaseApp.configure()
+        GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
+        GIDSignIn.sharedInstance().delegate = self
         
         //let foreCast = ForecastForNearbyPlaces()
         
@@ -48,11 +51,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if (UserDefaults.standard.value(forKey: "name") as? String) == nil {
             // Show the Login Page
             
-            MVC = storyBoard.instantiateViewController(withIdentifier: "ViewController")
+            MVC = storyBoard.instantiateViewController(withIdentifier: "LoginAndOutViewController")
         } else {
             
             // Show the Map View Page
-            MVC = storyBoard.instantiateViewController(withIdentifier: "MenuViewController")
+            MVC = storyBoard.instantiateViewController(withIdentifier: "LoginAndOutViewController")
             
         }
         
@@ -63,6 +66,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.makeKeyAndVisible()
         
         return true
+    }
+    
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
+        // ...
+        if let error = error {
+            print("Failed to log into Google ", error)
+            return
+        }
+        
+        print("We are succefully logged into Google!")
+        
+        guard let idToken = user.authentication.idToken else { return }
+        guard let accessToken = user.authentication.accessToken else { return }
+        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+        Auth.auth().signIn(with: credential, completion: { (user, error) in
+            if let error = error{
+                print("Failed to create a firebase user with Google account", error)
+            
+                return
+            
+            }
+            guard let uid = user?.uid else { return }
+            print("Sucessfully logged into Firebase with Google", uid)
+        
+        })
+        //guard let authentication = user.authentication else { return }
+        //let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,accessToken: authentication.accessToken)
+        // ...
+    }
+    
+    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
+        // Perform any operations when the user disconnects from app here.
+        // ...
+    }
+    
+    @available(iOS 9.0, *)
+    func application(_ application: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any])
+        -> Bool {
+            return GIDSignIn.sharedInstance().handle(url,
+                                                     sourceApplication:options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String,
+                                                     annotation: [:])
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

@@ -27,7 +27,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     enum JSONError: String, Error {
         case NoData = "Error: No Data"
         case ConversionFailed = "Error: Conversion from JSON failed"
-    
     }
     
     /******************************************************************************************************/
@@ -312,12 +311,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         let heading = newHeading.magneticHeading
         let heading2 = newHeading.trueHeading
-        let heading2_2 = heading2*M_PI/180
+        let heading2_2 = heading2*Double.pi/180
         
     
         
         self.mapView.transform = CGAffineTransform(rotationAngle: CGFloat(heading2_2))
-        let headingDegrees = (heading*M_PI/180)
+        let headingDegrees = (heading*Double.pi/180)
         print(heading2)
         print(headingDegrees)
         let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: heading2, viewingAngle: 20)
@@ -587,7 +586,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             do{
                 
                 if error != nil{
-                    print("Error: \(error?.localizedDescription)")
+                    print("Error: \(String(describing: error?.localizedDescription))")
                     
                 } else {
                 
@@ -1473,10 +1472,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 // Since we search for the place and set the destination we should start tracking
                 if destinationTag == 1 {
-                    
-                    
+                    let totalRemainingDistanceInMiles = (totalremainingDistance/1000)*1.61
                     // FIXIT - I need to fix the Alert View
-                    if (totalremainingDistance/1000)*1.61 < 0.05{
+                    if totalRemainingDistanceInMiles < 0.05 && totalRemainingDistanceInMiles > 0.00{
                         totalDistanceToDestination.text = "Remaining Distance = \(0.0)mi"
                         destinationTag = 0
                         
@@ -1488,10 +1486,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         
                         present(destinationAlertView, animated: true, completion: nil)
                         
-                    } else if (totalremainingDistance/1000)*1.61 > 0.05 {
+                    } else if totalRemainingDistanceInMiles > 0.05 {
                     
                         totalremainingDistance -= lastLocation.distance(from: location)
                         totalDistanceToDestination.text = "Remaining Distance = \(String(format: "%.2f",(totalremainingDistance/1000)*1.61))mi"
+                    } else if totalRemainingDistanceInMiles < 0.00{
+                        totalDistanceToDestination.text = "Remaining Distance = There is something wrong with total remaining distance"
+                        
                     }
                 }
                 
@@ -1574,7 +1575,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         geocoder.reverseGeocodeCoordinate(coordinate){(placemark, error) in
             
             if (error != nil && placemark == nil){
-                print("Error occurred = \(error)")
+                print("Error occurred = \(String(describing: error))")
             }
                 
             else {
@@ -1586,7 +1587,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                             self.addressLabel.text = " \(place.lines![0]) \n \(place.lines![1])"
                             
                             if place.locality == nil {
-                                self.address.append("\(place.country)")
+                                self.address.append("\(String(describing: place.country))")
                             
                             } else if place.locality != nil {
                                 self.address.append("\(place.locality!)")
@@ -2313,7 +2314,7 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         
         let deviceName = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString
         
-        print("NEXT Peripheral name: \(deviceName)")
+        print("NEXT Peripheral name: \(String(describing: deviceName))")
         print("Next peripheral uuid: \(peripheral.identifier.uuidString)")
         
         
@@ -2403,7 +2404,7 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         
         if error != nil {
-            print("Error Discovering Characteristics: \(error?.localizedDescription)")
+            print("Error Discovering Characteristics: \(String(describing: error?.localizedDescription))")
             return
         
         }
@@ -2436,7 +2437,6 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
                 
             }
             
-        
         }
         
     }
@@ -2444,7 +2444,7 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         
         if error != nil {
-            print("Error on updating value for the characteristics: \(error?.localizedDescription)" )
+            print("Error on updating value for the characteristics: \(String(describing: error?.localizedDescription))" )
             return
         }
         
@@ -2498,12 +2498,12 @@ extension RiderStatusViewController{
 
     
     func RadiansToDegrees(radians: Double) -> Double {
-        return (radians * 190.0/M_PI)
+        return (radians * 190.0/Double.pi)
     }
     
     func DegreesToRadians(degrees: Double) -> Double {
     
-        return (degrees * M_PI/180.0)
+        return (degrees * Double.pi/180.0)
     }
     
     
@@ -2536,7 +2536,7 @@ extension RiderStatusViewController{
         var radianBearing = atan2(y, x)
         
         if (radianBearing < 0.0) {
-            radianBearing += 2*M_PI
+            radianBearing += 2*Double.pi
         }
         
         return radianBearing

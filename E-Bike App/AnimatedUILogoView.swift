@@ -221,7 +221,7 @@ extension AnimatedULogoView {
     fileprivate func generateCircleLayer()->CAShapeLayer {
         let layer = CAShapeLayer()
         layer.lineWidth = radius
-        layer.path = UIBezierPath(arcCenter: CGPoint.zero, radius: radius/2, startAngle: -CGFloat(M_PI_2), endAngle: CGFloat(3*M_PI_2), clockwise: true).cgPath
+        layer.path = UIBezierPath(arcCenter: CGPoint.zero, radius: radius/2, startAngle: -CGFloat(Double.pi/2), endAngle: CGFloat(3*Double.pi/2), clockwise: true).cgPath
         layer.strokeColor = UIColor.white.cgColor
         layer.fillColor = UIColor.clear.cgColor
         return layer
@@ -275,7 +275,7 @@ extension AnimatedULogoView {
         transformAnimation.timingFunction = strokeEndTimingFunction
         transformAnimation.duration = kAnimationDuration - kAnimationDurationDelay
         
-        var startingTransform = CATransform3DMakeRotation(CGFloat(M_PI_4), 0, 0, 1)
+        var startingTransform = CATransform3DMakeRotation(CGFloat(Double.pi/4), 0, 0, 1)
         startingTransform = CATransform3DScale(startingTransform, 0.25, 0.25, 1)
         transformAnimation.fromValue = NSValue(caTransform3D: startingTransform)
         transformAnimation.toValue = NSValue(caTransform3D: CATransform3DIdentity)

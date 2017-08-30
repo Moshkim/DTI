@@ -1,5 +1,28 @@
 PODS:
   - Alamofire (4.4.0)
+  - Firebase/Auth (4.0.0):
+    - Firebase/Core
+    - FirebaseAuth (= 4.0.0)
+  - Firebase/Core (4.0.0):
+    - FirebaseAnalytics (= 4.0.0)
+    - FirebaseCore (= 4.0.0)
+  - Firebase/Database (4.0.0):
+    - Firebase/Core
+    - FirebaseDatabase (= 4.0.0)
+  - FirebaseAnalytics (4.0.0):
+    - FirebaseCore (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseAuth (4.0.0):
+    - FirebaseAnalytics (~> 4.0)
+    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseCore (4.0.0):
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseDatabase (4.0.0):
+    - FirebaseAnalytics (~> 4.0)
+  - FirebaseInstanceID (2.0.0):
+    - FirebaseCore (~> 4.0)
   - GoogleMaps (2.2.0):
     - GoogleMaps/Maps (= 2.2.0)
   - GoogleMaps/Base (2.2.0)
@@ -11,14 +34,42 @@ PODS:
   - GooglePlaces (2.2.0):
     - GoogleMaps/Base (= 2.2.0)
   - GooglePlacesSearchController (0.1.7)
+  - GoogleSignIn (4.0.2):
+    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - GoogleToolboxForMac/NSString+URLArguments (~> 2.1)
+    - GTMOAuth2 (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - GoogleToolboxForMac/DebugUtils (2.1.1):
+    - GoogleToolboxForMac/Defines (= 2.1.1)
+  - GoogleToolboxForMac/Defines (2.1.1)
+  - GoogleToolboxForMac/NSData+zlib (2.1.1):
+    - GoogleToolboxForMac/Defines (= 2.1.1)
+  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.1):
+    - GoogleToolboxForMac/DebugUtils (= 2.1.1)
+    - GoogleToolboxForMac/Defines (= 2.1.1)
+    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
+  - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
+  - GTMOAuth2 (1.1.4):
+    - GTMSessionFetcher (~> 1.1)
+  - GTMSessionFetcher (1.1.10):
+    - GTMSessionFetcher/Full (= 1.1.10)
+  - GTMSessionFetcher/Core (1.1.10)
+  - GTMSessionFetcher/Full (1.1.10):
+    - GTMSessionFetcher/Core (= 1.1.10)
+  - KeychainSwift (8.0.2)
   - SwiftyJSON (3.0.0)
 
 DEPENDENCIES:
   - Alamofire (~> 4.4)
+  - Firebase/Auth
+  - Firebase/Core
+  - Firebase/Database
   - GoogleMaps
   - GooglePlacePicker
   - GooglePlaces
   - GooglePlacesSearchController
+  - GoogleSignIn
+  - KeychainSwift
   - SwiftyJSON (from `https://github.com/appsailor/SwiftyJSON.git`, branch `swift3`)
 
 EXTERNAL SOURCES:
@@ -33,12 +84,23 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
+  Firebase: 284eea779b73fdff309791817da7c68bff8dd572
+  FirebaseAnalytics: 6f08e746f7d66f5452931bc2e822b5df9c66b64a
+  FirebaseAuth: ebb6abcbabae00fc47446d690c19ce68d8484fde
+  FirebaseCore: 85ad466044c2f013cdb167f85d426d15b128114a
+  FirebaseDatabase: d829b3a8c3e2ac7a16773c5df226966b0805dfc2
+  FirebaseInstanceID: 9fbf536668f4d3f0880e7438456dabd1376e294b
   GoogleMaps: 104c418d61ab8a05dff06ed0784c25ea9d37da45
   GooglePlacePicker: 345b1aabd42c9d6d9bf2369c1bae1234d903e764
   GooglePlaces: bca867d5e9da15384c794b945e4226848bc6e9d9
   GooglePlacesSearchController: 0ac4fedf1582d2e44329c417a6eed80ccf62d716
+  GoogleSignIn: d7ad83f13480e1f30453471d00d19b5293ac46af
+  GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
+  GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
+  GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
+  KeychainSwift: 213db04dfe7244988e61f77c72a2afb2f775954a
   SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
 
-PODFILE CHECKSUM: 9b43f27ac3b69f7092daf8a89911c0027c2ab21d
+PODFILE CHECKSUM: 90f61f9900a8294f7acc85a86f1b6afae33e8b27
 
 COCOAPODS: 1.2.1

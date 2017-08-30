@@ -596,8 +596,8 @@ extension MapViewController: GMSAutocompleteViewControllerDelegate {
         }
         
         print("Place name: \(place.name)")
-        print("Place address: \(place.formattedAddress)")
-        print("Place attributions: \(place.attributions)")
+        print("Place address: \(String(describing: place.formattedAddress))")
+        print("Place attributions: \(String(describing: place.attributions))")
         
         self.mapView.camera = camera
         dismiss(animated: true, completion: nil)
@@ -682,7 +682,7 @@ extension MapViewController {
             }
             if let place = place {
                 //self.createMarker(titleMarker: "\(place.name)", latitude: center.latitude, logitude: center.longitude)
-                self.currentAddress.text = "\(place.name) \n \(place.formattedAddress?.components(separatedBy: ", ").joined(separator: "\n"))"
+                self.currentAddress.text = "\(place.name) \n \(String(describing: place.formattedAddress?.components(separatedBy: ", ").joined(separator: "\n")))"
                 self.currentLatitude.text = "\(place.coordinate.latitude)"
                 self.currentLogitude.text = "\(place.coordinate.longitude)"
             } else {
