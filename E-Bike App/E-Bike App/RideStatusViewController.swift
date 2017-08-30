@@ -2086,7 +2086,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             ])
         
         userCurrentLocationMarker.map = mapView
-        /*
+        
         
         let authenticaitonContext = LAContext()
         
@@ -2113,7 +2113,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
             print("Device does not have touch id!")
         }
-        */
+
         //locationManager.startUpdatingLocation()
 
         //locationManager.startUpdatingHeading()

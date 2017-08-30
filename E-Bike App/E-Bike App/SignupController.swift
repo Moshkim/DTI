@@ -16,9 +16,6 @@ class SignupController: UIViewController {
     
     
     fileprivate var user: Customer?
-    //fileprivate var user: Users?
-    
-    
     
     let profilePicture: UIImageView = {
         let profile = UIImageView(frame: CGRect(x: 0, y: 0, width: 120, height: 120))
@@ -40,8 +37,7 @@ class SignupController: UIViewController {
         name.layer.cornerRadius = 5
         name.textAlignment = .left
         name.backgroundColor = UIColor.clear
-        //name.layer.borderColor = UIColor.white.cgColor
-        //name.layer.borderWidth = 1
+        
         let bottomLayer = CALayer()
         bottomLayer.frame = CGRect(x: 0, y: 40, width: 300, height: 0.6)
         bottomLayer.backgroundColor = UIColor.white.cgColor
@@ -84,7 +80,6 @@ class SignupController: UIViewController {
         bottomLayer.backgroundColor = UIColor.white.cgColor
         password.layer.addSublayer(bottomLayer)
         
-        
         password.isSecureTextEntry = true
         password.textColor = UIColor.white
         password.attributedPlaceholder = NSAttributedString(string: "  Password", attributes: [NSForegroundColorAttributeName: UIColor(white: 1.0, alpha: 0.7)])
@@ -108,6 +103,9 @@ class SignupController: UIViewController {
     
     func SignupAction() {
     
+        saveCoreData()
+        
+        
     
         if let email = emailTextField.text, let password = passwordTextField.text {
             
@@ -185,42 +183,21 @@ class SignupController: UIViewController {
         let selectedDate: String = dateFormatter.string(from: sender.date)
     }
      */
-    /*
-     
-     if let email = emailTextfield.text, let password = passwordField.text {
-     
-     
-     let isEmailAddressValid = emailValidation(emailAddressString: email)
-     
-     if isEmailAddressValid {
-     
-     print("Email Address is valid")
-     } else {
-     print("Email Address is not valid")
-     let alertViewController = UIAlertController(title: "Invalid Email", message: "Type valid email address!", preferredStyle: .alert)
-     let cancel = UIAlertAction(title: "OK", style: .cancel)
-     alertViewController.addAction(cancel)
-     present(alertViewController, animated: true, completion: nil)
-     return
-     
-     }
-     
-     
-     Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
-     if error != nil{
-     print("Can not sign un with the email you provided", error?.localizedDescription as Any)
-     
-     } else {
-     self.CompleteSignIn(id: (user?.uid)!)
-     self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.signupButton)
-     }
-     
-     
-     })
-     
-     }
-     
-     */
+
+    
+    fileprivate func saveCoreData() {
+        
+        guard let name = nameTextField.text else { return }
+        
+        let newUser = Customer(context: CoreDataStack.context)
+        newUser.name = name
+        
+        
+        CoreDataStack.saveContext()
+        user = newUser
+    
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
