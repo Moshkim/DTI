@@ -83,6 +83,11 @@
 		A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */; };
 		A6F1C4181F1FD29F000B03AE /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = A6F1C4171F1FD29F000B03AE /* style.json */; };
 		A6F1C41A1F201063000B03AE /* EbikeDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */; };
+		A6FC1B3C1F58A7DE00B08DC3 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B3B1F58A7DE00B08DC3 /* AuthService.swift */; };
+		A6FC1B3E1F59D7BD00B08DC3 /* SettingMenuSlide.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B3D1F59D7BD00B08DC3 /* SettingMenuSlide.swift */; };
+		A6FC1B421F59FB2A00B08DC3 /* ProfilePicture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B411F59FB2A00B08DC3 /* ProfilePicture.swift */; };
+		A6FC1B441F5B16EF00B08DC3 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B431F5B16EF00B08DC3 /* SettingViewController.swift */; };
+		A6FC1B491F5B299900B08DC3 /* TermsAndPrivacyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -169,6 +174,11 @@
 		A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuButton.swift; sourceTree = "<group>"; };
 		A6F1C4171F1FD29F000B03AE /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = style.json; path = "E-Bike App/style.json"; sourceTree = SOURCE_ROOT; };
 		A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EbikeDetailsViewController.swift; path = "E-Bike App/EbikeDetailsViewController.swift"; sourceTree = SOURCE_ROOT; };
+		A6FC1B3B1F58A7DE00B08DC3 /* AuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthService.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/AuthService.swift"; sourceTree = "<group>"; };
+		A6FC1B3D1F59D7BD00B08DC3 /* SettingMenuSlide.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingMenuSlide.swift; path = "E-Bike App/SettingMenuSlide.swift"; sourceTree = SOURCE_ROOT; };
+		A6FC1B411F59FB2A00B08DC3 /* ProfilePicture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfilePicture.swift; path = "E-Bike App/ProfilePicture.swift"; sourceTree = SOURCE_ROOT; };
+		A6FC1B431F5B16EF00B08DC3 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingViewController.swift; path = "E-Bike App/SettingViewController.swift"; sourceTree = SOURCE_ROOT; };
+		A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TermsAndPrivacyViewController.swift; sourceTree = "<group>"; };
 		ACF4783236EC3749D3BED074 /* Pods-E-Bike App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E-Bike App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-E-Bike App/Pods-E-Bike App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -271,7 +281,6 @@
 				A68573F41EF0A271005C96CC /* Extensions&HelpFunc */,
 				A68573F31EF0A22F005C96CC /* LogInPages */,
 				A68573F61EF0A2CB005C96CC /* Settings */,
-				A63CC22E1EFA11DA00F2B7DC /* SignupPage */,
 				A6BD1C641EF8424A00E5D8EE /* SubmitTransition */,
 			);
 			path = "E-Bike App";
@@ -284,13 +293,6 @@
 			);
 			name = "Core Data";
 			path = ../../../../ebikeTracking/ebikeTracking;
-			sourceTree = "<group>";
-		};
-		A63CC22E1EFA11DA00F2B7DC /* SignupPage */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = SignupPage;
 			sourceTree = "<group>";
 		};
 		A68447DB1F02C8A400B90B79 /* DesignableX */ = {
@@ -325,6 +327,7 @@
 		A68447E11F02C8A400B90B79 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A6FC1B3B1F58A7DE00B08DC3 /* AuthService.swift */,
 				A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */,
 				A630165F1F3A741E006C0B7F /* ForecastService.swift */,
 				A63016611F3A7831006C0B7F /* CurrentWeather.swift */,
@@ -333,6 +336,7 @@
 				A64E95A31F4F8CEF00E6C1C1 /* Device.swift */,
 				A64E95A51F50B6AA00E6C1C1 /* HeartRateMeasurement.swift */,
 				A63417E61F561EE600F1CF99 /* DataServiceFirebase.swift */,
+				A6FC1B411F59FB2A00B08DC3 /* ProfilePicture.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -352,19 +356,16 @@
 		A68447E91F02C8A400B90B79 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */,
-				A64E95A71F548AE700E6C1C1 /* LoginAndOutViewController.swift */,
-				A667DF941F573233000FDC33 /* SignupController.swift */,
-				A661BF131F1002410029A905 /* RideStatusViewController.swift */,
-				A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */,
+				A6FC1B471F5B295800B08DC3 /* Menu Controller */,
+				A6FC1B4A1F5B2AAB00B08DC3 /* SignIn & Signup Controller */,
+				A6FC1B4C1F5B2B0900B08DC3 /* Rider Detail Controller */,
+				A6FC1B4B1F5B2ADB00B08DC3 /* Main Controller */,
 				A68447E81F02C8A400B90B79 /* MenuViewController.swift */,
+				A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */,
 				A625DDDE1EC623B600DB521E /* MapViewController.swift */,
 				A63CC22F1EFA121D00F2B7DC /* SignupViewController.swift */,
-				A6431BDE1F0314A300466972 /* EbikeSettingViewController.swift */,
 				A60DBB0F1F0D6B6E00AAD99D /* GraphViewController.swift */,
 				A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */,
-				A6664F0A1F2FED47007316AA /* HistoryViewController.swift */,
-				A64966461F3583240039D768 /* HistoryDetailViewController.swift */,
 			);
 			name = Controller;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -449,6 +450,44 @@
 			);
 			name = CircleMenuLib;
 			path = "../../../../Downloads/circle-menu-master/CircleMenuLib";
+			sourceTree = "<group>";
+		};
+		A6FC1B471F5B295800B08DC3 /* Menu Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A6FC1B3D1F59D7BD00B08DC3 /* SettingMenuSlide.swift */,
+				A6FC1B431F5B16EF00B08DC3 /* SettingViewController.swift */,
+				A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */,
+			);
+			name = "Menu Controller";
+			sourceTree = "<group>";
+		};
+		A6FC1B4A1F5B2AAB00B08DC3 /* SignIn & Signup Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */,
+				A64E95A71F548AE700E6C1C1 /* LoginAndOutViewController.swift */,
+				A667DF941F573233000FDC33 /* SignupController.swift */,
+			);
+			name = "SignIn & Signup Controller";
+			sourceTree = "<group>";
+		};
+		A6FC1B4B1F5B2ADB00B08DC3 /* Main Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A661BF131F1002410029A905 /* RideStatusViewController.swift */,
+			);
+			name = "Main Controller";
+			sourceTree = "<group>";
+		};
+		A6FC1B4C1F5B2B0900B08DC3 /* Rider Detail Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */,
+				A64966461F3583240039D768 /* HistoryDetailViewController.swift */,
+				A6664F0A1F2FED47007316AA /* HistoryViewController.swift */,
+			);
+			name = "Rider Detail Controller";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -612,8 +651,10 @@
 				A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */,
 				A6144FA81EDE243200204D02 /* TileView.swift in Sources */,
 				A63016601F3A741E006C0B7F /* ForecastService.swift in Sources */,
+				A6FC1B3C1F58A7DE00B08DC3 /* AuthService.swift in Sources */,
 				A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */,
 				A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */,
+				A6FC1B3E1F59D7BD00B08DC3 /* SettingMenuSlide.swift in Sources */,
 				A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */,
 				A64966471F3583240039D768 /* HistoryDetailViewController.swift in Sources */,
 				A625DDDD1EC623B600DB521E /* AppDelegate.swift in Sources */,
@@ -645,10 +686,13 @@
 				A6144FA61EDE242B00204D02 /* TileGridView.swift in Sources */,
 				A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */,
 				A68447EF1F02C8A400B90B79 /* UIViewControllerX.swift in Sources */,
+				A6FC1B441F5B16EF00B08DC3 /* SettingViewController.swift in Sources */,
+				A6FC1B491F5B299900B08DC3 /* TermsAndPrivacyViewController.swift in Sources */,
 				A68447EC1F02C8A400B90B79 /* UIButtonX.swift in Sources */,
 				A68447F31F02C8A400B90B79 /* UISliderX.swift in Sources */,
 				A684A5E41F0AC1E6007C6FCC /* ConfirmActionButton.swift in Sources */,
 				A68447F11F02C8A400B90B79 /* UIViewX.swift in Sources */,
+				A6FC1B421F59FB2A00B08DC3 /* ProfilePicture.swift in Sources */,
 				A6BD1C6A1EF842A100E5D8EE /* CGRectEx.swift in Sources */,
 				A663974F1F2661C1009D3C96 /* LocationManager.swift in Sources */,
 				A64E95A61F50B6AA00E6C1C1 /* HeartRateMeasurement.swift in Sources */,

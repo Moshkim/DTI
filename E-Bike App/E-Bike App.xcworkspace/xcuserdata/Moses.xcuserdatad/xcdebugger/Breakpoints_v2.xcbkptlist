@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
+            timestampString = "525900940.634371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
+            startingLineNumber = "314"
+            endingLineNumber = "314"
             landmarkName = "locationManager(_:didUpdateHeading:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
+            timestampString = "525900940.634371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "319"
-            endingLineNumber = "319"
+            startingLineNumber = "320"
+            endingLineNumber = "320"
             landmarkName = "locationManager(_:didUpdateHeading:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
+            timestampString = "525900940.634371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "305"
-            endingLineNumber = "305"
+            startingLineNumber = "306"
+            endingLineNumber = "306"
             landmarkName = "mapView(_:didTap:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -74,60 +74,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
+            timestampString = "525900940.634371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "305"
-            endingLineNumber = "305"
+            startingLineNumber = "306"
+            endingLineNumber = "306"
             landmarkName = "mapView(_:didTap:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1428"
-            endingLineNumber = "1428"
-            landmarkName = "locationManager(_:didChangeAuthorization:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1430"
-            endingLineNumber = "1430"
-            landmarkName = "locationManager(_:didChangeAuthorization:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1433"
-            endingLineNumber = "1433"
-            landmarkName = "locationManager(_:didChangeAuthorization:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -154,7 +106,23 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
+            timestampString = "525900940.634371"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "283"
+            endingLineNumber = "283"
+            landmarkName = "directionToDest(sender:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "E-Bike App/RideStatusViewController.swift"
+            timestampString = "525900940.634371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "282"
@@ -170,12 +138,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525397008.173519"
+            timestampString = "526064874.805737"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "281"
-            endingLineNumber = "281"
-            landmarkName = "directionToDest(sender:)"
+            startingLineNumber = "2518"
+            endingLineNumber = "2518"
+            landmarkName = "peripheral(_:didUpdateValueFor:error:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -186,12 +154,262 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "E-Bike App/RideStatusViewController.swift"
-            timestampString = "525807320.999361"
+            timestampString = "526024092.518545"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2461"
-            endingLineNumber = "2461"
-            landmarkName = "peripheral(_:didUpdateValueFor:error:)"
+            startingLineNumber = "1677"
+            endingLineNumber = "1677"
+            landmarkName = "RiderStatusViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.slideMenuButton.getter : __ObjC.UIButton"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.074654"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "176">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.slideMenuButton.setter : __ObjC.UIButton"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.078471"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "65">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.(slideMenuButton.getter : __ObjC.UIButton).(closure #1)"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.083428"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1680"
+                  endingLineNumber = "1680"
+                  offsetFromSymbolStart = "15">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.init (nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; E_Bike_App.RiderStatusViewController"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.08855"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "13017">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;E_Bike_App.RiderStatusViewController&gt;"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.092691"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "12910">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "E-Bike App/RideStatusViewController.swift"
+            timestampString = "526024093.778303"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1679"
+            endingLineNumber = "1679"
+            landmarkName = "slideMenuButton"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.slideMenuButton.getter : __ObjC.UIButton"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.104982"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "176">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.slideMenuButton.setter : __ObjC.UIButton"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.108824"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "65">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.(slideMenuButton.getter : __ObjC.UIButton).(closure #1)"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.112189"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1680"
+                  endingLineNumber = "1680"
+                  offsetFromSymbolStart = "15">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.init (nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; E_Bike_App.RiderStatusViewController"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.115119"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "13017">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "E_Bike_App.RiderStatusViewController.init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;E_Bike_App.RiderStatusViewController&gt;"
+                  moduleName = "E-Bike App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Moses/Documents/E-Bike/E-bikeApp/E-Bike%20App/E-Bike%20App/RideStatusViewController.swift"
+                  timestampString = "526064876.11838"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1679"
+                  endingLineNumber = "1679"
+                  offsetFromSymbolStart = "12910">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "E-Bike App/RideStatusViewController.swift"
+            timestampString = "526024094.306382"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1680"
+            endingLineNumber = "1680"
+            landmarkName = "slideMenuButton"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "E-Bike App/RideStatusViewController.swift"
+            timestampString = "526064874.805737"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1708"
+            endingLineNumber = "1708"
+            landmarkName = "showControllerWithLogoutButton()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "E-Bike App/RideStatusViewController.swift"
+            timestampString = "526064874.805737"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1709"
+            endingLineNumber = "1709"
+            landmarkName = "showControllerWithLogoutButton()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "E-Bike App/RideStatusViewController.swift"
+            timestampString = "526064874.805737"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1710"
+            endingLineNumber = "1710"
+            landmarkName = "showControllerWithLogoutButton()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "E-Bike App/RideStatusViewController.swift"
+            timestampString = "526064874.805737"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1705"
+            endingLineNumber = "1705"
+            landmarkName = "showControllerWithSettingButton()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

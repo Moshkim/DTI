@@ -16,6 +16,8 @@ import KeychainSwift
 class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     
     
+    //let instanceAuthService = AuthService.shared
+    
     
     let mainLogoImage: UIImageView = {
         let image = UIImage(named: "hexagon")
@@ -79,6 +81,8 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(loginAction), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isEnabled = false
+        button.setTitleColor(UIColor(white: 1.0, alpha:0.7), for: .normal)
         return button
     }()
     func loginAction() {
@@ -100,21 +104,14 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
             return
         
         }
+
         
-        Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error ) in
-            if error != nil {
-                print("There is a problem with login ", error?.localizedDescription as Any)
-            
-            } else {
-                self.CompleteSignIn(id: (user?.uid)!)
-                self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.loginButton)
-            }
-        
-        
+        AuthService.signIn(email: email, password: password, onSuccess: {
+            self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.loginButton)
+        }, onError: { error in
+            print(error!)
         })
         
-        
-        //"LoginToRiderStatusSegue"
     }
     
     
@@ -136,12 +133,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
 
     
     
-    fileprivate func CompleteSignIn(id: String){
-        let keyChain = DataServiceFirebase().keyChain
-        keyChain.set(id, forKey: "uid")
-        
-    }
-    
+
     /*
     lazy var googleSignInButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
@@ -179,16 +171,35 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         
         //UserDefaults.standard.set(signUpNameTextField.text, forKey: "name")
     }
-    
     override func viewDidAppear(_ animated: Bool) {
-        let keyChain = DataServiceFirebase().keyChain
+        super.viewDidAppear(animated)
+        //let keyChain = DataServiceFirebase().keyChain
         
-        if keyChain.get("uid") != nil {
+        if Auth.auth().currentUser != nil {
             performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: nil)
         }
         
     }
     
+    
+    func handleTextField() {
+        emailTextfield.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        passwordField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+    }
+    
+    func textFieldDidChange() {
+        guard let email = emailTextfield.text, !email.isEmpty, let password = passwordField.text, !password.isEmpty  else {
+            print("what?? what?? what??????")
+            return
+        }
+        loginButton.setTitleColor(UIColor.white, for: .normal)
+        loginButton.isEnabled = true
+        
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -223,7 +234,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         //_ = googleSignInButton.anchor(passwordField.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
             //googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
-        
+        handleTextField()
         //setupGoogle()
     }
 

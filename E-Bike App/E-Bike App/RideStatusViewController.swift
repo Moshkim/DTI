@@ -16,6 +16,7 @@ import CoreData
 import MapKit
 import LocalAuthentication
 import CoreBluetooth
+import FirebaseAuth
 
 
 class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate, MKMapViewDelegate{
@@ -208,6 +209,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     
+    
+    
+    
+    // MARK - GOOGLE MAP DIRECTION HANDLING FUNCTIONS
+    //*************************************************************************************************************************************//
     
     let mapView: GMSMapView = {
         
@@ -675,6 +681,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     }
     
+    
+    
+    
+    //*************************************************************************************************************************************//
+    
+    
+    
+    // MARK - SCROLL VIEW PAGE SECTION
+    
+    //*************************************************************************************************************************************//
     
     func featureViewController() {
         featureArray = [screenOne,screenTwo, screenThree, screenFour, screenFive]
@@ -1412,7 +1428,39 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
     }
     
+    //*************************************************************************************************************************************//
+    
+    
+    
+    
+    
+    
+    
+    // MARK - GOOGLE MAP HANDLING SECTION!!
+    //*************************************************************************************************************************************//
 
+    
+    
+    
+    // Map Styling
+    
+    func mapStyle() {
+        
+        do {
+            //Set the map style by passing a valid JSON String.
+            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+            } else {
+                NSLog("Unable to find style.json")
+                print("Unavle to find the style.json")
+            }
+            
+        } catch {
+            
+            print("One or more of the map style failed to load. \(error)")
+        }
+    }
+    
     
     // Once the user allowed us to track then we let the system to start updating the the current location and track it
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -1671,10 +1719,64 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         statusViewControl.currentPage = Int(page)
     }
     
+    //*************************************************************************************************************************************//
+    
+    
+    
+    
+    // MARK - Sliding left menu
+    
+    //*************************************************************************************************************************************//
+    
+    lazy var slideMenuButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        button.backgroundColor = UIColor.clear
+        button.setImage(UIImage(named: "menu")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor.DTIRed()
+        button.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(handleSideMenuButton), for: .touchUpInside)
+        return button
+    
+    }()
+    
+    lazy var settingMenu: SettingMenuSlide = {
+        let menu = SettingMenuSlide()
+        menu.rideStatusView = self
+        return menu
+    }()
 
+    
+    func handleSideMenuButton() {
+        
+        //Show Menu
+        settingMenu.handleSideMenuButton()
+
+    }
+    
+    func showControllerWithTermsAndPrivacyButton() {
+        self.performSegue(withIdentifier: .termsAndPrivacy, sender: nil)
+    }
+    
+    
+    func showControllerWithSettingButton() {
+        self.performSegue(withIdentifier: .setting, sender: nil)
+    }
+    
+    func showControllerWithLogoutButton() {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "LoginAndOutViewController")
+        self.present(loginVC, animated: true, completion: nil)
+    }
+    
+
+    //*************************************************************************************************************************************//
+    
+    
 
     // MARK - Specific Info View while riding on the bike
 
+    //*************************************************************************************************************************************//
     
     lazy var startButton: UIButtonY = {
     
@@ -1694,6 +1796,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         return button
     }()
+    
     
     
     func pauseTheRoute(sender: UIButtonY) {
@@ -1839,6 +1942,53 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         }
     }
+    
+    
+    
+    
+    func getWeatherInfo() {
+        
+        
+        let currentLocationLat: Double?
+        let currentLocationLong: Double?
+        let forecastService = ForecastService(APIKey: forecastAPIKey)
+        //let currentTemperature: Double?
+        //var weatherStatus: String?
+        
+        if let currentLocation = locationList.first {
+            
+            currentLocationLat = currentLocation.coordinate.latitude
+            currentLocationLong = currentLocation.coordinate.longitude
+            
+            forecastService.getForecast(lat: currentLocationLat!, long: currentLocationLong!) { (currentWeather) in
+                
+                if let currentWeather = currentWeather {
+                    DispatchQueue.main.async {
+                        if let temperature = currentWeather.temperature {
+                            self.currentTemperature = temperature
+                            
+                            if let summary = currentWeather.summary {
+                                self.currentWeatherSummary = summary
+                                
+                            }
+                            if let icon = currentWeather.weatherStatus{
+                                self.currentWeatherIcon = icon
+                                self.setWeatherIcon()
+                                self.weatherAlert()
+                            }
+                        }
+                    }
+                } else {
+                    
+                    self.currentTemperature = 0
+                    
+                }
+            }
+        } else {
+            print("There is no location that is saved!")
+        }
+        
+    }
 
     
 
@@ -1949,6 +2099,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }
 
     
+    // MARK - CORE DATA SECTION TO STORE DATA!
+    
+    //*************************************************************************************************************************************//
+    
+    
     fileprivate func saveEbike(name: String) {
         
         
@@ -2004,89 +2159,33 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
     }
     
-    
-    func moveBack() {
-        performSegue(withIdentifier: "menuViewSegue", sender: self)
-    }
+    //*************************************************************************************************************************************//
     
     
     
-    // Map Styling
-    
-    func mapStyle() {
-    
-        do {
-            //Set the map style by passing a valid JSON String.
-            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json") {
-                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
-            } else {
-                NSLog("Unable to find style.json")
-                print("Unavle to find the style.json")
-            }
-            
-        } catch {
-            
-            print("One or more of the map style failed to load. \(error)")
-        }
-    }
-    
-
-    
-    
-    func getWeatherInfo() {
-    
-        
-        let currentLocationLat: Double?
-        let currentLocationLong: Double?
-        let forecastService = ForecastService(APIKey: forecastAPIKey)
-        //let currentTemperature: Double?
-        //var weatherStatus: String?
-        
-        if let currentLocation = locationList.first {
-            
-            currentLocationLat = currentLocation.coordinate.latitude
-            currentLocationLong = currentLocation.coordinate.longitude
-            
-            forecastService.getForecast(lat: currentLocationLat!, long: currentLocationLong!) { (currentWeather) in
-                
-                if let currentWeather = currentWeather {
-                    DispatchQueue.main.async {
-                        if let temperature = currentWeather.temperature {
-                            self.currentTemperature = temperature
-                            
-                            if let summary = currentWeather.summary {
-                                self.currentWeatherSummary = summary
-                                
-                            }
-                            if let icon = currentWeather.weatherStatus{
-                                self.currentWeatherIcon = icon
-                                self.setWeatherIcon()
-                                self.weatherAlert()
-                            }
-                        }
-                    }
-                } else {
-                
-                    self.currentTemperature = 0
-                
-                }
-            }
-        } else {
-            print("There is no location that is saved!")
-        }
-    
-    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        userCurrentLocationMarker.map = mapView
+        
+        
+        // MARK - Bluetooth Delegate Searching DEVICE
+        //*********************************************************************************************************************************//
+        
         centralManager = CBCentralManager(delegate: self, queue: nil, options: [
             CBCentralManagerOptionShowPowerAlertKey: true
             ])
+        //*********************************************************************************************************************************//
         
-        userCurrentLocationMarker.map = mapView
         
+        
+        
+        
+        // MARK - Touch ID Authentication
+        // FIXIT - The Touch ID does not work properly
+        //*********************************************************************************************************************************//
         
         let authenticaitonContext = LAContext()
         
@@ -2113,10 +2212,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
             print("Device does not have touch id!")
         }
+        
+        //*********************************************************************************************************************************//
+        
 
-        //locationManager.startUpdatingLocation()
-
-        //locationManager.startUpdatingHeading()
         locationManager.delegate = self
         locationManager.activityType = .fitness
         locationManager.requestWhenInUseAuthorization()
@@ -2130,6 +2229,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         view.backgroundColor = UIColor.black
         
         view.addSubview(mainTitle)
+        view.addSubview(slideMenuButton)
+        
+        
         view.addSubview(ScrollView)
         view.addSubview(statusViewControl)
         view.addSubview(addressLabel)
@@ -2145,13 +2247,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         featureViewController()
         loadFeatures()
         
-        
         _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 30)
         mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
+        _ = slideMenuButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 23, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 25, heightConstant: 25)
+        
         _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 30, heightConstant: 30)
         
+
         _ = ScrollView.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 60, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
         ScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
@@ -2185,6 +2289,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 
 }
 
+
+// MARK - BLUETOOTH HANDLING PROTOCOL TO FIND AND CONNECT TO BLUETOOTH DEVICES
+//*************************************************************************************************************************************//
 
 extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDelegate{
     
@@ -2493,7 +2600,13 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
 
 }
 
+//*************************************************************************************************************************************//
 
+
+
+
+// MARK - DIRECTION HEADING HANDLING EXTENSION FUNCTION
+//*************************************************************************************************************************************//
 extension RiderStatusViewController{
 
     
@@ -2543,9 +2656,14 @@ extension RiderStatusViewController{
     }
     
 }
+//*************************************************************************************************************************************//
 
 
 
+
+
+// MARK - WEATHER STATUS HELPER ENUM
+//*************************************************************************************************************************************//
 extension RiderStatusViewController {
     enum CurrentWeatherStatus: String {
         case rain = "rain"
@@ -2563,12 +2681,21 @@ extension RiderStatusViewController {
         case tornado = "tornado"
     }
 }
+//*************************************************************************************************************************************//
+
+
+
+// MARK - SEGUE HANDLER
+
+//*************************************************************************************************************************************//
 
 extension RiderStatusViewController: SegueHandlerType {
     
     enum SegueIdentifier: String {
         case stopAndSave = "saveViewSegue"
         case history = "historyViewSegue"
+        case setting = "MenuToSettingViewSegue"
+        case termsAndPrivacy = "MenuToTermsViewSegue"
     }
     
     
@@ -2580,7 +2707,17 @@ extension RiderStatusViewController: SegueHandlerType {
             
         case .history:
             _ = segue.destination as! UINavigationController
+            
+        case .setting:
+            _ = segue.destination as! SettingViewController
+       
+        
+        case .termsAndPrivacy:
+            _ = segue.destination as! TermsAndPrivacyViewController
+        
+        
         }
     }
 }
+//*************************************************************************************************************************************//
 

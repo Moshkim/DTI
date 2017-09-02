@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="17A358a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="wMv-2V-Pxv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="17A358a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="wMv-2V-Pxv">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -53,7 +53,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F7b-2A-hPt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="268" y="601"/>
+            <point key="canvasLocation" x="182" y="276"/>
         </scene>
         <!--Menu View Controller-->
         <scene sceneID="o6g-Yv-FV3">
@@ -113,7 +113,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bZV-0j-tz7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1120.8" y="2219.6401799100449"/>
+            <point key="canvasLocation" x="354" y="3188"/>
         </scene>
         <!--History Detail View Controller-->
         <scene sceneID="Sqb-46-zav">
@@ -134,7 +134,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xtb-IQ-LVx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-932" y="2219"/>
+            <point key="canvasLocation" x="-1778" y="3188"/>
         </scene>
         <!--Ebike Details View Controller-->
         <scene sceneID="hDR-pY-tge">
@@ -155,7 +155,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mcE-1Q-oJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2009" y="2023"/>
+            <point key="canvasLocation" x="-1319" y="2421"/>
         </scene>
         <!--Login And Out View Controller-->
         <scene sceneID="BLQ-14-9nD">
@@ -198,20 +198,96 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FAb-VL-Z4r" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-364" y="1589"/>
+            <point key="canvasLocation" x="-1319" y="1628"/>
+        </scene>
+        <!--Setting View Controller-->
+        <scene sceneID="KtR-wf-c53">
+            <objects>
+                <viewController id="8wa-Cx-cp5" customClass="SettingViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Qcj-6B-MTq"/>
+                        <viewControllerLayoutGuide type="bottom" id="p8V-hF-n0Z"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="zox-Yw-TTT">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ANB-ES-ZfQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3334" y="1074"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="yLA-Sz-hZO">
+            <objects>
+                <viewController id="MnT-FG-qP9" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="5Mj-sS-bph"/>
+                        <viewControllerLayoutGuide type="bottom" id="MIQ-X7-jcE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="X3V-Jf-rfB">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8iL-tm-2Ni" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3334" y="1911"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="dOc-qj-WGb">
+            <objects>
+                <viewController id="faj-wC-jzg" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="hjR-yn-Hh7"/>
+                        <viewControllerLayoutGuide type="bottom" id="WJ5-2M-8YW"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="jXJ-pL-DBe">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rjh-Op-7VD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4294" y="2546"/>
+        </scene>
+        <!--Terms And Privacy View Controller-->
+        <scene sceneID="Cv5-4m-vTp">
+            <objects>
+                <viewController id="e2Q-cP-Huv" customClass="TermsAndPrivacyViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ZgX-hp-y1c"/>
+                        <viewControllerLayoutGuide type="bottom" id="Z5z-vp-vW0"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Kla-a3-MFe">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RfU-sQ-9re" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4214" y="1469"/>
         </scene>
         <!--Rider Status View Controller-->
         <scene sceneID="ekP-He-UAc">
             <objects>
-                <viewController id="pVP-ZR-IT5" customClass="RiderStatusViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="pVP-ZR-IT5" customClass="RiderStatusViewController" customModule="E_Bike_App" sceneMemberID="viewController">
                     <connections>
                         <segue destination="3Qy-eS-D2T" kind="show" identifier="saveViewSegue" id="kaR-nJ-hLM"/>
                         <segue destination="4Zi-NT-XUS" kind="show" identifier="historyViewSegue" id="qX4-7C-N0h"/>
+                        <segue destination="8wa-Cx-cp5" kind="show" identifier="MenuToSettingViewSegue" id="UwD-zJ-AvP"/>
+                        <segue destination="MnT-FG-qP9" kind="show" id="R06-he-cBN"/>
+                        <segue destination="e2Q-cP-Huv" kind="show" identifier="MenuToTermsViewSegue" id="yct-wE-9lU"/>
+                        <segue destination="faj-wC-jzg" kind="show" id="mbg-oM-cKZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4HH-Xx-D9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="982" y="1314"/>
+            <point key="canvasLocation" x="1338" y="1564"/>
         </scene>
         <!--Graph View Controller-->
         <scene sceneID="imV-be-EtM">
@@ -229,7 +305,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zKn-sL-yJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3572" y="1717.6911544227887"/>
+            <point key="canvasLocation" x="4302" y="527"/>
         </scene>
         <!--Ebike Setting View Controller-->
         <scene sceneID="hgK-Aj-jPO">
@@ -261,7 +337,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fnV-pt-11d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3970" y="600"/>
+            <point key="canvasLocation" x="3810" y="-96"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="bUw-FJ-Mkz">
@@ -454,7 +530,20 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N7R-KW-xT4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="181.59999999999999" y="2219.6401799100449"/>
+            <point key="canvasLocation" x="-652" y="3188"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="QHC-gb-HiC">
+            <objects>
+                <viewController id="0ig-55-nSH" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="OXV-8m-iXq">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Ik-iZ-PWl" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
         </scene>
     </scenes>
     <resources>
@@ -464,9 +553,9 @@
         <image name="getDirectionArrow" width="778" height="768"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QJr-Kw-PYn"/>
-        <segue reference="1uj-td-jI8"/>
-        <segue reference="BLt-nd-ynn"/>
+        <segue reference="uam-He-dUK"/>
         <segue reference="qX4-7C-N0h"/>
+        <segue reference="1uj-td-jI8"/>
+        <segue reference="1YH-UB-0d7"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -8,29 +8,50 @@
 
 import Firebase
 import FirebaseDatabase
+import FirebaseStorage
 import GoogleSignIn
 import UIKit
 import KeychainSwift
 
 class SignupController: UIViewController {
     
-    
     fileprivate var user: Customer?
     
-    let profilePicture: UIImageView = {
+    //let profile_Image = ProfilePicture.sharedInstance
+    
+    static let sharedInstance = SignupController()
+    var profile = UIImage()
+    
+    
+    var selectedImage: UIImage?
+    
+    lazy var profilePicture: UIImageView = {
         let profile = UIImageView(frame: CGRect(x: 0, y: 0, width: 120, height: 120))
         let image = UIImage(named: "profile")?.withRenderingMode(.alwaysTemplate)
+        
         profile.tintColor = UIColor.white
         profile.backgroundColor = UIColor(red:0.10, green:0.38, blue:0.45, alpha:1)
         profile.image = image
-        profile.contentMode = .scaleAspectFit
+        profile.contentMode = .scaleAspectFill
+        profile.clipsToBounds = true
         profile.layer.cornerRadius = profile.frame.width/2
         profile.layer.borderColor = UIColor.white.cgColor
         profile.layer.borderWidth = 1
-    
+        
+        profile.isUserInteractionEnabled = true
+        profile.isHighlighted = true
 
         return profile
     }()
+    
+    func handleSelectProfileImageView() {
+        let pickerController = UIImagePickerController()
+        pickerController.delegate = self
+        pickerController.sourceType = .photoLibrary
+        pickerController.allowsEditing = true
+        present(pickerController, animated: true, completion: nil)
+        
+    }
     
     let nameTextField: UITextField = {
         let name = UITextField(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
@@ -94,9 +115,11 @@ class SignupController: UIViewController {
         button.layer.borderColor = UIColor.white.cgColor
         button.backgroundColor = UIColor(red:0.10, green:0.38, blue:0.45, alpha:1.00)
         button.setTitle("Sign Up", for: .normal)
+        button.setTitleColor(UIColor(white: 1.0, alpha:0.7), for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(SignupAction), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isEnabled = false
         return button
     }()
     
@@ -108,6 +131,7 @@ class SignupController: UIViewController {
         
     
         if let email = emailTextField.text, let password = passwordTextField.text {
+            guard let name = nameTextField.text else { return }
             
             
             let isEmailAddressValid = StringVerification.emailValidation(emailAddressString: email)
@@ -125,21 +149,35 @@ class SignupController: UIViewController {
                 
             }
             
-            
-            Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
-                if error != nil{
-                    print("Can not sign un with the email you provided", error?.localizedDescription as Any)
-                    
-                } else {
-                    self.CompleteSignIn(id: (user?.uid)!)
-                    self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.signupButton)
-                }
+            if let profileImage = self.selectedImage, let imageData = UIImageJPEGRepresentation(profileImage, 0.1){
+                
+                //let sharedProfile = SignupController.sharedInstance
+                //sharedProfile.profile = profileImage
                 
                 
-            })
-            
-        }
+                // FIXIT - We need to fix the profile images that it is not dynamic..It has to be related to the user email address
+                
+                // Encoding the picture we have selected in the sign up page
+                let profileImageData = UIImageJPEGRepresentation(profileImage, 0.1)! as NSData
+                
+                // save the profile username 
+                UserDefaults.standard.set(name, forKey: "username")
+                
+                // Saved the profile picture
+                UserDefaults.standard.set(profileImageData, forKey: "profileImage")
+                
+                
+                AuthService.signUp(name: name, email: email, password: password, imageData: imageData, onSuccess: {
+                    self.performSegue(withIdentifier: "SignupToRideStatusSegue", sender: nil)
+                
+                }, onError: { (error) in
+                    print(error!)
+                
+                })
+                
+            }
     
+        }
     }
     
     fileprivate func CompleteSignIn(id: String){
@@ -163,6 +201,10 @@ class SignupController: UIViewController {
     func backToLoginAction() {
         self.dismiss(animated: true, completion: nil)
     }
+    
+    
+    
+    
     
     /*
     lazy var dateOfBirth: UIDatePicker = {
@@ -197,7 +239,30 @@ class SignupController: UIViewController {
         user = newUser
     
     }
+
     
+    func handleTextField() {
+        nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        emailTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+    }
+    
+    func textFieldDidChange() {
+        guard let name = nameTextField.text, !name.isEmpty, let email = emailTextField.text, !email.isEmpty, let password = passwordTextField.text, !password.isEmpty  else {
+            print("what?? what?? what??????")
+            
+            signupButton.setTitleColor(UIColor(white:1.0, alpha: 0.7), for: .normal)
+            
+            return
+        }
+        signupButton.setTitleColor(UIColor.white, for: .normal)
+        signupButton.isEnabled = true
+    
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -212,6 +277,9 @@ class SignupController: UIViewController {
         view.addSubview(backToLoginButton)
         
     
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(SignupController.handleSelectProfileImageView))
+        profilePicture.addGestureRecognizer(tapGesture)
+        
     
         _ = profilePicture.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 80, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 120, heightConstant: 120)
             profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -231,5 +299,22 @@ class SignupController: UIViewController {
         _ = backToLoginButton.anchor(nil, left: nil, bottom: view.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 5, rightConstant: 0, widthConstant: 300, heightConstant: 50)
             backToLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     
+        handleTextField()
     }
+}
+
+
+
+extension SignupController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info["UIImagePickerControllerOriginalImage"] as? UIImage {
+            selectedImage = image
+            profilePicture.image = image
+        }
+        
+        dismiss(animated: true, completion: nil)
+    }
+
+
+
 }
