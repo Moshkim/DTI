@@ -1753,6 +1753,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 
     }
     
+    func showControllerWithGoalButton() {
+    
+        self.performSegue(withIdentifier: .goals, sender: nil)
+    }
+    
+    
+    func connectToDevice() {
+    
+        print("Sucessfully conntected to devices!")
+    }
+    
     func showControllerWithTermsAndPrivacyButton() {
         self.performSegue(withIdentifier: .termsAndPrivacy, sender: nil)
     }
@@ -2696,6 +2707,8 @@ extension RiderStatusViewController: SegueHandlerType {
         case history = "historyViewSegue"
         case setting = "MenuToSettingViewSegue"
         case termsAndPrivacy = "MenuToTermsViewSegue"
+        case goals = "MenuToGoalsViewSegue"
+        
     }
     
     
@@ -2715,7 +2728,9 @@ extension RiderStatusViewController: SegueHandlerType {
         case .termsAndPrivacy:
             _ = segue.destination as! TermsAndPrivacyViewController
         
-        
+        case .goals:
+            _ = segue.destination as! GoalsViewController
+            
         }
     }
 }

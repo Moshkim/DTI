@@ -198,7 +198,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FAb-VL-Z4r" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1319" y="1628"/>
+            <point key="canvasLocation" x="-347" y="1282"/>
         </scene>
         <!--Setting View Controller-->
         <scene sceneID="KtR-wf-c53">
@@ -218,10 +218,10 @@
             </objects>
             <point key="canvasLocation" x="3334" y="1074"/>
         </scene>
-        <!--View Controller-->
+        <!--Goals View Controller-->
         <scene sceneID="yLA-Sz-hZO">
             <objects>
-                <viewController id="MnT-FG-qP9" sceneMemberID="viewController">
+                <viewController id="MnT-FG-qP9" customClass="GoalsViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="5Mj-sS-bph"/>
                         <viewControllerLayoutGuide type="bottom" id="MIQ-X7-jcE"/>
@@ -280,7 +280,7 @@
                         <segue destination="3Qy-eS-D2T" kind="show" identifier="saveViewSegue" id="kaR-nJ-hLM"/>
                         <segue destination="4Zi-NT-XUS" kind="show" identifier="historyViewSegue" id="qX4-7C-N0h"/>
                         <segue destination="8wa-Cx-cp5" kind="show" identifier="MenuToSettingViewSegue" id="UwD-zJ-AvP"/>
-                        <segue destination="MnT-FG-qP9" kind="show" id="R06-he-cBN"/>
+                        <segue destination="MnT-FG-qP9" kind="show" identifier="MenuToGoalsViewSegue" id="R06-he-cBN"/>
                         <segue destination="e2Q-cP-Huv" kind="show" identifier="MenuToTermsViewSegue" id="yct-wE-9lU"/>
                         <segue destination="faj-wC-jzg" kind="show" id="mbg-oM-cKZ"/>
                     </connections>
@@ -553,9 +553,9 @@
         <image name="getDirectionArrow" width="778" height="768"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="uam-He-dUK"/>
-        <segue reference="qX4-7C-N0h"/>
+        <segue reference="BLt-nd-ynn"/>
         <segue reference="1uj-td-jI8"/>
+        <segue reference="CTB-uz-jrH"/>
         <segue reference="1YH-UB-0d7"/>
     </inferredMetricsTieBreakers>
 </document>

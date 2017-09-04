@@ -16,7 +16,7 @@ class SettingMenuSlide: NSObject {
     
     lazy var blackView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(white: 0.5, alpha: 0.4)
+        view.backgroundColor = UIColor(white: 0, alpha: 0.4)
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(DismissMenuBar)))
     
         return view
@@ -24,7 +24,7 @@ class SettingMenuSlide: NSObject {
     
     let slideMenuView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(white: 0, alpha: 0.6)
+        view.backgroundColor = UIColor(white: 0, alpha: 0.8)
         return view
     }()
     
@@ -86,6 +86,76 @@ class SettingMenuSlide: NSObject {
     //*************************************************************************************************************************************//
     
     
+    
+    // MARK - GOALS
+    //*************************************************************************************************************************************//
+    
+    lazy var goals: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor.clear
+        button.setTitle("Goals", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.isHighlighted = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action: #selector(moveToGoalsViewController), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    func moveToGoalsViewController() {
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            
+            self.blackView.alpha = 0
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
+            
+        }, completion: {(completion:Bool) in
+            self.rideStatusView?.showControllerWithGoalButton()
+        })
+    }
+    
+    
+    //*************************************************************************************************************************************//
+    
+    
+    
+    
+    
+    // MARK - CONNECT TO DEVICES
+    //*************************************************************************************************************************************//
+    lazy var connectToDevice: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor.clear
+        button.setTitle("Connect Device", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.isHighlighted = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action: #selector(connectToDevices), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    func connectToDevices() {
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+        
+            self.blackView.alpha = 0
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
+        
+        }, completion: {(completion:Bool) in
+            self.rideStatusView?.connectToDevice()
+        })
+    }
+    
+    
+    //*************************************************************************************************************************************//
+    
+    
+    
+    
+    
     // MARK - TERMS AND PRIVACY
     //*************************************************************************************************************************************//
     
@@ -105,10 +175,8 @@ class SettingMenuSlide: NSObject {
     func moveToTermsAndPrivacyViewController() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
-            if let window = UIApplication.shared.keyWindow{
-                self.slideMenuView.frame = CGRect(x: -((window.frame.width/3)*2), y: 0, width: (window.frame.width/3)*2, height: window.frame.height)
-                
-            }
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
+            
         }, completion: {(completed: Bool) in
             // going to setting view controller to set the setting
             self.rideStatusView?.showControllerWithTermsAndPrivacyButton()
@@ -149,10 +217,7 @@ class SettingMenuSlide: NSObject {
     func moveToSettingViewController() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
-            if let window = UIApplication.shared.keyWindow{
-                self.slideMenuView.frame = CGRect(x: -((window.frame.width/3)*2), y: 0, width: (window.frame.width/3)*2, height: window.frame.height)
-                
-            }
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
         }, completion: {(completed: Bool) in
             // going to setting view controller to set the setting
             self.rideStatusView?.showControllerWithSettingButton()
@@ -170,8 +235,9 @@ class SettingMenuSlide: NSObject {
     lazy var logoutButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 150, height: 40))
         button.backgroundColor = UIColor.clear
-        button.setTitle("Log Out", for: .normal)
-        button.setTitleColor(UIColor.DTIRed(), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.setImage(UIImage(named: "logout")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor.white
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(logoutAction), for: .touchUpInside)
@@ -194,10 +260,7 @@ class SettingMenuSlide: NSObject {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
             
-            if let window = UIApplication.shared.keyWindow{
-                self.slideMenuView.frame = CGRect(x: -((window.frame.width/3)*2), y: 0, width: (window.frame.width/3)*2, height: window.frame.height)
-                
-            }
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
             
         
         }, completion: {(completed: Bool) in
@@ -231,10 +294,16 @@ class SettingMenuSlide: NSObject {
             slideMenuView.addSubview(profileNickName)
             
             
+            
+            slideMenuView.addSubview(goals)
+            
+            slideMenuView.addSubview(connectToDevice)
+            
+            
             slideMenuView.addSubview(termsAndPrivacy)
             
             
-            slideMenuView.addSubview(settingImage)
+            //slideMenuView.addSubview(settingImage)
             slideMenuView.addSubview(settingButton)
             slideMenuView.addSubview(logoutButton)
             
@@ -248,18 +317,26 @@ class SettingMenuSlide: NSObject {
             _ = profilePicture.anchor(slideMenuView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 80, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 100)
                 profilePicture.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
-            _ = profileNickName.anchor(profilePicture.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 40)
+            _ = profileNickName.anchor(profilePicture.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 profileNickName.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
             
-            _ = termsAndPrivacy.anchor(nil, left: nil, bottom: settingButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: 90, heightConstant: 30)
+            _ = goals.anchor(nil, left: nil, bottom: connectToDevice.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+                goals.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
+            
+            
+            _ = connectToDevice.anchor(nil, left: nil, bottom: termsAndPrivacy.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+                connectToDevice.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
+            
+            
+            _ = termsAndPrivacy.anchor(nil, left: nil, bottom: settingButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 termsAndPrivacy.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
-            _ = settingImage.anchor(nil, left: slideMenuView.leftAnchor, bottom: logoutButton.topAnchor, right: settingButton.leftAnchor, topConstant: 0, leftConstant: 40, bottomConstant: 80, rightConstant: 0, widthConstant: 30, heightConstant: 30)
+            //_ = settingImage.anchor(nil, left: slideMenuView.leftAnchor, bottom: logoutButton.topAnchor, right: settingButton.leftAnchor, topConstant: 0, leftConstant: 40, bottomConstant: 80, rightConstant: 0, widthConstant: 30, heightConstant: 30)
             
-            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 80, rightConstant: 0, widthConstant: 90, heightConstant: 30)
+            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 100, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 settingButton.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             _ = logoutButton.anchor(nil, left: nil, bottom: slideMenuView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 40)
@@ -285,10 +362,7 @@ class SettingMenuSlide: NSObject {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
             self.blackView.alpha = 0
-            if let window = UIApplication.shared.keyWindow{
-                self.slideMenuView.frame = CGRect(x: -((window.frame.width/3)*2), y: 0, width: (window.frame.width/3)*2, height: window.frame.height)
-                
-            }
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
         }, completion: nil)
     }
 
