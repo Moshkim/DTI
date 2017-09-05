@@ -11,12 +11,16 @@ import FirebaseDatabase
 import GoogleSignIn
 import UIKit
 import KeychainSwift
+import LocalAuthentication
 
 
 class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     
     
     //let instanceAuthService = AuthService.shared
+    
+    
+    
     
     
     let mainLogoImage: UIImageView = {
@@ -95,6 +99,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         if isEmailAddressValid {
         
             print("Email Address is valid")
+            
         } else {
             print("Email Address is not valid")
             let alertViewController = UIAlertController(title: "Invalid Email", message: "Type valid email address!", preferredStyle: .alert)
@@ -109,8 +114,15 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         AuthService.signIn(email: email, password: password, onSuccess: {
             self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.loginButton)
         }, onError: { error in
-            print(error!)
+            
+            guard let err = error else { return }
+            let alertViewController = UIAlertController(title: "Authentication Error", message: "\(String(describing: err))", preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertViewController.addAction(cancel)
+            self.present(alertViewController, animated: true, completion: nil)
         })
+        
+        
         
     }
     
@@ -132,8 +144,109 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     
 
     
+    lazy var signInWithTouchIDButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+        button.backgroundColor = UIColor.clear
+        button.setTitleColor(UIColor(red:0.32, green:0.61, blue:0.64, alpha:1.00), for: .normal)
+        button.setTitle("Sign In With Touch ID", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.addTarget(self, action: #selector(signInWithTouchID), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+        
+    }()
     
-
+    func signInWithTouchID() {
+    
+        authenticationWithTouchID()
+    
+    }
+    
+    
+    // MARK - Touch ID Authentication
+    // FIXIT - The Touch ID does not work properly
+    //*****************************************************************************************************************************//
+    
+    func authenticationWithTouchID() {
+        
+        let authenticaitonContext = LAContext()
+        var error: NSError?
+        
+        
+        if authenticaitonContext.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error){
+            authenticaitonContext.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Verification"){
+                (success, error) in
+                if success {
+                    print("User has authenticated!")
+                    DispatchQueue.main.async {
+                        let email = UserDefaults.standard.object(forKey: "email")
+                        let password = UserDefaults.standard.object(forKey: "password")
+                        
+                        AuthService.signIn(email: email as! String, password: password as! String, onSuccess: {
+                            self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.loginButton)
+                        }, onError: { error in
+                            
+                            guard let err = error else { return }
+                            let alertViewController = UIAlertController(title: "Authentication Error", message: "\(String(describing: err))", preferredStyle: .alert)
+                            let cancel = UIAlertAction(title: "OK", style: .default, handler: nil)
+                            alertViewController.addAction(cancel)
+                            self.present(alertViewController, animated: true, completion: nil)
+                        })
+                    }
+                    
+                } else {
+                    if let err = error as NSError?{
+                        let message = self.errorMessageForLAErrorCode(errorCode: err.code)
+                        self.showAlertWithTitle(title: "Error", message: message)
+                        
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    
+    func showAlertWithTitle(title: String, message: String) {
+        
+        let alertViewController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        alertViewController.addAction(okAction)
+        self.present(alertViewController, animated: true, completion: nil)
+        
+        
+    }
+    
+    
+    
+    func errorMessageForLAErrorCode(errorCode: Int) -> String {
+        switch errorCode {
+        case LAError.appCancel.rawValue:
+            return "Authentication was cancelled by application"
+        case LAError.authenticationFailed.rawValue:
+            return "The user failed to provide valid credentials"
+        case LAError.invalidContext.rawValue:
+            return "The context is invalid"
+        case LAError.passcodeNotSet.rawValue:
+            return "Passcode is not set on the device"
+        case LAError.systemCancel.rawValue:
+            return "Authentication was cancelled by the system"
+        case LAError.touchIDLockout.rawValue:
+            return "Too many failed attempts"
+        case LAError.touchIDNotAvailable.rawValue:
+            return "TouchID is not available on the device"
+        case LAError.userCancel.rawValue:
+            return "The user did cancel"
+        default:
+            return "Did not find error code on LAError object"
+        }
+    }
+    
+    
+    
+    //*****************************************************************************************************************************//
+    
     /*
     lazy var googleSignInButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
@@ -174,11 +287,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //let keyChain = DataServiceFirebase().keyChain
-        
-        if Auth.auth().currentUser != nil {
-            performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: nil)
-        }
-        
+
     }
     
     
@@ -189,7 +298,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     
     func textFieldDidChange() {
         guard let email = emailTextfield.text, !email.isEmpty, let password = passwordField.text, !password.isEmpty  else {
-            print("what?? what?? what??????")
+            print("Typing the textfields")
             return
         }
         loginButton.setTitleColor(UIColor.white, for: .normal)
@@ -208,11 +317,14 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         self.view.backgroundColor = UIColor.black
         
         
+        
+        
         view.addSubview(mainLogoImage)
         view.addSubview(emailTextfield)
         view.addSubview(passwordField)
         view.addSubview(loginButton)
         view.addSubview(signupButton)
+        view.addSubview(signInWithTouchIDButton)
         //view.addSubview(googleSignInButton)
         
         _ = mainLogoImage.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 100, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 100)
@@ -230,6 +342,9 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         
         _ = signupButton.anchor(loginButton.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 50)
             signupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        _ = signInWithTouchIDButton.anchor(nil, left: nil, bottom: view.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 300, heightConstant: 30)
+            signInWithTouchIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         //_ = googleSignInButton.anchor(passwordField.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
             //googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true

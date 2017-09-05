@@ -278,14 +278,14 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         graphView.dataPointLabelColor = UIColor.white.withAlphaComponent(0.5)
         
         graphView.shouldAnimateOnStartup = true
-        graphView.shouldAdaptRange = true
+        graphView.shouldAdaptRange = false
         graphView.adaptAnimationType = ScrollableGraphViewAnimationType.easeOut
         graphView.animationDuration = 0.5
         graphView.rangeMax = 1000
         graphView.shouldRangeAlwaysStartAtZero = true
         graphView.showsVerticalScrollIndicator = true
         graphView.showsHorizontalScrollIndicator = true
-        graphView.shouldAutomaticallyDetectRange = true
+        //graphView.shouldAutomaticallyDetectRange = true
         
         graphView.shouldShowLabels = true
         

@@ -76,12 +76,48 @@ class SettingMenuSlide: NSObject {
         label.translatesAutoresizingMaskIntoConstraints = false
 
         let bottomLayer = CALayer()
-        bottomLayer.frame = CGRect(x: 0, y: 40, width: (((UIApplication.shared.keyWindow?.frame.width)!/3)*2), height: 0.6)
+        let length = (((UIApplication.shared.keyWindow?.frame.width)!/3)*2)/3
+        bottomLayer.frame = CGRect(x: length, y: 35, width: length, height: 0.4)
         bottomLayer.backgroundColor = UIColor.white.cgColor
-        //label.layer.addSublayer(bottomLayer)
+        label.layer.addSublayer(bottomLayer)
         
         return label
     }()
+    
+    //*************************************************************************************************************************************//
+    
+    
+    
+    // MARK - MY STATS
+    //*************************************************************************************************************************************//
+    
+    lazy var myStats: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor.clear
+        button.setTitle("My Stats", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.isHighlighted = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action: #selector(moveToMyStatsViewController), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    func moveToMyStatsViewController() {
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            
+            self.blackView.alpha = 0
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
+            
+        }, completion: {(completion:Bool) in
+            self.rideStatusView?.showControllerWithMyStatsButton()
+        })
+    }
+    
+    
     
     //*************************************************************************************************************************************//
     
@@ -94,6 +130,7 @@ class SettingMenuSlide: NSObject {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
         button.setTitle("Goals", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.setTitleColor(UIColor.white, for: .normal)
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -127,8 +164,9 @@ class SettingMenuSlide: NSObject {
     lazy var connectToDevice: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
-        button.setTitle("Connect Device", for: .normal)
+        button.setTitle("Connect Devices", for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
@@ -164,6 +202,7 @@ class SettingMenuSlide: NSObject {
         button.backgroundColor = UIColor.clear
         button.setTitle("Terms & Privacy", for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
@@ -206,6 +245,7 @@ class SettingMenuSlide: NSObject {
         button.backgroundColor = UIColor.clear
         button.setTitle("Settings", for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
@@ -233,7 +273,7 @@ class SettingMenuSlide: NSObject {
     // MARK - LOG OUT 
     //*************************************************************************************************************************************//
     lazy var logoutButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 150, height: 40))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         button.backgroundColor = UIColor.clear
         button.contentMode = .scaleAspectFit
         button.setImage(UIImage(named: "logout")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -295,6 +335,8 @@ class SettingMenuSlide: NSObject {
             
             
             
+            slideMenuView.addSubview(myStats)
+            
             slideMenuView.addSubview(goals)
             
             slideMenuView.addSubview(connectToDevice)
@@ -321,6 +363,9 @@ class SettingMenuSlide: NSObject {
                 profileNickName.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
+            _ = myStats.anchor(nil, left: nil, bottom: goals.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+                myStats.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
+            
             
             _ = goals.anchor(nil, left: nil, bottom: connectToDevice.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 goals.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
@@ -336,10 +381,10 @@ class SettingMenuSlide: NSObject {
             
             //_ = settingImage.anchor(nil, left: slideMenuView.leftAnchor, bottom: logoutButton.topAnchor, right: settingButton.leftAnchor, topConstant: 0, leftConstant: 40, bottomConstant: 80, rightConstant: 0, widthConstant: 30, heightConstant: 30)
             
-            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 100, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 60, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 settingButton.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
-            _ = logoutButton.anchor(nil, left: nil, bottom: slideMenuView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 40)
+            _ = logoutButton.anchor(nil, left: nil, bottom: slideMenuView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 40, heightConstant: 40)
                 logoutButton.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             

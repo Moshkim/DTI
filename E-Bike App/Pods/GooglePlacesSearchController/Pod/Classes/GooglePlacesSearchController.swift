@@ -158,7 +158,7 @@ open class PlaceDetails: CustomStringConvertible {
     }
     
     open var description: String {
-        return "\nPlace: \(name).\nAddress: \(formattedAddress).\ncoordinate: (\(coordinate.latitude), \(coordinate.longitude))\nPhone No.: \(formattedPhoneNo)\n"
+        return "\nPlace: \(name).\nAddress: \(formattedAddress).\ncoordinate: (\(coordinate.latitude), \(coordinate.longitude))\nPhone No.: \(String(describing: formattedPhoneNo))\n"
     }
 }
 
@@ -417,7 +417,7 @@ class GooglePlacesRequestHelpers {
     fileprivate class func doRequest(_ urlString: String, params: [String: String], success: @escaping (NSDictionary) -> ()) {
         if let url = URL(string: "\(urlString)?\(query(params as [String : AnyObject]))"){
             
-            let request = NSMutableURLRequest(
+            _ = NSMutableURLRequest(
                 url:url
             )
             

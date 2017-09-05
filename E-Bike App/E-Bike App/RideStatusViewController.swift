@@ -1753,6 +1753,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 
     }
     
+    
+    
+    func showControllerWithMyStatsButton() {
+    
+        self.performSegue(withIdentifier: .myStats, sender: nil)
+    }
+    
     func showControllerWithGoalButton() {
     
         self.performSegue(withIdentifier: .goals, sender: nil)
@@ -1762,6 +1769,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     func connectToDevice() {
     
         print("Sucessfully conntected to devices!")
+        
+        // MARK - Bluetooth Delegate Searching DEVICE
+        //*********************************************************************************************************************************//
+        
+        centralManager = CBCentralManager(delegate: self, queue: nil, options: [
+            CBCentralManagerOptionShowPowerAlertKey: true
+            ])
+        //*********************************************************************************************************************************//
+        
+        
     }
     
     func showControllerWithTermsAndPrivacyButton() {
@@ -2175,65 +2192,97 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     
+    // MARK - Touch ID Authentication
+    // FIXIT - The Touch ID does not work properly
+    //*****************************************************************************************************************************//
+    
+    func authenticationWithTouchID() {
+        
+        let authenticaitonContext = LAContext()
+        var error: NSError?
+        
+        
+        if authenticaitonContext.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error){
+            authenticaitonContext.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Verification"){
+                (success, error) in
+                if success {
+                    print("User has authenticated!")
+                    
+                    
+                } else {
+                    if let err = error as NSError?{
+                        let message = self.errorMessageForLAErrorCode(errorCode: err.code)
+                        self.showAlertWithTitle(title: "Error", message: message)
+                        
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    
+    func showAlertWithTitle(title: String, message: String) {
+        
+        let alertViewController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        alertViewController.addAction(okAction)
+        self.present(alertViewController, animated: true, completion: nil)
+        
+        
+    }
+    
+    
+    
+    func errorMessageForLAErrorCode(errorCode: Int) -> String {
+        switch errorCode {
+        case LAError.appCancel.rawValue:
+            return "Authentication was cancelled by application"
+        case LAError.authenticationFailed.rawValue:
+            return "The user failed to provide valid credentials"
+        case LAError.invalidContext.rawValue:
+            return "The context is invalid"
+        case LAError.passcodeNotSet.rawValue:
+            return "Passcode is not set on the device"
+        case LAError.systemCancel.rawValue:
+            return "Authentication was cancelled by the system"
+        case LAError.touchIDLockout.rawValue:
+            return "Too many failed attempts"
+        case LAError.touchIDNotAvailable.rawValue:
+            return "TouchID is not available on the device"
+        case LAError.userCancel.rawValue:
+            return "The user did cancel"
+        default:
+            return "Did not find error code on LAError object"
+        }
+    }
+    
+    
+    
+    //*****************************************************************************************************************************//
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         userCurrentLocationMarker.map = mapView
         
-        
-        // MARK - Bluetooth Delegate Searching DEVICE
-        //*********************************************************************************************************************************//
-        
-        centralManager = CBCentralManager(delegate: self, queue: nil, options: [
-            CBCentralManagerOptionShowPowerAlertKey: true
-            ])
-        //*********************************************************************************************************************************//
-        
-        
-        
-        
-        
-        // MARK - Touch ID Authentication
-        // FIXIT - The Touch ID does not work properly
-        //*********************************************************************************************************************************//
-        
-        let authenticaitonContext = LAContext()
-        
-        var error: NSError?
-        if authenticaitonContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error){
-        
-            authenticaitonContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Verification"){
-             (success, error) in
-                if success {
-                
-                    print("User has authenticated!")
-                } else {
-                    if let err = error {
-                        print(err)
-                    } else {
-                        print("did not authenticated")
-                    }
-                
-                }
-            
-            
-            }
-        } else {
-        
-            print("Device does not have touch id!")
+        //DispatchQueue.main.async {
+        OperationQueue.main.addOperation {
+            self.locationManager.delegate = self
+            self.mapView.delegate = self
         }
         
-        //*********************************************************************************************************************************//
         
-
-        locationManager.delegate = self
-        locationManager.activityType = .fitness
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startMonitoringSignificantLocationChanges()
+        self.locationManager.activityType = .fitness
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.startMonitoringSignificantLocationChanges()
+        //self.locationManager.startUpdatingHeading()
         
-        mapView.delegate = self
         
         UIApplication.shared.statusBarStyle = .lightContent
         
@@ -2298,6 +2347,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         mapView.settings.compassButton = true
     }
 
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        //authenticationWithTouchID()
+    }
 }
 
 
@@ -2708,6 +2762,7 @@ extension RiderStatusViewController: SegueHandlerType {
         case setting = "MenuToSettingViewSegue"
         case termsAndPrivacy = "MenuToTermsViewSegue"
         case goals = "MenuToGoalsViewSegue"
+        case myStats = "MenuToMyStatsViewSegue"
         
     }
     
@@ -2724,12 +2779,14 @@ extension RiderStatusViewController: SegueHandlerType {
         case .setting:
             _ = segue.destination as! SettingViewController
        
-        
         case .termsAndPrivacy:
             _ = segue.destination as! TermsAndPrivacyViewController
         
         case .goals:
             _ = segue.destination as! GoalsViewController
+            
+        case .myStats:
+            _ = segue.destination as! MyStatsViewController
             
         }
     }

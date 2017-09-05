@@ -10,11 +10,11 @@ import UIKit
 import CoreData
 import GoogleMaps
 import GooglePlaces
-import GoogleSignIn
+//import GoogleSignIn
 import Firebase
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate{
 
     var window: UIWindow?
 
@@ -29,8 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 
 
         FirebaseApp.configure()
-        GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-        GIDSignIn.sharedInstance().delegate = self
+        //GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
+        //GIDSignIn.sharedInstance().delegate = self
         
         //let foreCast = ForecastForNearbyPlaces()
         
@@ -48,19 +48,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         var MVC: UIViewController
         
-        if (UserDefaults.standard.value(forKey: "name") as? String) == nil {
+        //if (UserDefaults.standard.value(forKey: "name") as? String) == nil {
+        if Auth.auth().currentUser == nil {
             // Show the Login Page
             
             MVC = storyBoard.instantiateViewController(withIdentifier: "LoginAndOutViewController")
         } else {
-            
             // Show the Map View Page
-            MVC = storyBoard.instantiateViewController(withIdentifier: "LoginAndOutViewController")
+            MVC = storyBoard.instantiateViewController(withIdentifier: "SignInWithTouchIDViewController")
             
         }
         
         // This will set the root view controller of our app => Map View Controller for now
         self.window?.rootViewController = MVC
+        
+        
+        
+        
         
         // "Key window" is the window that receives events fron the device
         self.window?.makeKeyAndVisible()
@@ -68,6 +72,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         return true
     }
     
+    
+    
+    /*
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
         // ...
         if let error = error {
@@ -100,6 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // Perform any operations when the user disconnects from app here.
         // ...
     }
+ 
     
     @available(iOS 9.0, *)
     func application(_ application: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any])
@@ -108,7 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                                                      sourceApplication:options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String,
                                                      annotation: [:])
     }
-
+     */
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.

@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		7811FA365087491747E10638 /* Pods_E_Bike_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538CC959FD3D7DE95978EC3E /* Pods_E_Bike_App.framework */; };
 		A60DBB101F0D6B6E00AAD99D /* GraphViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60DBB0F1F0D6B6E00AAD99D /* GraphViewController.swift */; };
+		A60EBC651F5F125D004AF307 /* MyStatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60EBC641F5F125D004AF307 /* MyStatsViewController.swift */; };
+		A60EBC671F5F307D004AF307 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A60EBC661F5F307D004AF307 /* LocalAuthentication.framework */; };
+		A60EBC6B1F5F4E72004AF307 /* SignInWithTouchIDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60EBC6A1F5F4E72004AF307 /* SignInWithTouchIDViewController.swift */; };
 		A6144F981EDDEF6200204D02 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144F971EDDEF6200204D02 /* Utils.swift */; };
 		A6144F9A1EDDF1FC00204D02 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144F991EDDF1FC00204D02 /* SplashViewController.swift */; };
 		A6144F9C1EDDF23C00204D02 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144F9B1EDDF23C00204D02 /* Constant.swift */; };
@@ -95,6 +98,9 @@
 		22A681EB5AF2C4ED7C8D8D86 /* Pods-E-Bike App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E-Bike App.release.xcconfig"; path = "Pods/Target Support Files/Pods-E-Bike App/Pods-E-Bike App.release.xcconfig"; sourceTree = "<group>"; };
 		538CC959FD3D7DE95978EC3E /* Pods_E_Bike_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_E_Bike_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A60DBB0F1F0D6B6E00AAD99D /* GraphViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GraphViewController.swift; path = "../../../../Documents/E-Bike/E-bikeApp/GraphViewController.swift"; sourceTree = "<group>"; };
+		A60EBC641F5F125D004AF307 /* MyStatsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStatsViewController.swift; sourceTree = "<group>"; };
+		A60EBC661F5F307D004AF307 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
+		A60EBC6A1F5F4E72004AF307 /* SignInWithTouchIDViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInWithTouchIDViewController.swift; sourceTree = "<group>"; };
 		A6144F951EDDEEF400204D02 /* SplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SplashScreen.h; sourceTree = "<group>"; };
 		A6144F961EDDEF3C00204D02 /* Commons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Commons.h; sourceTree = "<group>"; };
 		A6144F971EDDEF6200204D02 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -189,6 +195,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A60EBC671F5F307D004AF307 /* LocalAuthentication.framework in Frameworks */,
 				A667DF991F57362A000FDC33 /* iAd.framework in Frameworks */,
 				A667DF971F573580000FDC33 /* AdSupport.framework in Frameworks */,
 				7811FA365087491747E10638 /* Pods_E_Bike_App.framework in Frameworks */,
@@ -210,6 +217,7 @@
 		54596950254F28FE3BCDFFDB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A60EBC661F5F307D004AF307 /* LocalAuthentication.framework */,
 				A667DF981F57362A000FDC33 /* iAd.framework */,
 				A667DF961F573580000FDC33 /* AdSupport.framework */,
 				A61680641F1EA82D00CE39D3 /* MapKit.framework */,
@@ -461,6 +469,7 @@
 				A6FC1B431F5B16EF00B08DC3 /* SettingViewController.swift */,
 				A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */,
 				A6FC1B4D1F5BB84400B08DC3 /* GoalsViewController.swift */,
+				A60EBC641F5F125D004AF307 /* MyStatsViewController.swift */,
 			);
 			name = "Menu Controller";
 			sourceTree = "<group>";
@@ -471,6 +480,7 @@
 				A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */,
 				A64E95A71F548AE700E6C1C1 /* LoginAndOutViewController.swift */,
 				A667DF941F573233000FDC33 /* SignupController.swift */,
+				A60EBC6A1F5F4E72004AF307 /* SignInWithTouchIDViewController.swift */,
 			);
 			name = "SignIn & Signup Controller";
 			sourceTree = "<group>";
@@ -637,6 +647,7 @@
 				A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */,
 				A6FC1B4E1F5BB84400B08DC3 /* GoalsViewController.swift in Sources */,
 				A625DDE51EC623B600DB521E /* E_Bike_App.xcdatamodeld in Sources */,
+				A60EBC6B1F5F4E72004AF307 /* SignInWithTouchIDViewController.swift in Sources */,
 				A690D5701F47722100C75280 /* APIKey.swift in Sources */,
 				A64E95A81F548AE700E6C1C1 /* LoginAndOutViewController.swift in Sources */,
 				A68447EE1F02C8A400B90B79 /* UIViewAnchorPoint.swift in Sources */,
@@ -645,6 +656,7 @@
 				A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */,
 				A6144FA21EDDFC1800204D02 /* RootContainerViewController.swift in Sources */,
 				A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */,
+				A60EBC651F5F125D004AF307 /* MyStatsViewController.swift in Sources */,
 				A6144F981EDDEF6200204D02 /* Utils.swift in Sources */,
 				A68447EA1F02C8A400B90B79 /* UIViewXRadialGradient.swift in Sources */,
 				A6646FEE1ED360FC00B6FF30 /* enum.swift in Sources */,

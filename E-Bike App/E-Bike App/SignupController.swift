@@ -30,7 +30,7 @@ class SignupController: UIViewController {
         let image = UIImage(named: "profile")?.withRenderingMode(.alwaysTemplate)
         
         profile.tintColor = UIColor.white
-        profile.backgroundColor = UIColor(red:0.10, green:0.38, blue:0.45, alpha:1)
+        profile.backgroundColor = UIColor(red:0.10, green:0.38, blue:0.45, alpha:0.5)
         profile.image = image
         profile.contentMode = .scaleAspectFill
         profile.clipsToBounds = true
@@ -160,6 +160,12 @@ class SignupController: UIViewController {
                 // Encoding the picture we have selected in the sign up page
                 let profileImageData = UIImageJPEGRepresentation(profileImage, 0.1)! as NSData
                 
+                // save the email
+                UserDefaults.standard.set(email, forKey: "email")
+            
+                // save the password
+                UserDefaults.standard.set(password, forKey: "password")
+                
                 // save the profile username 
                 UserDefaults.standard.set(name, forKey: "username")
                 
@@ -171,7 +177,11 @@ class SignupController: UIViewController {
                     self.performSegue(withIdentifier: "SignupToRideStatusSegue", sender: nil)
                 
                 }, onError: { (error) in
-                    print(error!)
+                    guard let err = error else { return }
+                    let alertViewController = UIAlertController(title: "Authentication Error", message: "\(String(describing: err))", preferredStyle: .alert)
+                    let cancel = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alertViewController.addAction(cancel)
+                    self.present(alertViewController, animated: true, completion: nil)
                 
                 })
                 
