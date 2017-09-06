@@ -123,24 +123,24 @@ class SettingMenuSlide: NSObject {
     
     
     
-    // MARK - GOALS
+    // MARK - BIKE TYPES
     //*************************************************************************************************************************************//
     
-    lazy var goals: UIButton = {
+    lazy var bikeTypes: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
-        button.setTitle("Goals", for: .normal)
+        button.setTitle("Bike Types", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.setTitleColor(UIColor.white, for: .normal)
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
-        button.addTarget(self, action: #selector(moveToGoalsViewController), for: .touchUpInside)
+        button.addTarget(self, action: #selector(moveToBikeTypesViewController), for: .touchUpInside)
         return button
     }()
     
     
-    func moveToGoalsViewController() {
+    func moveToBikeTypesViewController() {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
@@ -148,7 +148,7 @@ class SettingMenuSlide: NSObject {
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
             
         }, completion: {(completion:Bool) in
-            self.rideStatusView?.showControllerWithGoalButton()
+            self.rideStatusView?.showControllerWithBikeTypesButton()
         })
     }
     
@@ -337,7 +337,7 @@ class SettingMenuSlide: NSObject {
             
             slideMenuView.addSubview(myStats)
             
-            slideMenuView.addSubview(goals)
+            slideMenuView.addSubview(bikeTypes)
             
             slideMenuView.addSubview(connectToDevice)
             
@@ -363,12 +363,12 @@ class SettingMenuSlide: NSObject {
                 profileNickName.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
-            _ = myStats.anchor(nil, left: nil, bottom: goals.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = myStats.anchor(nil, left: nil, bottom: bikeTypes.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 myStats.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
-            _ = goals.anchor(nil, left: nil, bottom: connectToDevice.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
-                goals.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
+            _ = bikeTypes.anchor(nil, left: nil, bottom: connectToDevice.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+                bikeTypes.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
             _ = connectToDevice.anchor(nil, left: nil, bottom: termsAndPrivacy.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)

@@ -308,29 +308,27 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         directionToDestButton.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
         directionToDestButton.isHidden = false
         
-        
         return false
     }
     
-    
+    // MARK - TRUE HEADING & MAGNETIC HEADING 
+    //*************************************************************************************************************************************//
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        let heading = newHeading.magneticHeading
-        let heading2 = newHeading.trueHeading
-        let heading2_2 = heading2*Double.pi/180
+        //let magneticHeading = newHeading.magneticHeading
+        let trueHeading = newHeading.trueHeading
+        //let heading2_2 = trueHeading*Double.pi/180
+        //let headingDegrees = (magneticHeading*Double.pi/180)
         
-    
         
-        self.mapView.transform = CGAffineTransform(rotationAngle: CGFloat(heading2_2))
-        let headingDegrees = (heading*Double.pi/180)
-        print(heading2)
-        print(headingDegrees)
-        let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: heading2, viewingAngle: 20)
+        //print(trueHeading)
+        //print(headingDegrees)
+        let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: trueHeading, viewingAngle: 20)
         mapView.animate(to: camera)
-        //mapView.animate(toBearing: headingDegrees)
-        //let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: heading, viewingAngle: 45)
-        //mapView.animate(toBearing: heading)
     }
+    
+    
+    //*************************************************************************************************************************************//
     /*
     
     func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
@@ -1070,7 +1068,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 directionToDestButton.isHidden = true
                 
                 
-                _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height - 40)
+                _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height)
                 mapView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
                 mapView.centerYAnchor.constraint(equalTo: mainFrameOfView.centerYAnchor).isActive = true
                 
@@ -1193,7 +1191,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
         button.cornerRadius = button.frame.width/2
-        //button.setTitle("Cancel", for: .normal)
         button.setImage(UIImage(named: "cancelButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.contentMode = .scaleAspectFit
         button.tintColor = UIColor.white
@@ -1316,14 +1313,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.clear
         button.tintColor = UIColor.white
-        
-        //let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
-        //button.contentMode = .scaleAspectFit
-        //button.backgroundColor = UIColor.clear
-        //button.tintColor = UIColor.white
-        //button.setImage(UIImage(named: "deleteButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        
-        //button.addTarget(self, action: #selector(alertView), for: .touchUpInside)
         
         return button
     
@@ -1712,7 +1701,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         circle.map = self.mapView
         
     }
-    
+
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let page = scrollView.contentOffset.x / scrollView.frame.size.width
@@ -1760,9 +1749,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         self.performSegue(withIdentifier: .myStats, sender: nil)
     }
     
-    func showControllerWithGoalButton() {
+    func showControllerWithBikeTypesButton() {
     
-        self.performSegue(withIdentifier: .goals, sender: nil)
+        self.performSegue(withIdentifier: .bikeTypes, sender: nil)
     }
     
     
@@ -1801,6 +1790,70 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     //*************************************************************************************************************************************//
     
     
+    
+    // MARK - PAGE CONTROL ARROW TO SWIPE THROUGH SCROLL VIEW
+    //*************************************************************************************************************************************//
+    
+    lazy var leftArrowButton: UIButtonY = {
+        
+        let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 40, height: 45))
+        button.setImage(UIImage(named: "arrowLeftKey")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor(white:0.4, alpha: 0.5)
+        button.contentMode = .scaleAspectFit
+        button.isHighlighted = true
+        button.addTarget(self, action: #selector(leftScrollView), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    func leftScrollView() {
+        print("left arrow pressed")
+        
+        if statusViewControl.currentPage != Int(0) {
+            let position = CGPoint(x: ScrollView.contentOffset.x - view.frame.width, y: ScrollView.contentOffset.y)
+            ScrollView.setContentOffset(position, animated: true)
+        } else {
+            let position = CGPoint(x: ScrollView.contentOffset.x + (view.frame.width*4), y: ScrollView.contentOffset.y)
+            ScrollView.setContentOffset(position, animated: true)
+        
+        }
+        
+    }
+    
+    
+    
+    lazy var rightArrowButton: UIButtonY = {
+        
+        let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 40, height: 45))
+        button.setImage(UIImage(named: "arrowRightKey")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor(white:0.4, alpha: 0.5)
+        button.contentMode = .scaleAspectFit
+        button.isHighlighted = true
+        button.addTarget(self, action: #selector(rightScrollView), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    func rightScrollView() {
+        print("right arrow pressed")
+        
+        if statusViewControl.currentPage != Int(4) {
+            let position = CGPoint(x: ScrollView.contentOffset.x + view.frame.width, y: ScrollView.contentOffset.y)
+            ScrollView.setContentOffset(position, animated: true)
+        } else {
+            let position = CGPoint(x: 0, y: ScrollView.contentOffset.y)
+            ScrollView.setContentOffset(position, animated: true)
+        
+        }
+        
+    }
+    
+    
+    
+    //*************************************************************************************************************************************//
+    
+    
+    
 
     // MARK - Specific Info View while riding on the bike
 
@@ -1810,9 +1863,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.setTitle("Start", for: .normal)
-        button.cornerRadius = button.frame.width/2
-        button.borderWidth = 2
-        button.borderColor = UIColor.white
+        //button.cornerRadius = button.frame.width/2
+        //button.borderWidth = 2
+        //button.borderColor = UIColor.white
         button.tintColor = UIColor.white
         button.titleLabel?.textColor = UIColor.white
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
@@ -2023,6 +2076,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     fileprivate func startEbike() {
         
+        destinationTag = 1
         locationManager.startUpdatingLocation()
         
         mySearchButton.isHidden = true
@@ -2191,77 +2245,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     
-    
-    // MARK - Touch ID Authentication
-    // FIXIT - The Touch ID does not work properly
-    //*****************************************************************************************************************************//
-    
-    func authenticationWithTouchID() {
-        
-        let authenticaitonContext = LAContext()
-        var error: NSError?
-        
-        
-        if authenticaitonContext.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error){
-            authenticaitonContext.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Verification"){
-                (success, error) in
-                if success {
-                    print("User has authenticated!")
-                    
-                    
-                } else {
-                    if let err = error as NSError?{
-                        let message = self.errorMessageForLAErrorCode(errorCode: err.code)
-                        self.showAlertWithTitle(title: "Error", message: message)
-                        
-                    }
-                }
-            }
-        }
-        
-    }
-    
-    
-    func showAlertWithTitle(title: String, message: String) {
-        
-        let alertViewController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        
-        alertViewController.addAction(okAction)
-        self.present(alertViewController, animated: true, completion: nil)
-        
-        
-    }
-    
-    
-    
-    func errorMessageForLAErrorCode(errorCode: Int) -> String {
-        switch errorCode {
-        case LAError.appCancel.rawValue:
-            return "Authentication was cancelled by application"
-        case LAError.authenticationFailed.rawValue:
-            return "The user failed to provide valid credentials"
-        case LAError.invalidContext.rawValue:
-            return "The context is invalid"
-        case LAError.passcodeNotSet.rawValue:
-            return "Passcode is not set on the device"
-        case LAError.systemCancel.rawValue:
-            return "Authentication was cancelled by the system"
-        case LAError.touchIDLockout.rawValue:
-            return "Too many failed attempts"
-        case LAError.touchIDNotAvailable.rawValue:
-            return "TouchID is not available on the device"
-        case LAError.userCancel.rawValue:
-            return "The user did cancel"
-        default:
-            return "Did not find error code on LAError object"
-        }
-    }
-    
-    
-    
-    //*****************************************************************************************************************************//
-    
+
     
     
     override func viewDidLoad() {
@@ -2292,7 +2276,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         view.addSubview(slideMenuButton)
         
         
+        
+        
+        
         view.addSubview(ScrollView)
+        
+        
+        
         view.addSubview(statusViewControl)
         view.addSubview(addressLabel)
         view.addSubview(totalDistanceToDestination)
@@ -2302,6 +2292,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         view.addSubview(weatherIcon)
         weatherIcon.isHidden = true
         view.addSubview(toolBox)
+        
+        
+        
+        view.addSubview(leftArrowButton)
+        view.addSubview(rightArrowButton)
+        
+        
         
         mapStyle()
         featureViewController()
@@ -2316,8 +2313,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 30, heightConstant: 30)
         
 
+        
+        
+        
+        
         _ = ScrollView.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 60, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
         ScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        
+        
+        _ = leftArrowButton.anchor(ScrollView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
+        
+        _ = rightArrowButton.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
+        
+        
         
         _ = statusViewControl.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 20)
         statusViewControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -2350,7 +2359,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //authenticationWithTouchID()
     }
 }
 
@@ -2761,7 +2769,7 @@ extension RiderStatusViewController: SegueHandlerType {
         case history = "historyViewSegue"
         case setting = "MenuToSettingViewSegue"
         case termsAndPrivacy = "MenuToTermsViewSegue"
-        case goals = "MenuToGoalsViewSegue"
+        case bikeTypes = "MenuToBikeTypesViewSegue"
         case myStats = "MenuToMyStatsViewSegue"
         
     }
@@ -2782,8 +2790,8 @@ extension RiderStatusViewController: SegueHandlerType {
         case .termsAndPrivacy:
             _ = segue.destination as! TermsAndPrivacyViewController
         
-        case .goals:
-            _ = segue.destination as! GoalsViewController
+        case .bikeTypes:
+            _ = segue.destination as! BikeTypesViewController
             
         case .myStats:
             _ = segue.destination as! MyStatsViewController

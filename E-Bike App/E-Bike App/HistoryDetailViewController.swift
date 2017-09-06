@@ -58,6 +58,21 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         return view
     }()
     
+    lazy var backButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
+        button.setTitle("<Back", for: .normal)
+        button.backgroundColor = UIColor.clear
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.addTarget(self, action: #selector(goBackToMain), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    func goBackToMain() {
+        self.dismiss(animated: true, completion: nil)
+    
+    }
     
     lazy var deleteButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
@@ -362,7 +377,12 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         
         let item = UIBarButtonItem(customView: deleteButton)
         let item1 = UIBarButtonItem(customView: shareButton)
+        
+        //let item2 = UIBarButtonItem(customView: backButton)
+        let backButton = UIBarButtonItem(customView: self.backButton)
         navigationItem.rightBarButtonItems = [item, item1]
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         view.addSubview(mapView)

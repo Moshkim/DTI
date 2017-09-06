@@ -91,7 +91,7 @@
 		A6FC1B421F59FB2A00B08DC3 /* ProfilePicture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B411F59FB2A00B08DC3 /* ProfilePicture.swift */; };
 		A6FC1B441F5B16EF00B08DC3 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B431F5B16EF00B08DC3 /* SettingViewController.swift */; };
 		A6FC1B491F5B299900B08DC3 /* TermsAndPrivacyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */; };
-		A6FC1B4E1F5BB84400B08DC3 /* GoalsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B4D1F5BB84400B08DC3 /* GoalsViewController.swift */; };
+		A6FC1B4E1F5BB84400B08DC3 /* BikeTypesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B4D1F5BB84400B08DC3 /* BikeTypesViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -186,7 +186,7 @@
 		A6FC1B411F59FB2A00B08DC3 /* ProfilePicture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfilePicture.swift; path = "E-Bike App/ProfilePicture.swift"; sourceTree = SOURCE_ROOT; };
 		A6FC1B431F5B16EF00B08DC3 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingViewController.swift; path = "E-Bike App/SettingViewController.swift"; sourceTree = SOURCE_ROOT; };
 		A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TermsAndPrivacyViewController.swift; sourceTree = "<group>"; };
-		A6FC1B4D1F5BB84400B08DC3 /* GoalsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalsViewController.swift; sourceTree = "<group>"; };
+		A6FC1B4D1F5BB84400B08DC3 /* BikeTypesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BikeTypesViewController.swift; sourceTree = "<group>"; };
 		ACF4783236EC3749D3BED074 /* Pods-E-Bike App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-E-Bike App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-E-Bike App/Pods-E-Bike App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -468,7 +468,7 @@
 				A6FC1B3D1F59D7BD00B08DC3 /* SettingMenuSlide.swift */,
 				A6FC1B431F5B16EF00B08DC3 /* SettingViewController.swift */,
 				A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */,
-				A6FC1B4D1F5BB84400B08DC3 /* GoalsViewController.swift */,
+				A6FC1B4D1F5BB84400B08DC3 /* BikeTypesViewController.swift */,
 				A60EBC641F5F125D004AF307 /* MyStatsViewController.swift */,
 			);
 			name = "Menu Controller";
@@ -645,7 +645,7 @@
 				A6301CF81EEF1D170005EA12 /* SettingCell.swift in Sources */,
 				A6BD1C6B1EF842A100E5D8EE /* FadeTransition.swift in Sources */,
 				A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */,
-				A6FC1B4E1F5BB84400B08DC3 /* GoalsViewController.swift in Sources */,
+				A6FC1B4E1F5BB84400B08DC3 /* BikeTypesViewController.swift in Sources */,
 				A625DDE51EC623B600DB521E /* E_Bike_App.xcdatamodeld in Sources */,
 				A60EBC6B1F5F4E72004AF307 /* SignInWithTouchIDViewController.swift in Sources */,
 				A690D5701F47722100C75280 /* APIKey.swift in Sources */,

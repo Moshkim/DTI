@@ -239,10 +239,10 @@
             </objects>
             <point key="canvasLocation" x="3334" y="1074"/>
         </scene>
-        <!--Goals View Controller-->
+        <!--Bike Types View Controller-->
         <scene sceneID="yLA-Sz-hZO">
             <objects>
-                <viewController id="MnT-FG-qP9" customClass="GoalsViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="MnT-FG-qP9" customClass="BikeTypesViewController" customModule="E_Bike_App" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="5Mj-sS-bph"/>
                         <viewControllerLayoutGuide type="bottom" id="MIQ-X7-jcE"/>
@@ -301,7 +301,7 @@
                         <segue destination="3Qy-eS-D2T" kind="show" identifier="saveViewSegue" id="kaR-nJ-hLM"/>
                         <segue destination="4Zi-NT-XUS" kind="show" identifier="historyViewSegue" id="qX4-7C-N0h"/>
                         <segue destination="8wa-Cx-cp5" kind="show" identifier="MenuToSettingViewSegue" id="UwD-zJ-AvP"/>
-                        <segue destination="MnT-FG-qP9" kind="show" identifier="MenuToGoalsViewSegue" id="R06-he-cBN"/>
+                        <segue destination="MnT-FG-qP9" kind="show" identifier="MenuToBikeTypesViewSegue" id="R06-he-cBN"/>
                         <segue destination="e2Q-cP-Huv" kind="show" identifier="MenuToTermsViewSegue" id="yct-wE-9lU"/>
                         <segue destination="faj-wC-jzg" kind="show" identifier="MenuToMyStatsViewSegue" id="mbg-oM-cKZ"/>
                     </connections>
