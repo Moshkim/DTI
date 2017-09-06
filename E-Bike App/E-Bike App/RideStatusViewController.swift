@@ -49,7 +49,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     //Temporary UUID or name
     // FIXIT - We need to find the right devices to integrate with
-    let WahooHeartMonitorSensor = "TICKR 2DD7"
+    let WahooHeartMonitorSensor = "TICKR B20E"
     var hrSensorName: String?
     
     
@@ -60,6 +60,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     // Core Bluetooth properties
     
     var heartRateMonitorCharacteristic: CBCharacteristic?
+    
+    
+    
+    // Store Heart Rate Data
+    fileprivate var heartRateList: [Int] = []
+    var heartRateTag = 0
     
     /******************************************************************************************************/
     
@@ -86,7 +92,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var locationListWithDistance = [[CLLocation(),Double()]]
     fileprivate var timer: Timer?
     fileprivate var totalMovingTimer: Timer?
-    
     
     fileprivate let locationManager = LocationManager.shared
     fileprivate var seconds = 0
@@ -154,6 +159,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     var thirdDataSecond = UILabel()
     var thirdDataThird = UILabel()
     var timeFromStart = UILabel()
+    var heartRate = UILabel()
     var distanceLabel = UILabel()
     
     
@@ -163,9 +169,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     let labelArray = ["Speed", "Consumption", "Distance", "Time", "Calories(KCal)", "Heart", "Battery Life"]
     
     
-    let descriptionArray = ["Rider Power(W)","Motor Power(W)","Speed(mph)","Consumption(Wh/mi)", "Distance(mi)","Cadence(rpm)","Time From Start","Elevation Gain(ft)", "Battery Level(%)", "Calories(KCal)", "Heart Monitoring(bpm)", "Goal"]
+    let descriptionArray = ["Rider Power(W)","Motor Power(W)","Speed(mph)","Heart Rate(bpm)", "Distance(mi)","Cadence(rpm)","Time From Start","Elevation Gain(ft)", "Battery Level(%)", "Calories(KCal)", "Heart Monitoring(bpm)", "Goal"]
     
-    var screenOne = ["image1": "1", "label1": Double.self, "description1": "Rider Power(W)","image2": "1", "label2": Double.self, "description2": "Time From Start","image3": "1", "label3": Double.self, "description3": "Speed(mph)", "image4": "1", "label4": Double.self, "description4": "Consumption(Wh/mi)","image5": "1", "label5": Double.self, "description5": "Distance(mi)"] as [String : Any]
+    var screenOne = ["image1": "1", "label1": Double.self, "description1": "Rider Power(W)","image2": "1", "label2": Double.self, "description2": "Time From Start","image3": "1", "label3": Double.self, "description3": "Speed(mph)", "image4": "1", "label4": Double.self, "description4": "Heart Rate(bpm)","image5": "1", "label5": Double.self, "description5": "Distance(mi)"] as [String : Any]
     
     var screenTwo = ["image1": "1", "label1": Double.self, "description1": "Rider Power(W)","image2": "1", "label2": Double.self, "description2": "Motor Power(W)","image3": "1", "label3": Double.self, "description3": "Speed(mph)", "image4": "1", "label4": Double.self, "description4": "Consumption(Wh/mi)","image5": "1", "label5": Double.self, "description5": "Distance(mi)"] as [String : Any]
     
@@ -820,6 +826,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 fourthLabel.textAlignment = .center
                 
                 
+                // Heart Rate Monitor
+                heartRate.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 100, height: 50)
+                heartRate.backgroundColor = UIColor.clear
+                heartRate.font = UIFont.boldSystemFont(ofSize: 25)
+                heartRate.textColor = UIColor.white
+                heartRate.textAlignment = .center
+                //heartRate.text = "0 bpm"
+                
+                
                 
                 // Fifth view frame of the main view (bottom right)
                 
@@ -877,6 +892,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                     ScrollView.addSubview(timeFromStart)
                     ScrollView.addSubview(thirdData)
+                    ScrollView.addSubview(heartRate)
+                    
                     ScrollView.addSubview(distanceLabel)
                     
                     
@@ -914,6 +931,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                     _ = fourthLabel.anchor(nil, left: nil, bottom: fourthViewOfMain.centerYAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 120, heightConstant: 50)
                     fourthLabel.centerXAnchor.constraint(equalTo: fourthViewOfMain.centerXAnchor).isActive = true
+                    
+                    _ = heartRate.anchor(fourthLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 120, heightConstant: 50)
+                    heartRate.centerXAnchor.constraint(equalTo: fourthViewOfMain.centerXAnchor).isActive = true
+                    
                     
                     
                     // Fifth element view constraints
@@ -1757,7 +1778,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // MARK - Bluetooth Delegate Searching DEVICE
         //*********************************************************************************************************************************//
         
-        centralManager = CBCentralManager(delegate: self, queue: nil, options: [
+        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main, options: [
             CBCentralManagerOptionShowPowerAlertKey: true
             ])
         //*********************************************************************************************************************************//
@@ -1879,6 +1900,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         if (sender.tag == 1) {
+            // Heart Rate Tag Change to 1 to append data to array
+            
             
             sender.titleLabel?.textColor = UIColor.DTIRed()
             sender.setTitle("Stop", for: .normal)
@@ -2085,6 +2108,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     fileprivate func startEbike() {
         
+        // Start store the heart rate data to the array
+        heartRateTag = 1
         
         // MARK - Destination tag should be on in order to keep track remaining distance and time
         destinationTag = 1
@@ -2130,6 +2155,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         }
     }
     
+    
     fileprivate func alertView(sender: UIButtonY) {
         let alertController = UIAlertController(title: "End Ride?", message: "Do you want to end your ride?", preferredStyle: .alert)
         let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 20)]
@@ -2143,6 +2169,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         let saveButton = UIAlertAction(title: "Save The Route", style: .default) {
             _ in
+            
+            // Stop storing the heart rate data to the array
+            self.heartRateTag = 2
+            
+            
             sender.setTitle("Start", for: .normal)
             sender.tag = 1
             self.saveNameOfRoute()
@@ -2213,6 +2244,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         newRide.duration = Int16(seconds)
         newRide.timestamp = Date() as NSDate?
         newRide.name = name
+        newRide.heartrate = Int16(heartRateList.reduce(0, +)/heartRateList.count)
         //newRide.movingduration = Int16(movingSeconds)
         
         
@@ -2414,20 +2446,42 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         case .poweredOn:
             
             showAlert = false
-            keepScanning = true
+            //keepScanning = true
             
             
             message = "Bluetooth LE is turned on and ready for communication."
             print(message)
             
-            _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(pauseScan), userInfo: nil, repeats: false)
+            //_ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(pauseScan), userInfo: nil, repeats: false)
             
             
             
+            /*
+            let HeartRate          = "0x180D"
+            let DeviceInformation  = "0x180A"
+            let heartRateServiceUUID = CBUUID(string: HeartRate)
+            let deviceInfoServiceUUID = CBUUID(string: DeviceInformation)
+            let services = [heartRateServiceUUID,deviceInfoServiceUUID]
+             */
+            
+            let serviceUUID: [AnyObject] = [CBUUID(string: "180D")]
+            let lastPeripherals = centralManager.retrieveConnectedPeripherals(withServices: serviceUUID as! [CBUUID])
+            
+            if lastPeripherals.count > 0 {
+                let device = lastPeripherals.last! as CBPeripheral
+                deviceConnectTo = device
+                centralManager.connect(deviceConnectTo!, options: nil)
+            
+            } else {
+                centralManager.scanForPeripherals(withServices: serviceUUID as? [CBUUID], options: nil)
+            
+            }
+            //CBUUID(string: enumName.rawValue)
             
             // Initiate Scan for Peripherals
             //Option 1: Scan for all devices
-            self.centralManager.scanForPeripherals(withServices: ServiceUUID.uuids(enumNames: [.HeartRate]), options: nil)
+            //ServiceUUID.uuids(enumNames: [.HeartRate])
+            //self.centralManager.scanForPeripherals(withServices: , options: nil)
             
             //let AdvertisingUUID = CBUUID(string:)
             
@@ -2501,27 +2555,27 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             }
             
             hrSensorName = name
-            
+            print(hrSensorName as Any)
         
         }
         //To be safe we need to use guard let
         
         if let advertisedServiceUUIDs = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID]{
             
-            print("Servcies \(advertisedServiceUUIDs)")
+            print("Servcies are such that: \(advertisedServiceUUIDs)")
         }
         
         let deviceName = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString
         
-        print("NEXT Peripheral name: \(String(describing: deviceName))")
-        print("Next peripheral uuid: \(peripheral.identifier.uuidString)")
+        print("Peripheral name: \(String(describing: deviceName))")
+        print("Peripheral uuid: \(peripheral.identifier.uuidString)")
         
-        
-        
-        if deviceName?.contains(WahooHeartMonitorSensor) == true {
+        if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
             print("We found device and connecting now!!")
             // Stop scanning
-            keepScanning = false
+            
+            self.centralManager.stopScan()
+            //keepScanning = false
             //self.centralManager.stopScan()
             
             // Save a refence to the sensor tag
@@ -2529,9 +2583,31 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             // set the delegate property to point to the view controller
             self.deviceConnectTo?.delegate = self
             
-            // Request a conncetion to the peripheral
+            print("Request a conncetion to the peripheral")
+            centralManager.connect(self.deviceConnectTo!, options: nil)
+            
+        } else {
+        
+            print("Can't not unwrap advertisementData[CBAdvertisementDataLocalNameKey]")
+        }
+        /*
+        if deviceName?.contains(WahooHeartMonitorSensor) == true {
+            print("We found device and connecting now!!")
+            // Stop scanning
+            
+            self.centralManager.stopScan()
+            //keepScanning = false
+            //self.centralManager.stopScan()
+            
+            // Save a refence to the sensor tag
+            self.deviceConnectTo = peripheral
+            // set the delegate property to point to the view controller
+            self.deviceConnectTo?.delegate = self
+            
+            print("Request a conncetion to the peripheral")
             centralManager.connect(self.deviceConnectTo!, options: nil)
         }
+         */
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -2542,7 +2618,8 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         // If there was a subset of services we were interested in, we could pass the UUIDs here.
         // Doing so saves battery life and saves time.
         
-        peripheral.discoverServices(ServiceUUID.uuids(enumNames: [.HeartRate, .DeviceInformation]))
+        peripheral.discoverServices(nil)
+        print("---- peripheral state is \(peripheral.state)")
     }
 
     // When bluetooth connection is failed!!
@@ -2556,10 +2633,17 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         
         //A026E01D-0A7D-4AB3-97FAF1500F9FEB8B
         
+        if error != nil {
+            print("!!! --- error in didDiscoverServices: \(String(describing: error?.localizedDescription))")
+        
+        }
+        
         if let services = peripheral.services {
             
             for service in services {
-            
+                
+                peripheral.discoverCharacteristics(nil, for: service)
+                /*
                 switch service.uuid {
                 case ServiceUUID.uuid(enumName: .HeartRate):
                     print("Discovered heart rate service!")
@@ -2570,6 +2654,7 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
                 default:
                     print("unrecognized service: \(service.uuid)")
                 }
+                 */
             
             }
             
@@ -2608,6 +2693,45 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         
         }
         else {
+            
+            
+            
+            
+            if service.uuid == CBUUID(string: "180D"){
+                for characteristic in service.characteristics! as [CBCharacteristic]{
+                    switch characteristic.uuid.uuidString {
+                    case "2A37":
+                        // Set notification on heart rate measurement
+                        print("Found a Heart Rate Measurement Characteristic")
+                        peripheral.setNotifyValue(true, for: characteristic)
+                        
+                    case "2A38":
+                        // Read body sensor location
+                        print("Found a Body Sensor Location Characteristic")
+                        peripheral.readValue(for: characteristic)
+                    
+                    case "2A29":
+                        //Read body sensor location
+                        print("Found a HRM manufacturer name Characteristic")
+                        peripheral.readValue(for: characteristic)
+                        
+                    case "2A39":
+                        print("Found a Heart Rate Control Point Characteristic")
+                        var rawArray:[UInt8] = [0x01]
+                        let data = NSData(bytes: &rawArray, length: rawArray.count)
+                        peripheral.writeValue(data as Data, for: characteristic, type: CBCharacteristicWriteType.withoutResponse)
+                        
+                    default:
+                        print("default")
+                    }
+                
+                }
+            
+            
+            }
+            
+            
+            /*
             guard let characteristics = service.characteristics else { return }
             var enableValue:UInt8 = 1
             let enableBytes = NSData(bytes: &enableValue, length: MemoryLayout<UInt8>.size)
@@ -2635,40 +2759,74 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
                 }
                 
             }
-            
+            */
         }
         
     }
     
+    func update(heartRateData:Data){
+        print("--- UPDATING ..")
+        var buffer = [UInt8](repeating: 0x00, count: heartRateData.count)
+        heartRateData.copyBytes(to: &buffer, count: buffer.count)
+        
+        var bpm:UInt16?
+        if (buffer.count >= 2){
+            if (buffer[0] & 0x01 == 0){
+                bpm = UInt16(buffer[1]);
+            }else {
+                bpm = UInt16(buffer[1]) << 8
+                bpm =  bpm! | UInt16(buffer[2])
+            }
+        }
+        
+        if let actualBpm = bpm{
+            print(actualBpm)
+            self.heartRate.text = "\(actualBpm) bpm"
+            if heartRateTag == 1 {
+                heartRateList.append(Int(actualBpm))
+            }
+            
+            
+        }else {
+            //label1.text = ("\(bpm!)")
+            print(bpm!)
+        }
+    }
+    
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        
+        print("---- didUpdateValueForCharacteristic")
         
         if error != nil {
             print("Error on updating value for the characteristics: \(String(describing: error?.localizedDescription))" )
             return
+        } else {
+            switch characteristic.uuid.uuidString {
+            case "2A37":
+                update(heartRateData: characteristic.value!)
+            default:
+                print("--- something other than 2A37 uuid characteristic")
+            }
+        
         }
         
-        
+        /*
         guard let dataBytes = characteristic.value else {
             
             print("no value")
             return
         }
         
-        print("hear rate measurement value is \(dataBytes)")
-        renderHeartRateMeasurement(value: dataBytes as NSData)
+        //print("hear rate measurement value is \(dataBytes)")
+        //renderHeartRateMeasurement(value: dataBytes as NSData)
         
         if characteristic.uuid == CBUUID(string: Device.characteristicUUID){
             displayHeartRate(data: dataBytes as NSData)
         }
-        
+        */
     }
     
-    
-    func renderHeartRateMeasurement(value: NSData){
-    
-        
-    
-    }
+    /*
     
     func displayHeartRate(data: NSData) {
     
@@ -2688,7 +2846,7 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         
         
     }
-    
+    */
 
 }
 
