@@ -281,7 +281,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         graphView.shouldAdaptRange = false
         graphView.adaptAnimationType = ScrollableGraphViewAnimationType.easeOut
         graphView.animationDuration = 0.5
-        graphView.rangeMax = 1000
+        graphView.rangeMax = 500
         graphView.shouldRangeAlwaysStartAtZero = true
         graphView.showsVerticalScrollIndicator = true
         graphView.showsHorizontalScrollIndicator = true
@@ -407,7 +407,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         stringURL += "&samples=50&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
         
 
-        print(stringURL)
+        //print(stringURL)
         guard let urlString = URL(string: stringURL) else {
             
             print("Error: Cannot create URL")
@@ -443,7 +443,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                     
                     DispatchQueue.global(qos: .background).async {
                         let arrayElevations = json["results"] as! NSArray
-                        print(arrayElevations)
+                        //print(arrayElevations)
                         
                         for i in 0..<arrayElevations.count {
                             
@@ -457,7 +457,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                             self.locationsOfElevationSamples.append(location)
                         }
                         
-                        print(self.elevationData)
+                        //print(self.elevationData)
                         
                         var dist = 0.0
                         for i in 0..<self.locationsOfElevationSamples.count {
@@ -465,16 +465,17 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                                 self.distanceRelateToElevation.append(0.0)
                             } else {
                                 dist += self.locationsOfElevationSamples[i].distance(from: self.locationsOfElevationSamples[i-1])
+                                dist = dist*(1/1000)*(1/1.61)
                                 self.distanceRelateToElevation.append(dist)
                             }
                         }
                         
                         
-                        print(self.distanceRelateToElevation)
+                        //print(self.distanceRelateToElevation)
                         self.labels.removeAll()
                         
                         for i in 0..<self.distanceRelateToElevation.count {
-                            self.labels.append("\(Int(self.distanceRelateToElevation[i]))")
+                            self.labels.append(String(format: "%.1f",self.distanceRelateToElevation[i]))
                         }
                         
                         

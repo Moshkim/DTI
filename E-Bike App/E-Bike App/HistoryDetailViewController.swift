@@ -23,6 +23,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     var ride: Ride? {
         didSet{
             navigationItem.title = ride?.name
+            self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 16)]
             
             let distance = Measurement(value: (ride?.distance)!, unit: UnitLength.meters)
             let seconds = Int((ride?.duration)!)
@@ -59,10 +60,10 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     }()
     
     lazy var backButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 20))
         button.setTitle("<Back", for: .normal)
         button.backgroundColor = UIColor.clear
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.setTitleColor(UIColor.white, for: .normal)
         button.addTarget(self, action: #selector(goBackToMain), for: .touchUpInside)
         return button
@@ -70,7 +71,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     
     
     func goBackToMain() {
-        self.dismiss(animated: true, completion: nil)
+        _ = navigationController?.popViewController(animated: true)
     
     }
     
@@ -300,6 +301,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     func moveToRefreshedHistory() {
         //self.performSegue(withIdentifier: .history, sender: self)
     
+        //_ = navigationController?.popViewController(animated: true)
         self.dismiss(animated: true, completion: nil)
     }
 

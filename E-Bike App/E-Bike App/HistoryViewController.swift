@@ -51,6 +51,24 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     }
     
     
+    lazy var backButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 30))
+        button.backgroundColor = UIColor.clear
+        button.setTitle("<Back", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        button.addTarget(self, action: #selector(backToMainRideStatusView), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    func backToMainRideStatusView() {
+        
+        print("clicking!")
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    
     let segmentedControl: UISegmentedControl = {
         
         let segment = UISegmentedControl(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
@@ -161,8 +179,11 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         
         
         let item = UIBarButtonItem(customView: segmentedControl)
+        let backButton = UIBarButtonItem(customView: self.backButton)
         navigationItem.setRightBarButton(item, animated: true)
-
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         collectionView?.register(RideCell.self, forCellWithReuseIdentifier: cellId)
         collectionView?.alwaysBounceVertical = true
         collectionView?.alwaysBounceHorizontal = false

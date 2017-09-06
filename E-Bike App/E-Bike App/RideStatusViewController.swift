@@ -21,6 +21,9 @@ import FirebaseAuth
 
 class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate, MKMapViewDelegate{
 
+    // Access to the window size
+    let windowSize = UIApplication.shared.keyWindow
+    
 
     // JSON format for the get direction between two points
     
@@ -181,7 +184,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
         let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 400))
         
-        view.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+        view.backgroundColor = UIColor.black
+            //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
         
         return view
     
@@ -190,7 +194,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     let statusViewControl: UIPageControl = {
         let bar = UIPageControl(frame: CGRect(x: 0, y: 0, width:50, height: 30))
-        bar.pageIndicatorTintColor = UIColor.DTIBlue()
+        bar.pageIndicatorTintColor = UIColor.DTIBlue().withAlphaComponent(0.8)
         bar.currentPageIndicatorTintColor = UIColor.DTIRed()
         return bar
     }()
@@ -263,13 +267,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }()
     
     
-    
+    // MARK -
     func directionToDest(sender: UIButton) {
         
         let lat = latDirection
         let long = longDirection
         let position = CLLocationCoordinate2DMake(lat, long)
-        locationManager.startUpdatingHeading()
+        
         
         if sender.tag == 0 {
             sender.tag = 1
@@ -279,25 +283,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         if sender.tag == 1 {
             sender.tag = 0
             
-            
-            // MARK - Destination tag should be on in order to keep track remaining distance and time
-            destinationTag = 1
-            
             startButton.setTitle("Stop", for: .normal)
             startButton.tag = 2
-            //weatherAlert()
             startEbike()
-            //let currentLocation = mapView.myLocation?.coordinate
-            //let camera = GMSCameraPosition.camera(withTarget: currentLocation!, zoom: 15, bearing: 45, viewingAngle: 20)
-            //self.mapView.animate(to: camera)
-            
-            
-        
         }
-        
-        
-        //sender.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        
         
     }
     
@@ -319,10 +308,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         let trueHeading = newHeading.trueHeading
         //let heading2_2 = trueHeading*Double.pi/180
         //let headingDegrees = (magneticHeading*Double.pi/180)
-        
-        
-        //print(trueHeading)
-        //print(headingDegrees)
+
         let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: trueHeading, viewingAngle: 20)
         mapView.animate(to: camera)
     }
@@ -711,7 +697,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 // Main Frame of the each scroll view
                 let mainFrameOfView = UIView()
                 mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
-                mainFrameOfView.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+                mainFrameOfView.backgroundColor = UIColor.black
+                    //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
                     //UIColor(red:0.02, green:0.19, blue:0.38, alpha:1.00)
                 mainFrameOfView.frame.size.width = self.view.bounds.size.width
                 
@@ -722,7 +709,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 firstViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
                 firstViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 firstViewOfMain.layer.borderWidth = 3
-                firstViewOfMain.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                firstViewOfMain.backgroundColor = UIColor.black
+                    
+                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 //(red:0.43, green:0.47, blue:0.69, alpha:1.00)
                 
                 
@@ -744,7 +733,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 secondViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
                 secondViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 secondViewOfMain.layer.borderWidth = 3
-                secondViewOfMain.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                secondViewOfMain.backgroundColor = UIColor.black
+                    
+                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 //UIColor(red:0.43, green:0.44, blue:0.89, alpha:1.00)
                 
                 // Second main label of the second view
@@ -773,7 +764,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 thirdViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
                 thirdViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 thirdViewOfMain.layer.borderWidth = 3
-                thirdViewOfMain.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                thirdViewOfMain.backgroundColor = UIColor.black
                     //UIColor(red:0.99, green:0.73, blue:0.17, alpha:1.00)
                 
                 
@@ -815,7 +806,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 fourthViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
                 fourthViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 fourthViewOfMain.layer.borderWidth = 3
-                fourthViewOfMain.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                fourthViewOfMain.backgroundColor = UIColor.black
+                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 //UIColor(red:0.66, green:0.46, blue:0.83, alpha:1.00)
                 
                 
@@ -836,7 +828,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 fifthViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
                 fifthViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 fifthViewOfMain.layer.borderWidth = 3
-                fifthViewOfMain.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                fifthViewOfMain.backgroundColor = UIColor.black
+                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 
                 
                 let fifthLabel = UILabel()
@@ -1086,7 +1079,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
                 let mainFrameOfView = UIView()
                 mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
-                mainFrameOfView.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+                mainFrameOfView.backgroundColor = UIColor.black
+                    //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
                 mainFrameOfView.frame.size.width = self.view.bounds.size.width
                 
                 
@@ -1103,7 +1097,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 let speedButton = UIButton()
                 speedButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
-                speedButton.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+                speedButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 speedButton.layer.cornerRadius = speedButton.frame.width/2
                 speedButton.layer.borderColor = UIColor.DTIRed().cgColor
                 speedButton.layer.borderWidth = 3
@@ -1118,7 +1112,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 let distanceButton = UIButton()
                 distanceButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
-                distanceButton.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+                distanceButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 distanceButton.layer.cornerRadius = speedButton.frame.width/2
                 distanceButton.layer.borderColor = UIColor.DTIRed().cgColor
                 distanceButton.layer.borderWidth = 3
@@ -1133,7 +1127,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 let timeButton = UIButton()
                 timeButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
-                timeButton.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+                timeButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 timeButton.layer.cornerRadius = speedButton.frame.width/2
                 timeButton.layer.borderColor = UIColor.DTIRed().cgColor
                 timeButton.layer.borderWidth = 3
@@ -1320,16 +1314,19 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     lazy var toolBox: UIToolbar = {
-        let box = UIToolbar(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+        let box = UIToolbar(frame: CGRect(x: 0, y: (self.windowSize?.frame.height)!-40, width: (self.windowSize?.frame.width)!, height: 40))
         box.backgroundColor = UIColor.black
             //UIColor(red:0.21, green:0.27, blue:0.31, alpha:1.00)
         box.tintColor = UIColor.white
-        box.barStyle = .blackTranslucent
+        box.isTranslucent = false
+        box.barTintColor = UIColor.black
+        
         
         let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(moveToHistory))
         historyButton.tag = 1
         box.setItems([historyButton], animated: true)
-        box.isMultipleTouchEnabled = true
+        //box.isMultipleTouchEnabled = true
+        
     
         return box
     }()
@@ -1417,7 +1414,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
     }
     
-    //*************************************************************************************************************************************//
+    //*******************************************************************************************************************************//
     
     
     
@@ -1426,7 +1423,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // MARK - GOOGLE MAP HANDLING SECTION!!
-    //*************************************************************************************************************************************//
+    //*******************************************************************************************************************************//
 
     
     
@@ -1473,8 +1470,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             guard CLLocationManager.headingAvailable() else {
                 print("Heading is not available right now")
                 return }
-            locationManager.headingFilter = 5
-            locationManager.startUpdatingHeading()
             
         case .authorizedWhenInUse:
             mapView.isMyLocationEnabled = true
@@ -1863,9 +1858,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.setTitle("Start", for: .normal)
-        //button.cornerRadius = button.frame.width/2
-        //button.borderWidth = 2
-        //button.borderColor = UIColor.white
+        button.cornerRadius = button.frame.width/2
+        button.borderWidth = 2
+        button.borderColor = UIColor.white
         button.tintColor = UIColor.white
         button.titleLabel?.textColor = UIColor.white
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
@@ -1885,15 +1880,29 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         if (sender.tag == 1) {
             
+            sender.titleLabel?.textColor = UIColor.DTIRed()
             sender.setTitle("Stop", for: .normal)
             sender.tag = 2
+            
+            // MARK - Disappear the History tool bar when start button clicked
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!+40, width: (self.windowSize?.frame.width)!, height: 40)
+                
+            }, completion: nil)
+            
             //weatherAlert()
             startEbike()
             
         
         } else if (sender.tag == 2){
-            
             alertView(sender: sender)
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!-40, width: (self.windowSize?.frame.width)!, height: 40)
+                
+            }, completion: nil)
+            
+            
             
         
         }
@@ -2076,10 +2085,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     fileprivate func startEbike() {
         
+        
+        // MARK - Destination tag should be on in order to keep track remaining distance and time
         destinationTag = 1
+        
+        locationManager.startUpdatingHeading()
         locationManager.startUpdatingLocation()
         
         mySearchButton.isHidden = true
+        coffeSearchButton.isHidden = true
+
         distance = Measurement(value: 0, unit: UnitLength.meters)
         locationList.removeAll()
         
@@ -2150,6 +2165,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     fileprivate func saveNameOfRoute() {
         
+        
+        
         let alertController = UIAlertController(title: "Add New Name", message: "", preferredStyle: .alert)
         
         let saveNameAction = UIAlertAction(title: "Save", style: .default) {
@@ -2172,6 +2189,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     fileprivate func stopEbike() {
+        
+        
         mySearchButton.isHidden = false
         timer?.invalidate()
         locationManager.stopUpdatingLocation()
@@ -2341,7 +2360,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         startButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        _ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
+        //_ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
 
     }
     
