@@ -27,6 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         GMSPlacesClient.provideAPIKey(googleMapsApiKey)
         UIApplication.shared.statusBarStyle = .lightContent
 
+        //LocationService.sharedInstance.startUpdatingLocation()
 
         FirebaseApp.configure()
         //GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID

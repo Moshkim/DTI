@@ -24,7 +24,11 @@ class SettingMenuSlide: NSObject {
     
     let slideMenuView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(white: 0, alpha: 0.8)
+        view.backgroundColor = UIColor(red:0.10, green:0.10, blue:0.10, alpha:1.00)
+        view.layer.shadowOffset = CGSize(width: 5, height: 5)
+        view.layer.shadowColor = UIColor(red:0.95, green:0.95, blue:0.96, alpha:1.00).cgColor
+        view.layer.shadowOpacity = 1.0
+        view.layer.shadowRadius = 7.0
         return view
     }()
     
@@ -59,7 +63,7 @@ class SettingMenuSlide: NSObject {
     
     // MARK - PROFILE USERNAME 
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     let profileNickName: UILabel = {
         let label = UILabel()
         if let username = UserDefaults.standard.object(forKey: "username") {
@@ -84,12 +88,12 @@ class SettingMenuSlide: NSObject {
         return label
     }()
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
     // MARK - MY STATS
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     lazy var myStats: UIButton = {
         let button = UIButton()
@@ -110,6 +114,7 @@ class SettingMenuSlide: NSObject {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
             self.blackView.alpha = 0
+            self.slideMenuView.layer.shadowOpacity = 0
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
             
         }, completion: {(completion:Bool) in
@@ -119,12 +124,12 @@ class SettingMenuSlide: NSObject {
     
     
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
     // MARK - BIKE TYPES
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     lazy var bikeTypes: UIButton = {
         let button = UIButton()
@@ -145,6 +150,7 @@ class SettingMenuSlide: NSObject {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
             self.blackView.alpha = 0
+            self.slideMenuView.layer.shadowOpacity = 0
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
             
         }, completion: {(completion:Bool) in
@@ -153,14 +159,14 @@ class SettingMenuSlide: NSObject {
     }
     
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
     
     
     // MARK - CONNECT TO DEVICES
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     lazy var connectToDevice: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
@@ -180,6 +186,7 @@ class SettingMenuSlide: NSObject {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
         
             self.blackView.alpha = 0
+            self.slideMenuView.layer.shadowOpacity = 0
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
         
         }, completion: {(completion:Bool) in
@@ -188,14 +195,14 @@ class SettingMenuSlide: NSObject {
     }
     
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
     
     
     // MARK - TERMS AND PRIVACY
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     lazy var termsAndPrivacy: UIButton = {
         let button = UIButton()
@@ -214,6 +221,7 @@ class SettingMenuSlide: NSObject {
     func moveToTermsAndPrivacyViewController() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
+            self.slideMenuView.layer.shadowOpacity = 0
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
             
         }, completion: {(completed: Bool) in
@@ -223,12 +231,12 @@ class SettingMenuSlide: NSObject {
         })
     }
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     // MARK - USER SETTINGS
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     let settingImage: UIImageView = {
         let image = UIImage(named: "setting")?.withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView()
@@ -257,6 +265,7 @@ class SettingMenuSlide: NSObject {
     func moveToSettingViewController() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
+            self.slideMenuView.layer.shadowOpacity = 0
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
         }, completion: {(completed: Bool) in
             // going to setting view controller to set the setting
@@ -265,13 +274,13 @@ class SettingMenuSlide: NSObject {
         })
     
     }
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
     
     // MARK - LOG OUT 
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     lazy var logoutButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         button.layer.cornerRadius = button.frame.width/2
@@ -302,7 +311,7 @@ class SettingMenuSlide: NSObject {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
-            
+            self.slideMenuView.layer.shadowOpacity = 0
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
             
         
@@ -316,13 +325,13 @@ class SettingMenuSlide: NSObject {
     }
     
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
     // MARK - CENTER FUNCTION TO HANDLING ALL THE SIDE MENU UI
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     func handleSideMenuButton() {
         
         //Show Menu
@@ -394,6 +403,7 @@ class SettingMenuSlide: NSObject {
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 
                 self.blackView.alpha = 1
+                self.slideMenuView.layer.shadowOpacity = 1
                 self.slideMenuView.frame = CGRect(x: 0, y: 0, width: x, height: window.frame.height)
                 
             }, completion: nil)
@@ -401,7 +411,7 @@ class SettingMenuSlide: NSObject {
         }
     }
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
@@ -410,6 +420,7 @@ class SettingMenuSlide: NSObject {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
             self.blackView.alpha = 0
+            self.slideMenuView.layer.shadowOpacity = 0
             self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
         }, completion: nil)
     }

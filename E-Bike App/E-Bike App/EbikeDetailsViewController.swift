@@ -23,36 +23,21 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         return view
     }()
     
-    var locationAltitude = [Double()]
-    
-    var graphConstraints = [NSLayoutConstraint]()
-    
     var label = UILabel()
-    var labelConstraints = [NSLayoutConstraint]()
     
     var stringURL = String()
     
     
     
     // Data
-    let numberOfDataItems = 20
-    
     
     lazy var elevationData = [Double]()
-    lazy var elevationLabels = [Double]()
+    lazy var elevationTempLabels = [CLLocation]()
+    lazy var elevationLabels = [String]()
     
     
     var locationsOfElevationSamples = [CLLocation]()
     var distanceRelateToElevation = [Double]()
-    
-    
-    lazy var data: [Double] = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,14,15,15,15,20]
-        //self.generateRandomData(self.numberOfDataItems, max: 50)
-    //[29.9, 30, 30, 30, 30, 30, 30, 30, 30]
-    lazy var labels: [String] = self.generateSequentialLabels(self.numberOfDataItems, text: "")
-    //["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
-    
     
     var ride: Ride!
     
@@ -74,11 +59,16 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         let view = GMSMapView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         view.mapType = .normal
+        view.isUserInteractionEnabled = true
+        view.layer.cornerRadius = 5
+        view.settings.zoomGestures = true
+        view.settings.rotateGestures = true
+        view.settings.scrollGestures = true
         view.setMinZoom(5, maxZoom: 18)
         view.autoresizingMask = [.flexibleWidth,.flexibleHeight]
         return view
     }()
-
+    
     
     var graphLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
@@ -86,7 +76,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
-        label.text = "<Elevation>"
+        label.text = "Elevation"
         
         return label
     }()
@@ -96,40 +86,45 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         label.textAlignment = .center
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 4)
-        label.text = "km"
-    
+        
         return label
     }()
     
     var dateLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.textColor = UIColor.white
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
-        label.text = "Date"
         
         return label
     }()
     
     var distanceLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
-        label.text = "Distance"
         
         return label
     }()
     
     var timeLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
-        label.text = "Time: "
         
         return label
     }()
@@ -137,48 +132,51 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     
     var averageSpeedLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
-        label.text = "Time: "
         
         return label
     }()
     
     
-    var averageMovingSpeedLabel: UILabel = {
+    var heartRateLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
-        label.text = "Time: "
         
         return label
     }()
-
+    
     var addressLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
-        label.text = "Address: "
         label.numberOfLines = 2
         
         return label
     }()
     
-
+    
     
     lazy var backButton: UIButtonY = {
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.setTitle("<Back", for: .normal)
-        //button.cornerRadius = button.frame.width/2
-        //button.borderWidth = 2
-        //button.borderColor = UIColor.white
         button.tintColor = UIColor.white
         button.titleLabel?.textColor = UIColor.white
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
@@ -192,7 +190,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     
     func backToPrevious() {
         self.performSegue(withIdentifier: "rideStatusViewSegue", sender: backButton)
-    
+        
     }
     
     
@@ -202,17 +200,17 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         var bounds = GMSCoordinateBounds()
         
         guard let locations = ride.locations,
-        locations.count > 0
-        else {
-            let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-            present(alert, animated: true)
-            return
+            locations.count > 0
+            else {
+                let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                present(alert, animated: true)
+                return
         }
         
         let locationPoints = ride.locations?.array as! [Locations]
         
-
+        
         //print(locations.array as! [Locations])
         
         for i in 0..<locationPoints.count{
@@ -220,11 +218,55 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
             let long = locationPoints[i].longitude
             let position = CLLocationCoordinate2D(latitude: lat, longitude: long)
             
+            if i == 1{
+                
+                let startPointMapPin = GMSMarker()
+                
+                let markerImage = UIImage(named: "startPin")
+                //!.withRenderingMode(.alwaysTemplate)
+                
+                //creating a marker view
+                let markerView = UIImageView(image: markerImage)
+         
+                startPointMapPin.iconView = markerView
+                
+                startPointMapPin.layer.cornerRadius = 25
+                startPointMapPin.position = position
+                startPointMapPin.title = "Start"
+                startPointMapPin.opacity = 1
+                startPointMapPin.infoWindowAnchor.y = 1
+                startPointMapPin.map = mapView
+                startPointMapPin.appearAnimation = GMSMarkerAnimation.pop
+                startPointMapPin.isTappable = true
+                
+            } else if i == locationPoints.count - 2{
+                
+                let endPointMapPin = GMSMarker()
+                
+                
+                let markerImage = UIImage(named: "endPin")
+                //!.withRenderingMode(.alwaysTemplate)
+                
+                //creating a marker view
+                let markerView = UIImageView(image: markerImage)
+                
+                
+                endPointMapPin.iconView = markerView
+                endPointMapPin.layer.cornerRadius = 25
+                endPointMapPin.position = position
+                endPointMapPin.title = "end"
+                endPointMapPin.opacity = 1
+                endPointMapPin.infoWindowAnchor.y = 1
+                endPointMapPin.map = mapView
+                endPointMapPin.appearAnimation = GMSMarkerAnimation.pop
+                endPointMapPin.isTappable = true
+            }
+            
             path.add(position)
             bounds = bounds.includingPath(path)
             
         }
-
+        
         let update = GMSCameraUpdate.fit(bounds, withPadding: 4)
         
         let polyline = GMSPolyline(path: path)
@@ -246,10 +288,10 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     
     
     // functions for the graph scrollView
-
+    
     fileprivate func createDarkGraph(_ frame: CGRect) -> ScrollableGraphView {
         let graphView = ScrollableGraphView(frame: frame)
-        
+        graphView.layer.cornerRadius = 5
         graphView.backgroundFillColor = UIColor.colorFromHex(hexString: "#333333")
         
         graphView.lineWidth = 2
@@ -259,13 +301,13 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         graphView.shouldFill = true
         graphView.fillType = ScrollableGraphViewFillType.gradient
         graphView.fillColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
-            
-            //UIColor.colorFromHex(hexString: "#555555")
+        
+        //UIColor.colorFromHex(hexString: "#555555")
         graphView.fillGradientType = ScrollableGraphViewGradientType.radial
         graphView.fillGradientStartColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
-            //UIColor.colorFromHex(hexString: "#555555")
+        //UIColor.colorFromHex(hexString: "#555555")
         graphView.fillGradientEndColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
-            //UIColor.colorFromHex(hexString: "#444444")
+        //UIColor.colorFromHex(hexString: "#444444")
         
         graphView.dataPointSpacing = 25
         graphView.dataPointSize = 4
@@ -291,12 +333,12 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         return graphView
     }
-
-
+    
+    
     
     
     // Adding and updating the graph switching label in the top right corner of the screen.
-
+    
     
     private func createLabel(withText text: String) -> UILabel {
         let label = UILabel()
@@ -317,30 +359,6 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         return label
     }
-    
-    // Data Generation
-    private func generateRandomData(_ numberOfItems: Int, max: Double) -> [Double] {
-        var data = [Double]()
-        for _ in 0 ..< numberOfItems {
-            var randomNumber = Double(arc4random()).truncatingRemainder(dividingBy: max)
-            
-            if(arc4random() % 100 < 10) {
-                randomNumber *= 3
-            }
-            
-            data.append(randomNumber)
-        }
-        return data
-    }
-    
-    private func generateSequentialLabels(_ numberOfItems: Int, text: String) -> [String] {
-        var labels = [String]()
-        for i in 0 ..< numberOfItems {
-            labels.append("\(text) \(i+1)")
-        }
-        return labels
-    }
-    
     
     
     func getElevationInfo() {
@@ -388,25 +406,25 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         let locationPoints = locations.array as! [Locations]
         
-
+        
         
         
         
         let basedURL = "https://maps.googleapis.com/maps/api/elevation/json?path="
         stringURL += basedURL
-
+        
         
         guard let firstLat = locationPoints.first?.latitude else { return }
         guard let firstLong = locationPoints.first?.longitude else { return }
         guard let lastLat = locationPoints.last?.latitude else { return }
         guard let lastLong = locationPoints.last?.longitude else { return }
-
+        
         
         stringURL += "\(firstLat)%2C\(firstLong)%7C\(locationPoints[locationPoints.count/2].latitude)%2C\(locationPoints[locationPoints.count/2].longitude)%7C\(lastLat)%2C\(lastLong)"
         
         stringURL += "&samples=50&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
         
-
+        
         //print(stringURL)
         guard let urlString = URL(string: stringURL) else {
             
@@ -420,6 +438,8 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         
         let session = URLSession.shared
+        
+        ProgressHUD.show("Data Patching...", interaction: false)
         
         let task = session.dataTask(with: urlRequest) { (data, response, error) in
             
@@ -472,31 +492,24 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                         
                         
                         //print(self.distanceRelateToElevation)
-                        self.labels.removeAll()
+                        //self.labels.removeAll()
                         
                         for i in 0..<self.distanceRelateToElevation.count {
-                            self.labels.append(String(format: "%.1f",self.distanceRelateToElevation[i]))
+                            //self.labels.append(String(format: "%.1f",self.distanceRelateToElevation[i]))
                         }
                         
                         
                         DispatchQueue.main.async {
                             // Graph View
                             
-                            self.graphView.set(data: self.elevationData, withLabels: self.labels)
+                            //self.graphView.set(data: self.elevationData, withLabels: self.labels)
+                            ProgressHUD.showSuccess("Success")
                         }
                         
                     }
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
                 } catch let error as NSError{
+                    ProgressHUD.showError(error.localizedDescription)
                     print(error.debugDescription)
                 }
                 
@@ -505,22 +518,18 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                 
             }
             
-            
         }
         task.resume()
         
-
-
-    
     }
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-        getElevationInfo()
-       
+        
+        //getElevationInfo()
+        
         graphView = createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 200))
         
         
@@ -550,8 +559,6 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         // Elevation Graph x-axis Label
         graphView.addSubview(x_axisLabel)
         
-        
-        
         // Date
         view.addSubview(dateLabel)
         
@@ -568,44 +575,40 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         
         // Average Moving Speed
-        view.addSubview(averageMovingSpeedLabel)
+        view.addSubview(heartRateLabel)
         
         // Address
         view.addSubview(addressLabel)
         
-        _ = backButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        _ = backButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 40)
         
-        _ = nameOfTheRoute.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 60)
+        _ = nameOfTheRoute.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
         
-        
-        
-        _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
-        
+        _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
         
         _ = x_axisLabel.anchor(nil, left: graphView.leftAnchor, bottom: graphView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 3, bottomConstant: 3, rightConstant: 0, widthConstant: 10, heightConstant: 5)
-        
-        
-        _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
         
         _ = graphLabel.anchor(mapView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 20)
         graphLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
+        _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 180)
         
-        _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 20)
+        
+        _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
         dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: timeLabel.leftAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
-        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: distanceLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
-        
-        
-        _ = averageSpeedLabel.anchor(distanceLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: averageMovingSpeedLabel.leftAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
-        
-        _ = averageMovingSpeedLabel.anchor(timeLabel.bottomAnchor, left: averageSpeedLabel.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/2, heightConstant: 15)
+        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
         
-        _ = addressLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 15)
+        _ = averageSpeedLabel.anchor(distanceLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        _ = heartRateLabel.anchor(timeLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        
+        _ = addressLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
         
         
         
@@ -637,20 +640,65 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
             nameOfTheRoute.text = name
         }
         
-        if let address = ride.address {
-            addressLabel.text = address
+        guard let address = ride.address else { return }
+        
+        
+        
+        dateLabel.text = "Date: \(formattedDate)"
+        distanceLabel.text = "Distance: \(formattedDistance)"
+        timeLabel.text = "Time: \(formattedTime)"
+        averageSpeedLabel.text = "Avg 🚴🏼: \(formattedPace)"
+        heartRateLabel.text = "Avg ❤️ Rate: \(ride.heartrate) bpm"
+        addressLabel.text = "Region: \(address)"
+        
+        guard let locations = ride.locations,
+            locations.count > 0
+            else {
+                let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                present(alert, animated: true)
+                return
         }
         
-        distanceLabel.text = "Distance:  \(formattedDistance)"
-        dateLabel.text = formattedDate
-        timeLabel.text = "Time:  \(formattedTime)"
-        averageSpeedLabel.text = "A.Speed: \(formattedPace)"
-        //averageMovingSpeedLabel.text = "A.M.Speed: \(formattedMovingPace)"
         
-        graphView.set(data: data, withLabels: labels)
-
+        
+        let locationPoints = ride.locations?.array as! [Locations]
+        
+        for i in 0..<locationPoints.count{
+            if locationPoints[i].elevation > 0{
+                let elevation = locationPoints[i].elevation
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                
+                elevationTempLabels.append(position)
+                
+                elevationData.append(elevation)
+            }
+            //elevationLabels.append(String(format: "%.1f",FormatDisplay.distance(Measurement(value: distanceFromStart, unit: UnitLength.meters))))
+        }
+        
+        var cumulativeDistance = 0.0
+        
+        for i in 0..<elevationTempLabels.count {
+            if i == 0 {
+                self.elevationLabels.append(String(format: "%.1f", 0.0))
+            
+            } else {
+                cumulativeDistance += self.elevationTempLabels[i].distance(from: self.elevationTempLabels[i-1])
+                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
+                
+                
+                self.elevationLabels.append(String(format: "%.1f", cumulativeDistanceInMiles))
+            }
+        
+        }
+        
+        
+        graphView.set(data: elevationData, withLabels: elevationLabels)
+        
     }
-
-
+    
+    
 }
 

@@ -40,7 +40,7 @@ class SignupController: UIViewController {
         
         profile.isUserInteractionEnabled = true
         profile.isHighlighted = true
-
+        
         return profile
     }()
     
@@ -125,11 +125,11 @@ class SignupController: UIViewController {
     
     
     func SignupAction() {
-    
+        
         saveCoreData()
         
         
-    
+        
         if let email = emailTextField.text, let password = passwordTextField.text {
             guard let name = nameTextField.text else { return }
             
@@ -148,6 +148,7 @@ class SignupController: UIViewController {
                 return
                 
             }
+            ProgressHUD.show("Progress", interaction: false)
             
             if let profileImage = self.selectedImage, let imageData = UIImageJPEGRepresentation(profileImage, 0.1){
                 
@@ -162,11 +163,11 @@ class SignupController: UIViewController {
                 
                 // save the email
                 UserDefaults.standard.set(email, forKey: "email")
-            
+                
                 // save the password
                 UserDefaults.standard.set(password, forKey: "password")
                 
-                // save the profile username 
+                // save the profile username
                 UserDefaults.standard.set(name, forKey: "username")
                 
                 // Saved the profile picture
@@ -174,19 +175,20 @@ class SignupController: UIViewController {
                 
                 
                 AuthService.signUp(name: name, email: email, password: password, imageData: imageData, onSuccess: {
+                    ProgressHUD.showSuccess("Success")
                     self.performSegue(withIdentifier: "SignupToRideStatusSegue", sender: nil)
-                
+                    
                 }, onError: { (error) in
                     guard let err = error else { return }
-                    let alertViewController = UIAlertController(title: "Authentication Error", message: "\(String(describing: err))", preferredStyle: .alert)
-                    let cancel = UIAlertAction(title: "OK", style: .default, handler: nil)
-                    alertViewController.addAction(cancel)
-                    self.present(alertViewController, animated: true, completion: nil)
-                
+                    ProgressHUD.showError(err)
+                    
                 })
                 
+            } else {
+                ProgressHUD.showError("Profile Picture can't be empty")
+                
             }
-    
+            
         }
     }
     
@@ -217,25 +219,25 @@ class SignupController: UIViewController {
     
     
     /*
-    lazy var dateOfBirth: UIDatePicker = {
-        let datePicker = UIDatePicker(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
-        datePicker.timeZone = NSTimeZone.local
-        datePicker.backgroundColor = UIColor.black
-        datePicker.tintColor = UIColor.white
-        datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
-        
-        return datePicker
-    }()
-    
-    
-    func datePickerValueChanged(_ sender: UIDatePicker){
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/dd/yyyy"
-
-        let selectedDate: String = dateFormatter.string(from: sender.date)
-    }
+     lazy var dateOfBirth: UIDatePicker = {
+     let datePicker = UIDatePicker(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+     datePicker.timeZone = NSTimeZone.local
+     datePicker.backgroundColor = UIColor.black
+     datePicker.tintColor = UIColor.white
+     datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
+     
+     return datePicker
+     }()
+     
+     
+     func datePickerValueChanged(_ sender: UIDatePicker){
+     let dateFormatter: DateFormatter = DateFormatter()
+     dateFormatter.dateFormat = "MM/dd/yyyy"
+     
+     let selectedDate: String = dateFormatter.string(from: sender.date)
+     }
      */
-
+    
     
     fileprivate func saveCoreData() {
         
@@ -247,9 +249,9 @@ class SignupController: UIViewController {
         
         CoreDataStack.saveContext()
         user = newUser
-    
+        
     }
-
+    
     
     func handleTextField() {
         nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -267,7 +269,7 @@ class SignupController: UIViewController {
         }
         signupButton.setTitleColor(UIColor.white, for: .normal)
         signupButton.isEnabled = true
-    
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -286,29 +288,29 @@ class SignupController: UIViewController {
         view.addSubview(signupButton)
         view.addSubview(backToLoginButton)
         
-    
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(SignupController.handleSelectProfileImageView))
         profilePicture.addGestureRecognizer(tapGesture)
         
-    
+        
         _ = profilePicture.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 80, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 120, heightConstant: 120)
-            profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        profilePicture.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = nameTextField.anchor(nil, left: nil, bottom: view.centerYAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 35, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            nameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        nameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         _ = emailTextField.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            emailTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emailTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         
         _ = passwordTextField.anchor(view.centerYAnchor, left: nil, bottom: nil, right: nil, topConstant: 35, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = signupButton.anchor(passwordTextField.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            signupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        signupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = backToLoginButton.anchor(nil, left: nil, bottom: view.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 5, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            backToLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-    
+        backToLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
         handleTextField()
     }
 }
@@ -324,7 +326,7 @@ extension SignupController: UIImagePickerControllerDelegate, UINavigationControl
         
         dismiss(animated: true, completion: nil)
     }
-
-
-
+    
+    
+    
 }

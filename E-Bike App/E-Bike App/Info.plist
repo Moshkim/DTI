@@ -48,7 +48,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Allow Location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Show Your Location</string>
+	<string>Hello! Can i get your location for some good things :)</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
@@ -63,6 +63,9 @@
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
+		<string>location-services</string>
+		<string>gps</string>
+		<string>magnetometer</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

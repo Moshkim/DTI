@@ -19,12 +19,19 @@ import CoreBluetooth
 import FirebaseAuth
 
 
-class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate, MKMapViewDelegate{
 
+class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate, MKMapViewDelegate{
+    
     // Access to the window size
     let windowSize = UIApplication.shared.keyWindow
     
-
+    
+    
+    // Kalma Filter Algorithm
+    var resetKalmanFilter: Bool = true
+    var hcKalmanFilter: HCKalmanAlgorithm?
+    
+    
     // JSON format for the get direction between two points
     
     
@@ -33,9 +40,26 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         case ConversionFailed = "Error: Conversion from JSON failed"
     }
     
+    
+    
+    // MARK: - Location Tracking Accuracy Variables Declaration
     /******************************************************************************************************/
     
-    // Bluetooth Delegate
+    var userAnnotationImage: UIImage?
+    var accuracyRangeCircle: GMSCircle?
+    var isZooming: Bool?
+    var isBlockingAutoZoom: Bool?
+    var zoomBlockingTimer: Timer?
+    var didInitialZoom: Bool?
+    
+    /******************************************************************************************************/
+    
+    
+    
+    
+    /******************************************************************************************************/
+    
+    // MARK: - Bluetooth Delegate
     
     var centralManager: CBCentralManager!
     var deviceConnectTo: CBPeripheral?
@@ -72,8 +96,28 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // Changing the current location dot with our own icon or something!
-    var userCurrentLocationMarker = GMSMarker()
+    lazy var userCurrentLocationMarker: GMSMarker = {
+        let marker = GMSMarker()
+        
+        let markerImage = UIImage(named: "headingDirection")?.withRenderingMode(.alwaysTemplate)
+        let markerView = UIImageView(image: markerImage)
+        
+        marker.tracksViewChanges = true
+        marker.iconView = markerView
+        marker.appearAnimation = GMSMarkerAnimation.pop
+        marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
+        
+        return marker
+    }()
     var GeoAngle = 0.0
+    
+    
+    
+    // marker Tapped Position
+    /******************************************************************************************************/
+    var markerTappedPosition = CLLocationCoordinate2D()
+    /******************************************************************************************************/
+    
     
     
     // Google API info between two points
@@ -82,13 +126,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var totalremainingDistance = Double()
     fileprivate var totalremainingDuration = Double()
     
-
+    var totalRemainingDistanceInMiles = Double()
+    
+    
     // Core Data stack infomation variables
     
     fileprivate var ride:Ride?
     fileprivate var distance = Measurement(value: 0, unit: UnitLength.miles)
     fileprivate var address: [String] = []
     fileprivate var locationList: [CLLocation] = []
+    fileprivate var elevationList: [CLLocationDistance] = []
     fileprivate var locationListWithDistance = [[CLLocation(),Double()]]
     fileprivate var timer: Timer?
     fileprivate var totalMovingTimer: Timer?
@@ -101,10 +148,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var movingSeconds = 0
     fileprivate var speedTag = 0
     
-
+    
     // Weather Infomation Variables
     
-    fileprivate let forecastAPIKey = "d224f7da1fbbabe89fd206fcfbcf4868"
     fileprivate var currentTemperature: Double?
     fileprivate var currentWeatherIcon: String?
     fileprivate var currentWeatherSummary: String?
@@ -118,7 +164,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     var latDirection = Double()
     var longDirection = Double()
     
-
+    
     
     
     // Map View Polyline
@@ -135,11 +181,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // Camera Tag
-    
     var cameraTag = 0
+    var cameraBearing = CLLocationDirection()
     
     
-
     var likeltPlaces: [GMSPlace] = []
     var selectedPlace: GMSPlace?
     
@@ -166,7 +211,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     // Labels of Display dock
     
-    let labelArray = ["Speed", "Consumption", "Distance", "Time", "Calories(KCal)", "Heart", "Battery Life"]
+    let labelArray = ["Speed", "Consumption", "Distance", "Time", "Heart Rate", "Heart Rate", "Battery Life"]
     
     
     let descriptionArray = ["Rider Power(W)","Motor Power(W)","Speed(mph)","Heart Rate(bpm)", "Distance(mi)","Cadence(rpm)","Time From Start","Elevation Gain(ft)", "Battery Level(%)", "Calories(KCal)", "Heart Monitoring(bpm)", "Goal"]
@@ -181,20 +226,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     var screenFive = ["image1": "1", "label1": Double.self, "description1": "Rider Power(W)","image2": "1", "label2": Double.self, "description2": "Motor Power(W)","image3": "1", "label3": Double.self, "description3": "Speed(mph)", "image4": "1", "label4": Double.self, "description4": "Consumption(Wh/mi)","image5": "1", "label5": Double.self, "description5": "Distance(mi)"] as [String : Any]
     
-
+    
     
     var featureArray = [Dictionary<String, Any>]()
     
     
     lazy var ScrollView: UIScrollView = {
-    
+        
         let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 400))
         
         view.backgroundColor = UIColor.black
-            //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+        //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
         
         return view
-    
+        
     }()
     
     
@@ -222,8 +267,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     
-    // MARK - GOOGLE MAP DIRECTION HANDLING FUNCTIONS
-    //*************************************************************************************************************************************//
+    // MARK: - GOOGLE MAP DIRECTION HANDLING FUNCTIONS
+    //************************************************************************************************************************************//
     
     let mapView: GMSMapView = {
         
@@ -232,12 +277,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         view.mapType = .normal
         view.settings.setAllGesturesEnabled(true)
         view.tintColor = UIColor.DTIBlue()
+        view.isMyLocationEnabled = true
         
         view.setMinZoom(5, maxZoom: 20)
         view.autoresizingMask = [.flexibleWidth,.flexibleHeight]
         let mapInsets = UIEdgeInsets(top: 0, left: 0, bottom:0, right: 0)
         view.padding = mapInsets
         view.translatesAutoresizingMaskIntoConstraints = false
+        
         
         return view
     }()
@@ -256,7 +303,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return button
     }()
     
-
+    
     lazy var directionToDestButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         button.layer.cornerRadius = button.frame.width/2
@@ -273,7 +320,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }()
     
     
-    // MARK -
+    // MARK: - Direction to Destination
     func directionToDest(sender: UIButton) {
         
         let lat = latDirection
@@ -288,9 +335,65 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         }
         if sender.tag == 1 {
             sender.tag = 0
+            sender.setImage(UIImage(named: "coffeePlaces")?.withRenderingMode(.alwaysTemplate), for: .normal)
             
             startButton.setTitle("Stop", for: .normal)
             startButton.tag = 2
+            
+            
+            // clear the map first and just direction between start to destination point
+            
+            mapView.clear()
+            
+            // starting point
+            /******************************************************************************************************/
+            
+            let startPointMapPin = GMSMarker()
+            
+            let startMarkerImage = UIImage(named: "startPin")
+            //!.withRenderingMode(.alwaysTemplate)
+            
+            //creating a marker view
+            let startMarkerView = UIImageView(image: startMarkerImage)
+            
+            startPointMapPin.iconView = startMarkerView
+            
+            startPointMapPin.layer.cornerRadius = 25
+            startPointMapPin.position = (mapView.myLocation?.coordinate)!
+            startPointMapPin.title = "Start"
+            startPointMapPin.opacity = 1
+            startPointMapPin.infoWindowAnchor.y = 1
+            startPointMapPin.map = mapView
+            startPointMapPin.appearAnimation = GMSMarkerAnimation.pop
+            startPointMapPin.isTappable = true
+            
+            /******************************************************************************************************/
+            
+            
+            
+            // destination
+            /******************************************************************************************************/
+            let endPointMapPin = GMSMarker()
+            
+            
+            let endMarkerImage = UIImage(named: "endPin")
+            let endMarkerView = UIImageView(image: endMarkerImage)
+            
+            
+            endPointMapPin.iconView = endMarkerView
+            endPointMapPin.layer.cornerRadius = 25
+            endPointMapPin.position = markerTappedPosition
+            endPointMapPin.title = "end"
+            endPointMapPin.opacity = 1
+            endPointMapPin.infoWindowAnchor.y = 1
+            endPointMapPin.map = mapView
+            endPointMapPin.appearAnimation = GMSMarkerAnimation.pop
+            endPointMapPin.isTappable = true
+            
+            /******************************************************************************************************/
+            
+            let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 18, bearing: cameraBearing, viewingAngle: 25)
+            self.mapView.animate(to: camera)
             startEbike()
         }
         
@@ -303,35 +406,64 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         directionToDestButton.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
         directionToDestButton.isHidden = false
         
+        
+        markerTappedPosition = marker.position
         return false
     }
     
-    // MARK - TRUE HEADING & MAGNETIC HEADING 
-    //*************************************************************************************************************************************//
+    // MARK: - TRUE HEADING & MAGNETIC HEADING
+    //************************************************************************************************************************************//
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        
+        
+        //let theHeading = (newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading
+        
+        if newHeading.headingAccuracy > 0 {
+            let trueHeading = newHeading.trueHeading
+            //let heading = trueHeading*Double.pi/180
+            
+            let head = locationManager.location?.course ?? 0
+            self.cameraBearing = head
+            //userCurrentLocationMarker.rotation = trueHeading
+            //userCurrentLocationMarker.map = mapView
+            
+            
+            if cameraTag == 0 {
+                //let camera = GMSCameraUpdate.
+                mapView.animate(toBearing: trueHeading)
+            }
+            
+        } else {
+        
+            return
+        }
         //let magneticHeading = newHeading.magneticHeading
-        let trueHeading = newHeading.trueHeading
-        //let heading2_2 = trueHeading*Double.pi/180
-        //let headingDegrees = (magneticHeading*Double.pi/180)
 
-        let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: trueHeading, viewingAngle: 20)
-        mapView.animate(to: camera)
+        
+        //let headingDegrees = (magneticHeading*Double.pi/180)
+        
+        
+        //GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 15, bearing: trueHeading, viewingAngle: 20)
+        
+        
+        
     }
     
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
+    
     /*
-    
-    func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
-        latDirection = marker.position.latitude
-        longDirection = marker.position.longitude
-        print("Come in here ")
-        directionToDestButton.isHidden = false
-        
-        
-    }
-    */
+     
+     func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker) {
+     latDirection = marker.position.latitude
+     longDirection = marker.position.longitude
+     print("Come in here ")
+     directionToDestButton.isHidden = false
+     
+     
+     }
+     */
     
     func POIForCoffee() {
         guard let lat = mapView.myLocation?.coordinate.latitude else {return}
@@ -351,19 +483,19 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         /*
          let request = NSMutableURLRequest(url: NSURL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.33165083%2C-122.03029752&radius=3200&type=cafe&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA")! as URL,
-                                            cachePolicy: .useProtocolCachePolicy,
-                                            timeoutInterval: 10.0)
+         cachePolicy: .useProtocolCachePolicy,
+         timeoutInterval: 10.0)
          request.httpMethod = "GET"
          request.allHTTPHeaderFields = headers
          
          let session = URLSession.shared
          let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-            if (error != nil) {
-                print(error)
-            } else {
-                let httpResponse = response as? HTTPURLResponse
-                print(httpResponse)
-            }
+         if (error != nil) {
+         print(error)
+         } else {
+         let httpResponse = response as? HTTPURLResponse
+         print(httpResponse)
+         }
          })
          
          dataTask.resume()
@@ -404,7 +536,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     //print(json)
                     
                     DispatchQueue.global(qos: .background).async {
-                    
+                        
                         let arrayPlaces = json["results"] as! NSArray
                         
                         for i in 0..<arrayPlaces.count {
@@ -420,13 +552,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                             arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
                             
                         }
-
+                        
                         DispatchQueue.main.async {
                             //print(arrayOfLocations)
                             //print(arrayOfNames)
                             for i in 1..<arrayOfLocations.count{
                                 let nearbyMarker = GMSMarker()
-                                    nearbyMarker.iconView = markerView
+                                nearbyMarker.iconView = markerView
                                 for j in 0..<arrayOfLocations[i].count {
                                     
                                     
@@ -441,6 +573,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                                 }
                                 
                                 name = arrayOfNames[i]
+                                nearbyMarker.tracksViewChanges = true
                                 nearbyMarker.title = name
                                 nearbyMarker.snippet = arrayOfAddress[i]
                                 nearbyMarker.map = self.mapView
@@ -478,7 +611,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         button.backgroundColor = UIColor.DTIBlue()
         button.tintColor = UIColor.white
         button.translatesAutoresizingMaskIntoConstraints = false
-
+        
         button.setImage(UIImage(named: "myLocation")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(zoomToMyLocation), for: .touchUpInside)
         
@@ -487,12 +620,23 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     @objc fileprivate func zoomToMyLocation(sender: UIButton) {
-        guard let lat = self.mapView.myLocation?.coordinate.latitude,
-            let long = self.mapView.myLocation?.coordinate.longitude else { return }
+        guard let position = self.mapView.myLocation?.coordinate else { return }
+        
         self.cameraTag = 0
-    
-        let camera = GMSCameraPosition.camera(withTarget: CLLocationCoordinate2D(latitude: lat, longitude: long), zoom: 15)
+        //UIScreen.main.brightness = CGFloat(0.7)
+        
+        let camera = GMSCameraPosition.camera(withTarget: position, zoom: 18, bearing: cameraBearing, viewingAngle: 25)
         self.mapView.animate(to: camera)
+        /*
+        if cameraBearing != nil{
+            
+        } else {
+            let camera = GMSCameraUpdate.setTarget(position, zoom: 18)
+            self.mapView.animate(with: camera)
+        }
+        */
+        //GMSCameraPosition.camera(withTarget: CLLocationCoordinate2D(latitude: lat, longitude: long), zoom: 15)
+        
     }
     
     
@@ -511,15 +655,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }()
     
     
-
+    
     
     // Auto SearchBar for the google places
     fileprivate let controller = GooglePlacesSearchController(
-        apiKey: "AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA",
+        apiKey: Config.GOOGLE_API_KEY,
         placeType: PlaceType.address,
         radius: 1000
     )
-
+    
     
     @objc fileprivate func searchAddressForDirection(sender: UIButton) {
         infoMarker.map = nil
@@ -543,7 +687,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
         }
         present(controller, animated: true, completion: nil)
-    
+        
     }
     
     func drawRouteBetweenTwoPoints(coordinate: CLLocationCoordinate2D) {
@@ -553,10 +697,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         guard let lat = mapView.myLocation?.coordinate.latitude else {return}
         guard let long = mapView.myLocation?.coordinate.longitude else {return}
-
+        
         
         let aPointCoordinate = "\(lat),\(long)"
-    
+        
         let bPointCoordinate = "\(coordinate.latitude),\(coordinate.longitude)"
         
         let url = "http://maps.googleapis.com/maps/api/directions/json?origin=\(aPointCoordinate)&destination=\(bPointCoordinate)&sensor=false&mode=bicycling"
@@ -585,7 +729,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     print("Error: \(String(describing: error?.localizedDescription))")
                     
                 } else {
-                
+                    
                     guard let data = data else {
                         throw JSONError.NoData
                     }
@@ -605,13 +749,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     let dicDistance = arraySteps["distance"] as! NSDictionary
                     let totalDistance = dicDistance["text"] as! String
                     self.totalremainingDistance = dicDistance["value"] as! Double
-
+                    
                     
                     let dicDuration = arraySteps["duration"] as! NSDictionary
                     let totalDuration = dicDuration["text"] as! String
                     self.totalremainingDuration = dicDuration["value"] as! Double
-
-
+                    
+                    
                     
                     
                     
@@ -623,15 +767,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         
                         //Getting overview bound of the path
                         /*
-                        let overViewBoundOfNortheastLatitude = ((dic["bounds"] as! NSDictionary).object(forKey: "northeast") as! NSDictionary).object(forKey: "lat") as! Double
-                        let overViewBoundOfNortheastLongitude = ((dic["bounds"] as! NSDictionary).object(forKey: "northeast") as! NSDictionary).object(forKey: "lng") as! Double
-                        let overViewBoundOfSouthwestLatitude = ((dic["bounds"] as! NSDictionary).object(forKey: "southwest") as! NSDictionary).object(forKey: "lat") as! Double
-                        let overViewBoundOfSouthwestLongitude = ((dic["bounds"] as! NSDictionary).object(forKey: "southwest") as! NSDictionary).object(forKey: "lng") as! Double
-                        
-                        let northeastBound = CLLocationCoordinate2DMake(overViewBoundOfNortheastLatitude, overViewBoundOfNortheastLongitude)
-                        let southwestBound = CLLocationCoordinate2DMake(overViewBoundOfSouthwestLatitude, overViewBoundOfSouthwestLongitude)
-                        
-                        */
+                         let overViewBoundOfNortheastLatitude = ((dic["bounds"] as! NSDictionary).object(forKey: "northeast") as! NSDictionary).object(forKey: "lat") as! Double
+                         let overViewBoundOfNortheastLongitude = ((dic["bounds"] as! NSDictionary).object(forKey: "northeast") as! NSDictionary).object(forKey: "lng") as! Double
+                         let overViewBoundOfSouthwestLatitude = ((dic["bounds"] as! NSDictionary).object(forKey: "southwest") as! NSDictionary).object(forKey: "lat") as! Double
+                         let overViewBoundOfSouthwestLongitude = ((dic["bounds"] as! NSDictionary).object(forKey: "southwest") as! NSDictionary).object(forKey: "lng") as! Double
+                         
+                         let northeastBound = CLLocationCoordinate2DMake(overViewBoundOfNortheastLatitude, overViewBoundOfNortheastLongitude)
+                         let southwestBound = CLLocationCoordinate2DMake(overViewBoundOfSouthwestLatitude, overViewBoundOfSouthwestLongitude)
+                         
+                         */
                         
                         let dic1 = dic["overview_polyline"] as! NSDictionary
                         let points = dic1["points"] as! String
@@ -639,8 +783,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         
                         DispatchQueue.main.async {
                             
-                            self.totalDistanceToDestination.text = "Remaining Distance = \(totalDistance)"
-                            self.totalDurationToDestination.text = "Remaining Duration = \(totalDuration)"
+                            self.totalDistanceToDestination.text = "Remaining Distance \n \(totalDistance)"
+                            //self.totalDurationToDestination.text = "Duration \n \(totalDuration)"
                             
                             let path = GMSPath(fromEncodedPath: points)
                             self.polyPath.map = nil
@@ -648,39 +792,39 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                             self.polyPath.strokeWidth = 4
                             self.polyPath.strokeColor = UIColor.darkGray
                             self.polyPath.map = self.mapView
-
+                            
                             
                         }
                         
-                    
+                        
                         
                     }
                     
                 }
-            
+                
             }catch let error as JSONError {
                 print(error.rawValue)
             }catch let error as NSError {
                 print(error.debugDescription)
-            
+                
             }
-        
-        
+            
+            
         })
         task.resume()
-    
+        
     }
     
     
     
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
-    // MARK - SCROLL VIEW PAGE SECTION
+    // MARK: - SCROLL VIEW PAGE SECTION
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     func featureViewController() {
         featureArray = [screenOne,screenTwo, screenThree, screenFour, screenFive]
@@ -691,21 +835,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         ScrollView.delegate = self
     }
     
-
     
-
+    
+    
     func loadFeatures() {
-    
+        
         for (index,feature) in featureArray.enumerated() {
-
-            if (index < 3) {
             
+            if (index < 3) {
+                
                 // Main Frame of the each scroll view
                 let mainFrameOfView = UIView()
                 mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
                 mainFrameOfView.backgroundColor = UIColor.black
-                    //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
-                    //UIColor(red:0.02, green:0.19, blue:0.38, alpha:1.00)
+                //UIColor(red:0.02, green:0.19, blue:0.38, alpha:1.00)
                 mainFrameOfView.frame.size.width = self.view.bounds.size.width
                 
                 
@@ -716,9 +859,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 firstViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 firstViewOfMain.layer.borderWidth = 3
                 firstViewOfMain.backgroundColor = UIColor.black
-                    
-                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
-                //(red:0.43, green:0.47, blue:0.69, alpha:1.00)
+                
+                //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 
                 
                 // First main label of the first view
@@ -740,8 +882,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 secondViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 secondViewOfMain.layer.borderWidth = 3
                 secondViewOfMain.backgroundColor = UIColor.black
-                    
-                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                
+                //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 //UIColor(red:0.43, green:0.44, blue:0.89, alpha:1.00)
                 
                 // Second main label of the second view
@@ -758,8 +900,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 timeFromStart.backgroundColor = UIColor.clear
                 timeFromStart.font = UIFont.boldSystemFont(ofSize: 25)
                 timeFromStart.textColor = UIColor.white
-                //timeFromStart.text = "\(0):\(0):\(0)"
-                
                 timeFromStart.textAlignment = .center
                 
                 
@@ -771,7 +911,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 thirdViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 thirdViewOfMain.layer.borderWidth = 3
                 thirdViewOfMain.backgroundColor = UIColor.black
-                    //UIColor(red:0.99, green:0.73, blue:0.17, alpha:1.00)
+                //UIColor(red:0.99, green:0.73, blue:0.17, alpha:1.00)
                 
                 
                 let thirdLabel = UILabel()
@@ -813,7 +953,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 fourthViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 fourthViewOfMain.layer.borderWidth = 3
                 fourthViewOfMain.backgroundColor = UIColor.black
-                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 //UIColor(red:0.66, green:0.46, blue:0.83, alpha:1.00)
                 
                 
@@ -844,7 +984,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 fifthViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
                 fifthViewOfMain.layer.borderWidth = 3
                 fifthViewOfMain.backgroundColor = UIColor.black
-                    //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 
                 
                 let fifthLabel = UILabel()
@@ -914,7 +1054,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     _ = timeFromStart.anchor(secondLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 120, heightConstant: 50)
                     timeFromStart.centerXAnchor.constraint(equalTo: secondViewOfMain.centerXAnchor).isActive = true
                     
-
+                    
                     // Third element view constraints
                     _ = thirdViewOfMain.anchor(secondViewOfMain.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: (mainFrameOfView.frame.width)-20, heightConstant: (mainFrameOfView.frame.height/3)-10)
                     thirdViewOfMain.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
@@ -978,7 +1118,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     _ = thirdDataSecond.anchor(thirdLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 50)
                     thirdDataSecond.centerXAnchor.constraint(equalTo: thirdViewOfMain.centerXAnchor).isActive = true
                     
-                
+                    
                     
                     // Fourth element view constraints
                     _ = fourthViewOfMain.anchor(thirdViewOfMain.bottomAnchor, left: mainFrameOfView.leftAnchor, bottom: nil, right: mainFrameOfView.centerXAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (mainFrameOfView.frame.width/2)-15, heightConstant: (mainFrameOfView.frame.height/3)-15)
@@ -986,7 +1126,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     _ = fourthLabel.anchor(nil, left: nil, bottom: fourthViewOfMain.centerYAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 120, heightConstant: 50)
                     fourthLabel.centerXAnchor.constraint(equalTo: fourthViewOfMain.centerXAnchor).isActive = true
                     
-
+                    
                     
                     
                     // Fifth element view constraints
@@ -1031,15 +1171,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     _ = thirdDataThird.anchor(thirdLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 50)
                     thirdDataThird.centerXAnchor.constraint(equalTo: thirdViewOfMain.centerXAnchor).isActive = true
                     
-                    // Center button in view
-                    /*
-                    NSLayoutConstraint.activate([
-                        thirdLabel.topAnchor.constraint(equalTo: secondLabel.bottomAnchor),
-                        
-                        
-                        ])
-                    */
-                    //
                     
                     // Fourth element view constraints
                     _ = fourthViewOfMain.anchor(thirdViewOfMain.bottomAnchor, left: mainFrameOfView.leftAnchor, bottom: nil, right: mainFrameOfView.centerXAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (mainFrameOfView.frame.width/2)-15, heightConstant: (mainFrameOfView.frame.height/3)-15)
@@ -1059,11 +1190,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                     
                 }
-            
+                
             }
-            
+                
             else if (index == 3){
-            
+                
                 let mainFrameOfView = UIView()
                 mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
                 mainFrameOfView.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
@@ -1094,14 +1225,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 40, heightConstant: 40)
                 
-            
+                
             }
             else if (index == 4) {
-            
+                
+                
+                // MARK - LAST SCROLL VIEW WITH BIGGER DASH BOARD
+                
                 let mainFrameOfView = UIView()
                 mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
                 mainFrameOfView.backgroundColor = UIColor.black
-                    //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+                //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
                 mainFrameOfView.frame.size.width = self.view.bounds.size.width
                 
                 
@@ -1115,7 +1249,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 
                 
-                
+                // SPEED BUTTON
                 let speedButton = UIButton()
                 speedButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
                 speedButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
@@ -1130,7 +1264,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 speedButton.addTarget(self, action: #selector(moveToPopUp), for: .touchUpInside)
                 
                 
-                
+                // DISTANCE BUTTON
                 let distanceButton = UIButton()
                 distanceButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
                 distanceButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
@@ -1145,7 +1279,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 distanceButton.addTarget(self, action: #selector(moveToPopUp), for: .touchUpInside)
                 
                 
-                
+                // TOTAL TIME TRAVEL BUTTON
                 let timeButton = UIButton()
                 timeButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
                 timeButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
@@ -1158,6 +1292,24 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 timeButton.setTitle(labelArray[3], for: .normal)
                 timeButton.tag = 3
                 timeButton.addTarget(self, action: #selector(moveToPopUp), for: .touchUpInside)
+                
+                
+                
+                // CURRENT HEART RATE BUTTON
+                let heartRateButton = UIButton()
+                heartRateButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
+                heartRateButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                heartRateButton.layer.cornerRadius = speedButton.frame.width/2
+                heartRateButton.layer.borderColor = UIColor.DTIRed().cgColor
+                heartRateButton.layer.borderWidth = 3
+                heartRateButton.isHighlighted = true
+                heartRateButton.titleLabel?.numberOfLines = 2
+                heartRateButton.titleLabel?.textAlignment = .center
+                heartRateButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13)
+                heartRateButton.setTitle(labelArray[5], for: .normal)
+                heartRateButton.tag = 4
+                heartRateButton.addTarget(self, action: #selector(moveToPopUp), for: .touchUpInside)
+                
                 
                 
                 
@@ -1174,7 +1326,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 ScrollView.addSubview(speedButton)
                 ScrollView.addSubview(distanceButton)
                 ScrollView.addSubview(timeButton)
-            
+                ScrollView.addSubview(heartRateButton)
+                
                 
                 _ = middleFrameOfView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width-40, heightConstant: mainFrameOfView.frame.width-40)
                 middleFrameOfView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
@@ -1190,18 +1343,117 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 _ = timeButton.anchor(nil, left: nil, bottom: nil, right: middleFrameOfView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 80, heightConstant: 80)
                 timeButton.centerYAnchor.constraint(equalTo: middleFrameOfView.centerYAnchor).isActive = true
-            
+                
+                
+                _ = heartRateButton.anchor(nil, left: nil, bottom: middleFrameOfView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 80, heightConstant: 80)
+                heartRateButton.centerXAnchor.constraint(equalTo: middleFrameOfView.centerXAnchor).isActive = true
             }
             
-
+            
             
             
         }
-    
+        
     }
+    
+    
     
 
     
+    
+    let totalDistanceLabel: UILabelX = {
+        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.boldSystemFont(ofSize: 30)
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        label.backgroundColor = UIColor.clear
+        
+        return label
+    }()
+    
+    
+    let addressLabel: UILabelX = {
+        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.backgroundColor = UIColor.clear
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    
+    let totalDistanceToDestination: UILabel = {
+        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    let totalDurationToDestination: UILabel = {
+        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.backgroundColor = UIColor.clear
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    
+    
+    let weatherIcon: UIButton = {
+        
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.clear
+        button.tintColor = UIColor.white
+        
+        return button
+        
+    }()
+    
+    // MARK: - TOOLBAR AT THE BOTTOM OF THE VIEW TO NAVIGATE TO HISTORY VIEW
+    
+    //************************************************************************************************************************************//
+
+    lazy var toolBox: UIToolbar = {
+        let box = UIToolbar(frame: CGRect(x: 0, y: (self.windowSize?.frame.height)!-40, width: (self.windowSize?.frame.width)!, height: 40))
+        box.backgroundColor = UIColor.black
+        //UIColor(red:0.21, green:0.27, blue:0.31, alpha:1.00)
+        box.tintColor = UIColor.white
+        box.isTranslucent = false
+        box.barTintColor = UIColor.black
+        
+        
+        let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(moveToHistory))
+        historyButton.tag = 1
+        box.setItems([historyButton], animated: true)
+        //box.isMultipleTouchEnabled = true
+        
+        
+        return box
+    }()
+    
+    func moveToHistory() {
+        performSegue(withIdentifier: .history, sender: nil)
+    }
+    
+    
+    //************************************************************************************************************************************//
+
+    
+    
+    // MARK: - POP UP DASH BOARD
+    //************************************************************************************************************************************//
+
     lazy var closeButton: UIButtonY = {
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
@@ -1214,7 +1466,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(dismissPopUp), for: .touchUpInside)
-    
+        
         return button
     }()
     
@@ -1235,7 +1487,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         view.borderWidth = 1
         view.cornerRadius = 15
         return view
-    
+        
     }()
     
     
@@ -1273,8 +1525,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return label
     }()
     
-    
-    let totalDistanceLabel: UILabelX = {
+    let heartRateLabel: UILabelX = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
@@ -1284,89 +1535,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         return label
     }()
+
     
-    
-    let addressLabel: UILabelX = {
-        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 12)
-        label.backgroundColor = UIColor.clear
-        label.numberOfLines = 1
-        return label
-    }()
-    
-    
-    let totalDistanceToDestination: UILabel = {
-        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 10)
-        label.backgroundColor = UIColor.clear
-        label.numberOfLines = 1
-        return label
-    }()
-    
-    let totalDurationToDestination: UILabel = {
-        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 10)
-        label.backgroundColor = UIColor.clear
-        label.numberOfLines = 1
-        return label
-    }()
-    
-    
-    
-    let weatherIcon: UIButton = {
-        
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
-        button.contentMode = .scaleAspectFit
-        button.backgroundColor = UIColor.clear
-        button.tintColor = UIColor.white
-        
-        return button
-    
-    }()
-    
-    
-    lazy var toolBox: UIToolbar = {
-        let box = UIToolbar(frame: CGRect(x: 0, y: (self.windowSize?.frame.height)!-40, width: (self.windowSize?.frame.width)!, height: 40))
-        box.backgroundColor = UIColor.black
-            //UIColor(red:0.21, green:0.27, blue:0.31, alpha:1.00)
-        box.tintColor = UIColor.white
-        box.isTranslucent = false
-        box.barTintColor = UIColor.black
-        
-        
-        let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(moveToHistory))
-        historyButton.tag = 1
-        box.setItems([historyButton], animated: true)
-        //box.isMultipleTouchEnabled = true
-        
-    
-        return box
-    }()
-    
-    func moveToHistory() {
-        performSegue(withIdentifier: .history, sender: nil)
-    }
     
     func dismissPopUp(){
         rideView.removeFromSuperview()
         infoView.removeFromSuperview()
     }
     
-
+    
     
     
     func moveToPopUp(sender: UIButton) {
         
-
+        
         view.addSubview(rideView)
         view.addSubview(infoView)
         infoView.addSubview(closeButton)
@@ -1375,7 +1557,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         _ = rideView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: view.frame.height)
         rideView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         rideView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-    
+        
         
         _ = infoView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 350)
         infoView.centerXAnchor.constraint(equalTo: rideView.centerXAnchor).isActive = true
@@ -1393,6 +1575,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         if sender.tag == 0 {
             timeLabel.removeFromSuperview()
             totalDistanceLabel.removeFromSuperview()
+            heartRateLabel.removeFromSuperview()
+            
             infoView.addSubview(speedLabel)
             
             _ = speedLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
@@ -1404,19 +1588,21 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         if sender.tag == 2{
             timeLabel.removeFromSuperview()
             speedLabel.removeFromSuperview()
+            heartRateLabel.removeFromSuperview()
             
             infoView.addSubview(totalDistanceLabel)
             
             _ = totalDistanceLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
             totalDistanceLabel.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
             totalDistanceLabel.centerYAnchor.constraint(equalTo: infoView.centerYAnchor).isActive = true
-        
+            
         }
         
         if sender.tag == 3 {
             speedLabel.removeFromSuperview()
             totalDistanceLabel.removeFromSuperview()
-
+            heartRateLabel.removeFromSuperview()
+            
             infoView.addSubview(timeLabel)
             
             _ = timeLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
@@ -1425,30 +1611,42 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
         }
         
+        if sender.tag == 4 {
+            totalDistanceLabel.removeFromSuperview()
+            speedLabel.removeFromSuperview()
+            timeLabel.removeFromSuperview()
+        
+            infoView.addSubview(heartRateLabel)
+            
+            _ = heartRateLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 50)
+            heartRateLabel.centerXAnchor.constraint(equalTo: infoView.centerXAnchor).isActive = true
+            heartRateLabel.centerYAnchor.constraint(equalTo: infoView.centerYAnchor).isActive = true
+            
+        }
+        
         for (index, label) in labelArray.enumerated() {
             if (index == sender.tag) {
                 titleLabel.text = label
-
+                
             }
-
+            
         }
         
     }
     
-    //*******************************************************************************************************************************//
-    
-    
-    
-    
-    
-    
-    
-    // MARK - GOOGLE MAP HANDLING SECTION!!
-    //*******************************************************************************************************************************//
+    //************************************************************************************************************************************//
 
     
+    //*******************************************************************************************************************************//
     
     
+    
+    
+    
+    
+    
+    // MARK: - GOOGLE MAP HANDLING SECTION!!
+    //*******************************************************************************************************************************//
     // Map Styling
     
     func mapStyle() {
@@ -1505,7 +1703,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
         
-        if (gesture) {
+        if gesture {
+            UIScreen.main.brightness = CGFloat(1)
             cameraTag = 1
             print(gesture)
         }
@@ -1513,105 +1712,157 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     // This function is called whenever current location is changed
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
 
+
+        if resetKalmanFilter == true {
+            hcKalmanFilter?.resetKalman(newStartLocation: locations.first!)
+            resetKalmanFilter = false
+        }
         
-            if startLocation == nil {
-                startLocation = locations.first
-                path.add(startLocation.coordinate)
-                locationListWithDistance[0] = [startLocation,0]
+        if startLocation == nil {
+            self.hcKalmanFilter = HCKalmanAlgorithm(initialLocation: locations.first!)
+            
+            startLocation = locations.first
+            path.add(startLocation.coordinate)
+            lastLocation = locations.first
+            userCurrentLocationMarker.position = startLocation.coordinate
+            userCurrentLocationMarker.map = mapView
+            //locationListWithDistance[0] = [startLocation,0]
+            
+        } else if let location = locations.last {
+            
+            
+            let age = -location.timestamp.timeIntervalSinceNow
+            
+            if age > 10 {
+                print("Location is old")
+            }
+            if location.horizontalAccuracy < 0 {
+                print("Lat and Long values are invalid")
+            }
+            if location.horizontalAccuracy > 100 {
+                print("Accuracy is too low")
+            }
+            //locationDataArray.append(location)
+            
+            
+            
+            if age < 10 && location.horizontalAccuracy > 0 && location.horizontalAccuracy <= 50 {
+                print("Location quality is good enough")
                 
-            } else if let location = locations.last {
-                totalTravelDistance += lastLocation.distance(from: location)
+                //if let kalmanLocation = hcKalmanFilter?.processState(currentLocation: location) {
                 
-                // Since we search for the place and set the destination we should start tracking
-                if destinationTag == 1 {
-                    let totalRemainingDistanceInMiles = (totalremainingDistance/1000)*1.61
-                    // FIXIT - I need to fix the Alert View
-                    if totalRemainingDistanceInMiles < 0.05 && totalRemainingDistanceInMiles > 0.00{
-                        totalDistanceToDestination.text = "Remaining Distance = \(0.0)mi"
-                        destinationTag = 0
-                        
-                        let destinationAlertView = UIAlertController(title: "Destination!", message: "We are here :)", preferredStyle: .alert)
-                        
-                        let cancel = UIAlertAction(title: "Alright", style: .default)
-                        
-                        destinationAlertView.addAction(cancel)
-                        
-                        present(destinationAlertView, animated: true, completion: nil)
-                        
-                    } else if totalRemainingDistanceInMiles > 0.05 {
+                    totalTravelDistance += lastLocation.distance(from: location)
                     
-                        totalremainingDistance -= lastLocation.distance(from: location)
-                        totalDistanceToDestination.text = "Remaining Distance = \(String(format: "%.2f",(totalremainingDistance/1000)*1.61))mi"
-                    } else if totalRemainingDistanceInMiles < 0.00{
-                        totalDistanceToDestination.text = "Remaining Distance = There is something wrong with total remaining distance"
-                        
+                    
+                    userCurrentLocationMarker.position = location.coordinate
+                    userCurrentLocationMarker.map = mapView
+                    
+                    
+                    // Since we search for the place and set the destination we should start tracking
+                    if destinationTag == 1 {
+                        totalRemainingDistanceInMiles = (totalremainingDistance/1000)*1.61
+                        // FIXIT - I need to fix the Alert View
+                        if totalRemainingDistanceInMiles < 0.05 && totalRemainingDistanceInMiles > 0.00{
+                            totalDistanceToDestination.text = "Remaining Distance = \(0.0)mi"
+                            destinationTag = 0
+                            
+                            let destinationAlertView = UIAlertController(title: "Destination!", message: "We are here :)", preferredStyle: .alert)
+                            
+                            let cancel = UIAlertAction(title: "Alright", style: .default)
+                            
+                            destinationAlertView.addAction(cancel)
+                            
+                            present(destinationAlertView, animated: true, completion: nil)
+                            
+                        } else if totalRemainingDistanceInMiles > 0.05 {
+                            
+                            totalremainingDistance -= lastLocation.distance(from: location)
+                            totalDistanceToDestination.text = "Remaining Distance \n \(String(format: "%.2f",(totalremainingDistance/1000)*1.61))mi"
+                        } else if totalRemainingDistanceInMiles < 0.00{
+                            totalDistanceToDestination.text = "Distance = There is something wrong with total remaining distance"
+                            
+                        }
                     }
-                }
-                
-                locationListWithDistance.append([lastLocation,totalTravelDistance])
-                
-                print("Traveled Distance:",  totalTravelDistance)
-                print("Straight Distance:", startLocation.distance(from: locations.last!))
-                print("Elevation:", location.altitude)
-                
-                let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
-                
-                if msTomph > 20.0 && speedTag == 0{
-                    let alertController = UIAlertController(title: "Warning!", message: "You might want to slow down for your safety", preferredStyle: .alert)
                     
-                    let cancelAction = UIAlertAction(title: "OK", style: .cancel)
+                    //locationListWithDistance.append([lastLocation,totalTravelDistance])
                     
-                    alertController.addAction(cancelAction)
-                    alertController.view.tintColor = UIColor.DTIRed()
-                    alertController.view.backgroundColor = UIColor.black
-                    alertController.view.layer.cornerRadius = 25
-                    speedTag = 1
+                    print("Traveled Distance:",  totalTravelDistance)
+                    print("Straight Distance:", startLocation.distance(from: location))
+                    print("Elevation:", location.altitude)
                     
-                    present(alertController, animated: true, completion: nil)
-                }
-                
-                if msTomph < 20.0 {
-                    speedTag = 0
-                }
-                
-                speedLabel.text = "\(msTomph)/mph"
-                thirdData.text = "\(msTomph)/mph"
-                thirdDataSecond.text = "\(msTomph)/mph"
-                thirdDataThird.text = "\(msTomph)/mph"
-                
-                
-                
-                trackingMovingTime(speed: location.speed as Double!)
-                
-                path.add((locations.last?.coordinate)!)
-                
-                
-                distance = Measurement(value: totalTravelDistance, unit: UnitLength.meters)
-                
-                let camera = GMSCameraPosition(target: location.coordinate, zoom: 15, bearing: 30, viewingAngle: 20)
-                
-                if cameraTag == 0{
-                    mapView.animate(to: camera)
-                    reverseGeocodeCoordinate(coordinate: location.coordinate)
-                }
+                    let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+                    
+                    if msTomph > 70.0 && speedTag == 0{
+                        let alertController = UIAlertController(title: "Warning!", message: "You might want to slow down for your safety", preferredStyle: .alert)
+                        
+                        let cancelAction = UIAlertAction(title: "OK", style: .cancel)
+                        
+                        alertController.addAction(cancelAction)
+                        alertController.view.tintColor = UIColor.DTIRed()
+                        alertController.view.backgroundColor = UIColor.black
+                        alertController.view.layer.cornerRadius = 25
+                        speedTag = 1
+                        
+                        present(alertController, animated: true, completion: nil)
+                    }
+                    
+                    if msTomph < 20.0 {
+                        speedTag = 0
+                    }
+                    
+                    speedLabel.text = "\(msTomph)/mph"
+                    thirdData.text = "\(msTomph)/mph"
+                    thirdDataSecond.text = "\(msTomph)/mph"
+                    thirdDataThird.text = "\(msTomph)/mph"
+                    
+                    
+                    
+                    //trackingMovingTime(speed: location.speed as Double!)
+                    
+                    
+                    lastLocation = location
+                    
+                    
+                    distance = Measurement(value: totalTravelDistance, unit: UnitLength.meters)
+                    
+                    //let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 15)
+                    
+                    
+                    if cameraTag == 0{
+                        let camera = GMSCameraUpdate.setTarget(location.coordinate, zoom: 18)
+                        
+                        mapView.animate(with: camera)
+                        reverseGeocodeCoordinate(coordinate: location.coordinate)
+                    }
+                    
+                    
+                    
+                    locationList.append(location)
+                    path.add(location.coordinate)
+                    drawPath(path: path)
+
+                //}
             }
+        }
         
-            lastLocation = locations.last
-            locationList.append(lastLocation)
         
-            if locationList.count == 1 {
-                getWeatherInfo()
-            }
+        if locationList.count == 1{
+            getWeatherInfo()
+        }
         
-            drawPath(path: path)
+        
         
     }
     
     
+
+    
+    
     // draw black line on the map that shows how current object moving
     func drawPath(path: GMSPath) {
-    
+        
         let polyline = GMSPolyline(path: path)
         polyline.strokeWidth = 3
         polyline.geodesic = true
@@ -1641,9 +1892,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                             
                             if place.locality == nil {
                                 self.address.append("\(String(describing: place.country))")
-                            
+                                
                             } else if place.locality != nil {
-                                self.address.append("\(place.locality!)")
+                                guard let locality = place.locality else { return }
+                                guard let administrativeArea = place.administrativeArea else { return }
+                                guard let country = place.country else { return }
+                                self.address.append("\(locality) \(administrativeArea) \(country)")
                             }
                             
                         } else {
@@ -1664,7 +1918,15 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     // Handle location manager errors.
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         locationManager.stopUpdatingLocation()
-        print("Error: \(error)")
+        if (error as NSError).domain == kCLErrorDomain && (error as NSError).code == CLError.Code.denied.rawValue{
+            // User denied your app to access your location information
+            showTurnOnLocationServiceAlert()
+            
+        }
+    }
+    
+    func showTurnOnLocationServiceAlert() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue:"showTurnOnLocationServiceAlert"), object: nil)
     }
     
     
@@ -1685,13 +1947,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             self.infoMarker.snippet = "\(placeName)"
             
-        
+            
         })
         
-        
-        
-        
-        //infoMarker.snippet = "\(location.latitude), \(location.longitude)"
         infoMarker.layer.cornerRadius = 25
         infoMarker.position = location
         infoMarker.title = name
@@ -1701,15 +1959,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         infoMarker.appearAnimation = GMSMarkerAnimation.pop
         infoMarker.isTappable = true
         mapView.selectedMarker = infoMarker
-        
-        //locationManager.stopUpdatingLocation()
-        //let camera = GMSCameraPosition(target: location, zoom: 15, bearing: 0, viewingAngle: 0)
-        //mapView.animate(to: camera)
+
     }
     
     
     func drawCircle(position: CLLocationCoordinate2D){
-    
+        
         
         let circle = GMSCircle(position: position, radius: 100)
         circle.strokeColor = UIColor.DTIBlue()
@@ -1717,21 +1972,21 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         circle.map = self.mapView
         
     }
-
+    
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let page = scrollView.contentOffset.x / scrollView.frame.size.width
         statusViewControl.currentPage = Int(page)
     }
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
     
-    // MARK - Sliding left menu
+    // MARK: - Sliding left menu
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     lazy var slideMenuButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
@@ -1741,7 +1996,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         button.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(handleSideMenuButton), for: .touchUpInside)
         return button
-    
+        
     }()
     
     lazy var settingMenu: SettingMenuSlide = {
@@ -1749,39 +2004,39 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         menu.rideStatusView = self
         return menu
     }()
-
+    
     
     func handleSideMenuButton() {
         
         //Show Menu
         settingMenu.handleSideMenuButton()
-
+        
     }
     
     
     
     func showControllerWithMyStatsButton() {
-    
+        
         self.performSegue(withIdentifier: .myStats, sender: nil)
     }
     
     func showControllerWithBikeTypesButton() {
-    
+        
         self.performSegue(withIdentifier: .bikeTypes, sender: nil)
     }
     
     
     func connectToDevice() {
-    
-        print("Sucessfully conntected to devices!")
         
-        // MARK - Bluetooth Delegate Searching DEVICE
-        //*********************************************************************************************************************************//
+        print("START LOOKING FOR THE BLUETOOTH SIGNAL!!!")
+        
+        // MARK: - Bluetooth Delegate Searching DEVICE
+        //********************************************************************************************************************************//
         
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main, options: [
             CBCentralManagerOptionShowPowerAlertKey: true
-            ])
-        //*********************************************************************************************************************************//
+        ])
+        //********************************************************************************************************************************//
         
         
     }
@@ -1802,28 +2057,43 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         self.present(loginVC, animated: true, completion: nil)
     }
     
+    
+    //************************************************************************************************************************************//
+    
+    
+    
+    // MARK: - PAGE CONTROL ARROW TO SWIPE THROUGH SCROLL VIEW
+    //************************************************************************************************************************************//
+    
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: {
+            self.leftArrowButton.isHidden = false
+            self.rightArrowButton.isHidden = false
+            UIScreen.main.brightness = CGFloat(1)
+        
+        }, completion: nil)
+        
+    }
+    
 
-    //*************************************************************************************************************************************//
     
-    
-    
-    // MARK - PAGE CONTROL ARROW TO SWIPE THROUGH SCROLL VIEW
-    //*************************************************************************************************************************************//
     
     lazy var leftArrowButton: UIButtonY = {
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 40, height: 45))
         button.setImage(UIImage(named: "arrowLeftKey")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = UIColor(white:0.4, alpha: 0.5)
+        button.tintColor = UIColor.white
         button.contentMode = .scaleAspectFit
         button.isHighlighted = true
+        button.isHidden = true
         button.addTarget(self, action: #selector(leftScrollView), for: .touchUpInside)
         
         return button
     }()
     
     func leftScrollView() {
-        print("left arrow pressed")
         
         if statusViewControl.currentPage != Int(0) {
             let position = CGPoint(x: ScrollView.contentOffset.x - view.frame.width, y: ScrollView.contentOffset.y)
@@ -1831,7 +2101,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         } else {
             let position = CGPoint(x: ScrollView.contentOffset.x + (view.frame.width*4), y: ScrollView.contentOffset.y)
             ScrollView.setContentOffset(position, animated: true)
-        
+            
         }
         
     }
@@ -1842,16 +2112,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 40, height: 45))
         button.setImage(UIImage(named: "arrowRightKey")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = UIColor(white:0.4, alpha: 0.5)
+        button.tintColor = UIColor.white
         button.contentMode = .scaleAspectFit
         button.isHighlighted = true
+        button.isHidden = true
         button.addTarget(self, action: #selector(rightScrollView), for: .touchUpInside)
         
         return button
     }()
     
     func rightScrollView() {
-        print("right arrow pressed")
         
         if statusViewControl.currentPage != Int(4) {
             let position = CGPoint(x: ScrollView.contentOffset.x + view.frame.width, y: ScrollView.contentOffset.y)
@@ -1859,24 +2129,24 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         } else {
             let position = CGPoint(x: 0, y: ScrollView.contentOffset.y)
             ScrollView.setContentOffset(position, animated: true)
-        
+            
         }
         
     }
     
     
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
     
     
     
-
-    // MARK - Specific Info View while riding on the bike
-
-    //*************************************************************************************************************************************//
+    
+    // MARK: - Specific Info View while riding on the bike
+    
+    //************************************************************************************************************************************//
     
     lazy var startButton: UIButtonY = {
-    
+        
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.setTitle("Start", for: .normal)
         button.cornerRadius = button.frame.width/2
@@ -1900,8 +2170,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         if (sender.tag == 1) {
-            // Heart Rate Tag Change to 1 to append data to array
             
+            // Reset the kalman filter algorithm to store new data
+            resetKalmanFilter = true
+            
+            
+            // Don't go to sleep mode while app is running or when start button is clicked
+            UIApplication.shared.isIdleTimerDisabled = true
+            UIScreen.main.brightness = CGFloat(0.7)
+            
+            // Heart Rate Tag Change to 1 to append data to array
             
             sender.titleLabel?.textColor = UIColor.DTIRed()
             sender.setTitle("Stop", for: .normal)
@@ -1916,8 +2194,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             //weatherAlert()
             startEbike()
             
-        
+            
         } else if (sender.tag == 2){
+            
+            
+            // Can be go to sleep mode after your ride is done and play with apps
+            UIApplication.shared.isIdleTimerDisabled = false
+            UIScreen.main.brightness = CGFloat(1.0)
+            
             alertView(sender: sender)
             
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
@@ -1927,7 +2211,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             
             
-        
+            
         }
         
     }
@@ -1973,7 +2257,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
     }
     
-
+    
     
     fileprivate func weatherAlert() {
         
@@ -2001,7 +2285,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 //imageView.center
                 
                 
-
+                
                 switch icon {
                 case "clear":
                     let action = UIAlertAction(title: "Let's get go wild!", style: .default, handler: nil)
@@ -2031,8 +2315,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     break
                 }
                 
-
-            
+                
+                
                 
                 let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
                 
@@ -2045,14 +2329,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 present(alertController, animated: true, completion: nil)
             }
         } else {
-        
+            
             let alertController = UIAlertController(title: "Weather is not available", message: "-° \n -", preferredStyle: .alert)
             
             let cancelButton = UIAlertAction(title: "Got it!", style: .cancel)
-
+            
             alertController.addAction(cancelButton)
             present(alertController, animated: true, completion: nil)
-        
+            
         }
     }
     
@@ -2064,7 +2348,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         let currentLocationLat: Double?
         let currentLocationLong: Double?
-        let forecastService = ForecastService(APIKey: forecastAPIKey)
+        let forecastService = ForecastService(APIKey: Config.FORECAST_API_KEY)
         //let currentTemperature: Double?
         //var weatherStatus: String?
         
@@ -2102,9 +2386,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         }
         
     }
-
     
-
+    
+    
     
     fileprivate func startEbike() {
         
@@ -2114,12 +2398,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // MARK - Destination tag should be on in order to keep track remaining distance and time
         destinationTag = 1
         
-        locationManager.startUpdatingHeading()
+        
+        if CLLocationManager.headingAvailable() {
+            locationManager.headingFilter = 5
+            locationManager.startUpdatingHeading()
+        
+        }
         locationManager.startUpdatingLocation()
         
         mySearchButton.isHidden = true
         coffeSearchButton.isHidden = true
-
+        
         distance = Measurement(value: 0, unit: UnitLength.meters)
         locationList.removeAll()
         
@@ -2136,9 +2425,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             self.distanceLabel.text = "\(formattedDistance)"
             self.totalDistanceLabel.text = "\(formattedDistance)"
         }
-    
+        
     }
-
+    
     
     fileprivate func trackingMovingTime(speed: Double) {
         totalMovingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true){ _ in
@@ -2191,7 +2480,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         alertController.addAction(cancelButton)
         present(alertController, animated: true, completion: nil)
         
-    
+        
     }
     
     fileprivate func saveNameOfRoute() {
@@ -2215,12 +2504,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         alertController.addAction(saveNameAction)
         self.present(alertController, animated: true, completion: nil)
-    
+        
     }
     
     
     fileprivate func stopEbike() {
-        
         
         mySearchButton.isHidden = false
         timer?.invalidate()
@@ -2229,11 +2517,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
     }
-
     
-    // MARK - CORE DATA SECTION TO STORE DATA!
     
-    //*************************************************************************************************************************************//
+    // MARK: - CORE DATA SECTION TO STORE DATA!
+    
+    //************************************************************************************************************************************//
     
     
     fileprivate func saveEbike(name: String) {
@@ -2244,59 +2532,118 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         newRide.duration = Int16(seconds)
         newRide.timestamp = Date() as NSDate?
         newRide.name = name
-        newRide.heartrate = Int16(heartRateList.reduce(0, +)/heartRateList.count)
+        //newRide.heartrate = Int16(heartRateList.reduce(0, +)/heartRateList.count)
         //newRide.movingduration = Int16(movingSeconds)
         
-        
-        for i in 0..<address.count{
-            
-            if (i == address.count/2) {
-                newRide.address = address[i]
+        if heartRateList.count > 0 {
+            var sumOfHeartRate = 0
+            var avgHeartRate = 0
+            for i in 0..<heartRateList.count {
+                sumOfHeartRate += heartRateList[i]
             }
+            avgHeartRate = sumOfHeartRate/heartRateList.count
+            newRide.heartrate = Int16(avgHeartRate)
+        
+        } else {
+            newRide.heartrate = 0
         }
         
+        
+        if newRide.address != nil {
+            newRide.address = address[address.count/2]
+        }
+        
+
         for location in locationList {
             let locationObject = Locations(context: CoreDataStack.context)
-            locationObject.elevation = location.altitude as Double
-            print(location.altitude)
+            locationObject.elevation = location.altitude
             locationObject.timestamp = location.timestamp as NSDate?
             locationObject.latitude = location.coordinate.latitude
             locationObject.longitude = location.coordinate.longitude
             newRide.addToLocations(locationObject)
         }
+        
         /*
-        for i in 0..<locationListWithDistance.count{
-            
-            let locationObj = Locations(context: CoreDataStack.context)
-            for j in 0..<locationListWithDistance[i].count{
-                if j == 0 {
-                    var locObj = CLLocation()
-                    locObj = locationListWithDistance[i][0] as! CLLocation
-                    locationObj.elevation = locObj.altitude
-                    locationObj.latitude = locObj.coordinate.latitude
-                    locationObj.longitude = locObj.coordinate.longitude
-                    locationObj.timestamp = locObj.timestamp as NSDate?
-                    
-                }
-                if j == 1 {
-                    var locObjDistance = Double()
-                    locObjDistance = locationListWithDistance[i][1] as! Double
-                    locationObj.distanceFromStart = locObjDistance
-                }
-                newRide.addToLocations(locationObj)
-            }
-        }
-        */
+         for i in 0..<locationListWithDistance.count{
+         
+         let locationObj = Locations(context: CoreDataStack.context)
+         for j in 0..<locationListWithDistance[i].count{
+         if j == 0 {
+         var locObj = CLLocation()
+         locObj = locationListWithDistance[i][0] as! CLLocation
+         locationObj.elevation = locObj.altitude
+         locationObj.latitude = locObj.coordinate.latitude
+         locationObj.longitude = locObj.coordinate.longitude
+         locationObj.timestamp = locObj.timestamp as NSDate?
+         
+         }
+         if j == 1 {
+         var locObjDistance = Double()
+         locObjDistance = locationListWithDistance[i][1] as! Double
+         locationObj.distanceFromStart = locObjDistance
+         }
+         newRide.addToLocations(locationObj)
+         }
+         }
+         */
         CoreDataStack.saveContext()
         ride = newRide
         
     }
     
-    //*************************************************************************************************************************************//
+    //************************************************************************************************************************************//
+    
+    
+    //************************************************************************************************************************************//
+    
+    /*
+    func updateMap(_ notification: NSNotification){
+    
+        if let userInfo = notification.userInfo{
+        
+            updatePolylines()
+            
+            if let newLocation = userInfo["location"] as? CLLocation{
+                print(newLocation)
+            }
+        }
+    
+    }
+    
+    
+    func updatePolylines() {
+        var coordinateArray = [CLLocationCoordinate2D]()
+        
+        for location in LocationService.sharedInstance.locationDataArray{
+            coordinateArray.append(location.coordinate)
+        }
+        
+    
+    }
+    */
+    
+    func showTurnOnLocationServiceAlert(_ notification: NSNotification){
+        let alert = UIAlertController(title: "Turn on Location Service", message: "To use location tracking feature of the app, please turn on the location service from the Settings app.", preferredStyle: .alert)
+        
+        let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
+            let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
+            if let url = settingsUrl {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
+        alert.addAction(settingsAction)
+        alert.addAction(cancelAction)
+        
+        
+        present(alert, animated: true, completion: nil)
+        
+    }
     
     
     
-
+    //************************************************************************************************************************************//
     
     
     override func viewDidLoad() {
@@ -2311,11 +2658,28 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             self.mapView.delegate = self
         }
         
+        /******************************************************************************************************/
+        // Testing for location accuracy
         
-        self.locationManager.activityType = .fitness
-        self.locationManager.requestWhenInUseAuthorization()
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationManager.startMonitoringSignificantLocationChanges()
+        //mapView.isMyLocationEnabled = true
+        //accuracyRangeCircle = GMSCircle(position: (self.mapView.myLocation?.coordinate)!, radius: 50)
+        
+        //accuracyRangeCircle?.map = self.mapView
+        
+        //self.didInitialZoom = false
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(showTurnOnLocationServiceAlert(_:)), name: Notification.Name(rawValue:"showTurnOnLocationServiceAlert"), object: nil)
+        
+        /******************************************************************************************************/
+        
+        
+        locationManager.activityType = .fitness
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager.distanceFilter = 3
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startMonitoringSignificantLocationChanges()
+        locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.pausesLocationUpdatesAutomatically = false
         //self.locationManager.startUpdatingHeading()
         
         
@@ -2323,77 +2687,100 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         view.backgroundColor = UIColor.black
         
-        view.addSubview(mainTitle)
+        // TOP LEFT
         view.addSubview(slideMenuButton)
         
+        // TOP MIDDLE
+        view.addSubview(mainTitle)
         
+        // TOP RIGHT
+        view.addSubview(weatherIcon)
+        weatherIcon.isHidden = true
         
-        
-        
+        // MIDDLE
         view.addSubview(ScrollView)
         
         
+        // LEFT ARROW
+        view.addSubview(leftArrowButton)
         
+        // RIGHT ARROW
+        view.addSubview(rightArrowButton)
+        
+        // BELOW MAP VIEW
         view.addSubview(statusViewControl)
+        
+        // BELOW PAGE CONTROL
         view.addSubview(addressLabel)
+        
         view.addSubview(totalDistanceToDestination)
+        
         view.addSubview(totalDurationToDestination)
         
         view.addSubview(startButton)
-        view.addSubview(weatherIcon)
-        weatherIcon.isHidden = true
+        
+        // BOTTOM
         view.addSubview(toolBox)
         
         
-        
-        view.addSubview(leftArrowButton)
-        view.addSubview(rightArrowButton)
-        
-        
-        
+        // MAP STYLE FUNC
         mapStyle()
+        
+        // BASIC CONFIGURATION OF THE SCROLL VIEW SUCH THAT NUMBER OF PAGES AND ETC...
         featureViewController()
+        
+        // ALL THE LABELS AND MAP IN THE SCROLL VIEW
         loadFeatures()
         
+        // MAIN RIDE STATUS VIEW
         _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 30)
         mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
+        // PROFILE SETTING VIEW
+        
         _ = slideMenuButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 23, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 25, heightConstant: 25)
+        
+        // WEATHER ICON ON THE RIGHT TOP OF THE VIEW
         
         _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 30, heightConstant: 30)
         
-
-        
-        
-        
+        // MAIN SCROLL VIEW OF THE DASHBOARD & GOOGLE MAP
         
         _ = ScrollView.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 60, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
         ScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
+        // RIGHT & LEFT ARROW TO NAVIGATE SCROLL VIEW
         
         _ = leftArrowButton.anchor(ScrollView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
         
         _ = rightArrowButton.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
         
         
-        
+        // PAGING CONTROL VIEW SHOWS WHICH PAGE YOU ARE ON
         _ = statusViewControl.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 20)
         statusViewControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
-        _ = addressLabel.anchor(statusViewControl.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 30)
         
-        _ = totalDistanceToDestination.anchor(addressLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: totalDurationToDestination.leftAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width/2-20, heightConstant: 30)
+        // STREET NAME CORRESPONDING TO CURRENT LOCATION
+        _ = addressLabel.anchor(statusViewControl.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 50)
         
-        _ = totalDurationToDestination.anchor(addressLabel.bottomAnchor, left: totalDistanceToDestination.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width/2-20, heightConstant: 30)
         
-        _ = startButton.anchor(totalDistanceToDestination.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        // TOTAL TRAVEL DISTANCE LABEL
+        _ = totalDistanceToDestination.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: startButton.leftAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 40, rightConstant: 0, widthConstant: (view.frame.width/2)-25, heightConstant: 40)
+        
+        
+        
+        // TOTAL TIME LABEL
+        _ = totalDurationToDestination.anchor(nil, left: startButton.rightAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 40, rightConstant: 0, widthConstant: view.frame.width/2-25, heightConstant: 40)
+        
+        
+        // TRIGER BUTTON TO START JOURNEY
+        _ = startButton.anchor(nil, left: nil, bottom: view.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 40, rightConstant: 0, widthConstant: 50, heightConstant: 50)
         startButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
-        //_ = toolBox.anchor(startButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
-
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -2403,10 +2790,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        mapView.isMyLocationEnabled = true
+        
         mapView.settings.compassButton = true
     }
-
+    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -2414,12 +2801,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 }
 
 
-// MARK - BLUETOOTH HANDLING PROTOCOL TO FIND AND CONNECT TO BLUETOOTH DEVICES
+// MARK: - BLUETOOTH HANDLING PROTOCOL TO FIND AND CONNECT TO BLUETOOTH DEVICES
 //*************************************************************************************************************************************//
 
 extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDelegate{
     
-
+    
     
     
     
@@ -2447,9 +2834,7 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             
             showAlert = false
             //keepScanning = true
-            
-            
-            message = "Bluetooth LE is turned on and ready for communication."
+            message = "BLUETOOTH LE IS TURNED ON AND READY FOR THE COMMUNICATION"
             print(message)
             
             //_ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(pauseScan), userInfo: nil, repeats: false)
@@ -2457,24 +2842,24 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             
             
             /*
-            let HeartRate          = "0x180D"
-            let DeviceInformation  = "0x180A"
-            let heartRateServiceUUID = CBUUID(string: HeartRate)
-            let deviceInfoServiceUUID = CBUUID(string: DeviceInformation)
-            let services = [heartRateServiceUUID,deviceInfoServiceUUID]
+             let HeartRate          = "0x180D"
+             let DeviceInformation  = "0x180A"
+             let heartRateServiceUUID = CBUUID(string: HeartRate)
+             let deviceInfoServiceUUID = CBUUID(string: DeviceInformation)
+             let services = [heartRateServiceUUID,deviceInfoServiceUUID]
              */
             
-            let serviceUUID: [AnyObject] = [CBUUID(string: "180D")]
+            let serviceUUID: [AnyObject] = [CBUUID(string: Device.HEART_RATE_DEVICE)]
             let lastPeripherals = centralManager.retrieveConnectedPeripherals(withServices: serviceUUID as! [CBUUID])
             
             if lastPeripherals.count > 0 {
                 let device = lastPeripherals.last! as CBPeripheral
                 deviceConnectTo = device
                 centralManager.connect(deviceConnectTo!, options: nil)
-            
+                
             } else {
                 centralManager.scanForPeripherals(withServices: serviceUUID as? [CBUUID], options: nil)
-            
+                
             }
             //CBUUID(string: enumName.rawValue)
             
@@ -2493,13 +2878,13 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             
         case .poweredOff:
             message = "Bluetooth on this is currently powered off."
-        
+            
         case .unsupported:
             message = "This device does not support Bluetooth Low Energy."
             
         case .unauthorized:
             message = "This app is not authorized to use Bluetooth Low Energy."
-        
+            
         case .resetting:
             message = "The BLE Manager is resetting; a state update is pending."
             
@@ -2514,12 +2899,12 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             alertViewController.addAction(okAction)
             present(alertViewController, animated: true, completion: nil)
         }
-
+        
     }
     
     
     // MARK: - Bluetooth scanning
-    
+    /*
     func pauseScan() {
         // Scanning uses up battery on phone, so pause the scan process for the designated interval.
         print("*** PAUSING SCAN...")
@@ -2543,11 +2928,11 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         }
     }
     
+    */
     
-
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-
-        print("Central Manger didDiscoverPeripheral: \(peripheral), \(advertisementData), \(RSSI)")
+        
+        print("CENTRAL MANGER DID DISCOVERED PERIPHERAL: \(peripheral), \(advertisementData), \(RSSI)")
         
         if let name = peripheral.name {
             if hrSensorName != nil && name != self.hrSensorName{
@@ -2556,23 +2941,25 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             
             hrSensorName = name
             print(hrSensorName as Any)
-        
+            
         }
         //To be safe we need to use guard let
         
         if let advertisedServiceUUIDs = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID]{
             
-            print("Servcies are such that: \(advertisedServiceUUIDs)")
+            print("SERVICES ARE SUCH THAT: \(advertisedServiceUUIDs)")
         }
         
         let deviceName = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString
         
-        print("Peripheral name: \(String(describing: deviceName))")
-        print("Peripheral uuid: \(peripheral.identifier.uuidString)")
+        print("PERIPHERAL NAME: \(String(describing: deviceName))")
+        print("PERIPHERAL UUID: \(peripheral.identifier.uuidString)")
         
         if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
-            print("We found device and connecting now!!")
+            print("WE FOUND THE DEVICE THAT WE ARE LOOKING FOR!!!")
             // Stop scanning
+            
+            print("PERIPHERAL NAME: \(String(describing: localName))")
             
             self.centralManager.stopScan()
             //keepScanning = false
@@ -2583,35 +2970,35 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             // set the delegate property to point to the view controller
             self.deviceConnectTo?.delegate = self
             
-            print("Request a conncetion to the peripheral")
+            print("REQUEST A CONNECTION TO THE PERIPHERAL")
             centralManager.connect(self.deviceConnectTo!, options: nil)
             
         } else {
-        
+            
             print("Can't not unwrap advertisementData[CBAdvertisementDataLocalNameKey]")
         }
         /*
-        if deviceName?.contains(WahooHeartMonitorSensor) == true {
-            print("We found device and connecting now!!")
-            // Stop scanning
-            
-            self.centralManager.stopScan()
-            //keepScanning = false
-            //self.centralManager.stopScan()
-            
-            // Save a refence to the sensor tag
-            self.deviceConnectTo = peripheral
-            // set the delegate property to point to the view controller
-            self.deviceConnectTo?.delegate = self
-            
-            print("Request a conncetion to the peripheral")
-            centralManager.connect(self.deviceConnectTo!, options: nil)
-        }
+         if deviceName?.contains(WahooHeartMonitorSensor) == true {
+         print("We found device and connecting now!!")
+         // Stop scanning
+         
+         self.centralManager.stopScan()
+         //keepScanning = false
+         //self.centralManager.stopScan()
+         
+         // Save a refence to the sensor tag
+         self.deviceConnectTo = peripheral
+         // set the delegate property to point to the view controller
+         self.deviceConnectTo?.delegate = self
+         
+         print("Request a conncetion to the peripheral")
+         centralManager.connect(self.deviceConnectTo!, options: nil)
+         }
          */
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("Seccessfully connected to the device")
+        print("WE ARE NOW SUCCESSFULLY CONNECTED TO THE DEVICE")
         
         
         // -NOTE: we pass nil to request ALL services be discovered.
@@ -2619,23 +3006,21 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
         // Doing so saves battery life and saves time.
         
         peripheral.discoverServices(nil)
-        print("---- peripheral state is \(peripheral.state)")
+        print("---- PERIPHERAL STATE IS \(peripheral.state)")
     }
-
+    
     // When bluetooth connection is failed!!
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        print("CONNECTION to heart rate monitor failed!", error.debugDescription)
+        print("CONNECTION TO HEART RATE MONITOR IS FAILED!", error.debugDescription)
     }
-
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         // Core Bluetooth creates an array of CBService objects
         // one for each service that is discovered on the peripheral
         
-        //A026E01D-0A7D-4AB3-97FAF1500F9FEB8B
-        
         if error != nil {
-            print("!!! --- error in didDiscoverServices: \(String(describing: error?.localizedDescription))")
-        
+            print("!!! --- ERROR IN DID DISCOVER SERVICES: \(String(describing: error?.localizedDescription))")
+            
         }
         
         if let services = peripheral.services {
@@ -2644,33 +3029,33 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
                 
                 peripheral.discoverCharacteristics(nil, for: service)
                 /*
-                switch service.uuid {
-                case ServiceUUID.uuid(enumName: .HeartRate):
-                    print("Discovered heart rate service!")
-                    peripheral.discoverCharacteristics(HeartRateCharacteristicUUID.uuids(enumNames: [.HeartRateMeasurement, .BodySensorLocation]), for: service)
-                case ServiceUUID.uuid(enumName: .DeviceInformation):
-                    print("Discovered device information service!")
-                    
-                default:
-                    print("unrecognized service: \(service.uuid)")
-                }
+                 switch service.uuid {
+                 case ServiceUUID.uuid(enumName: .HeartRate):
+                 print("Discovered heart rate service!")
+                 peripheral.discoverCharacteristics(HeartRateCharacteristicUUID.uuids(enumNames: [.HeartRateMeasurement, .BodySensorLocation]), for: service)
+                 case ServiceUUID.uuid(enumName: .DeviceInformation):
+                 print("Discovered device information service!")
+                 
+                 default:
+                 print("unrecognized service: \(service.uuid)")
+                 }
                  */
-            
+                
             }
             
             /*
-            for service in services{
-            
-                if service.uuid == CBUUID(string: Device.totalServiceUUID){
-                    print("We found the specific service we want and now let's find characteristics")
-                    peripheral.discoverCharacteristics(nil, for: service)
-                
-                }
-            }
+             for service in services{
+             
+             if service.uuid == CBUUID(string: Device.totalServiceUUID){
+             print("We found the specific service we want and now let's find characteristics")
+             peripheral.discoverCharacteristics(nil, for: service)
+             
+             }
+             }
              */
-        
+            
         }
-
+        
     }
     
     
@@ -2688,34 +3073,31 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         
         if error != nil {
-            print("Error Discovering Characteristics: \(String(describing: error?.localizedDescription))")
+            print("ERROR IN DID DISCOVER CHARACTERISTICS: \(String(describing: error?.localizedDescription))")
             return
-        
+            
         }
         else {
             
-            
-            
-            
-            if service.uuid == CBUUID(string: "180D"){
+            if service.uuid == CBUUID(string: Device.HEART_RATE_DEVICE){
                 for characteristic in service.characteristics! as [CBCharacteristic]{
                     switch characteristic.uuid.uuidString {
-                    case "2A37":
+                    case Characteristic.HEART_RATE_MEASUREMENT:
                         // Set notification on heart rate measurement
                         print("Found a Heart Rate Measurement Characteristic")
                         peripheral.setNotifyValue(true, for: characteristic)
                         
-                    case "2A38":
+                    case Characteristic.BODY_SENSOR_LOCATION:
                         // Read body sensor location
                         print("Found a Body Sensor Location Characteristic")
                         peripheral.readValue(for: characteristic)
-                    
-                    case "2A29":
+                        
+                    case Characteristic.HRM_MANUFACTURER_NAME:
                         //Read body sensor location
                         print("Found a HRM manufacturer name Characteristic")
                         peripheral.readValue(for: characteristic)
                         
-                    case "2A39":
+                    case Characteristic.HEART_RATE_CONTROL_POINT:
                         print("Found a Heart Rate Control Point Characteristic")
                         var rawArray:[UInt8] = [0x01]
                         let data = NSData(bytes: &rawArray, length: rawArray.count)
@@ -2724,42 +3106,62 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
                     default:
                         print("default")
                     }
-                
+                    
                 }
-            
-            
+                
             }
             
             
             /*
-            guard let characteristics = service.characteristics else { return }
-            var enableValue:UInt8 = 1
-            let enableBytes = NSData(bytes: &enableValue, length: MemoryLayout<UInt8>.size)
-            
-            for characteristic in characteristics {
-            
-                if characteristic.uuid == HeartRateCharacteristicUUID.uuid(enumName: .HeartRateMeasurement){
-                
-                    
-                    if characteristic.properties.contains(.notify){
-                        self.deviceConnectTo?.setNotifyValue(true, for: characteristic)
-                    
-                    } else {
-                        print("HR sensor non-compliant with spec. HR measurement not NOTIFY capable")
-                    }
-                    
-                    //self.heartRateMonitorCharacteristic = characteristic
-                    //self.deviceConnectTo?.setNotifyValue(true, for: characteristic)
-                } else {
-                    if characteristic.properties.contains(.read){
-                    
-                        peripheral.readValue(for: characteristic)
-                    }
-                
-                }
-                
+             guard let characteristics = service.characteristics else { return }
+             var enableValue:UInt8 = 1
+             let enableBytes = NSData(bytes: &enableValue, length: MemoryLayout<UInt8>.size)
+             
+             for characteristic in characteristics {
+             
+             if characteristic.uuid == HeartRateCharacteristicUUID.uuid(enumName: .HeartRateMeasurement){
+             
+             
+             if characteristic.properties.contains(.notify){
+             self.deviceConnectTo?.setNotifyValue(true, for: characteristic)
+             
+             } else {
+             print("HR sensor non-compliant with spec. HR measurement not NOTIFY capable")
+             }
+             
+             //self.heartRateMonitorCharacteristic = characteristic
+             //self.deviceConnectTo?.setNotifyValue(true, for: characteristic)
+             } else {
+             if characteristic.properties.contains(.read){
+             
+             peripheral.readValue(for: characteristic)
+             }
+             
+             }
+             
+             }
+             */
+        }
+        
+    }
+    
+
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        
+        print("---- didUpdateValueForCharacteristic")
+        
+        if error != nil {
+            print("Error on updating value for the characteristics: \(String(describing: error?.localizedDescription))" )
+            return
+        } else {
+            switch characteristic.uuid.uuidString {
+            case "2A37":
+                update(heartRateData: characteristic.value!)
+            default:
+                print("--- something other than 2A37 uuid characteristic")
             }
-            */
+            
         }
         
     }
@@ -2783,71 +3185,40 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             print(actualBpm)
             self.heartRate.text = "\(actualBpm) bpm"
             if heartRateTag == 1 {
+                heartRateLabel.text = "\(actualBpm) bpm"
                 heartRateList.append(Int(actualBpm))
             }
             
             
         }else {
-            //label1.text = ("\(bpm!)")
             print(bpm!)
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        
-        print("---- didUpdateValueForCharacteristic")
-        
-        if error != nil {
-            print("Error on updating value for the characteristics: \(String(describing: error?.localizedDescription))" )
-            return
-        } else {
-            switch characteristic.uuid.uuidString {
-            case "2A37":
-                update(heartRateData: characteristic.value!)
-            default:
-                print("--- something other than 2A37 uuid characteristic")
-            }
-        
-        }
-        
-        /*
-        guard let dataBytes = characteristic.value else {
-            
-            print("no value")
-            return
-        }
-        
-        //print("hear rate measurement value is \(dataBytes)")
-        //renderHeartRateMeasurement(value: dataBytes as NSData)
-        
-        if characteristic.uuid == CBUUID(string: Device.characteristicUUID){
-            displayHeartRate(data: dataBytes as NSData)
-        }
-        */
-    }
+    
     
     /*
+     
+     func displayHeartRate(data: NSData) {
+     
+     let dataLength = data.length / MemoryLayout<UInt16>.size
+     
+     var dataArray = [UInt16](repeating: 0, count: dataLength)
+     data.getBytes(&dataArray, length: dataLength * MemoryLayout<UInt16>.size)
+     
+     
+     //Output values for debugging/diagnostic purpose
+     for i in 0..<dataLength {
+     
+     let nextInt:UInt16 = dataArray[i]
+     print("Next Int: \(nextInt)")
+     }
+     
+     
+     
+     }
+     */
     
-    func displayHeartRate(data: NSData) {
-    
-        let dataLength = data.length / MemoryLayout<UInt16>.size
-    
-        var dataArray = [UInt16](repeating: 0, count: dataLength)
-        data.getBytes(&dataArray, length: dataLength * MemoryLayout<UInt16>.size)
-        
-        
-        //Output values for debugging/diagnostic purpose
-        for i in 0..<dataLength {
-        
-            let nextInt:UInt16 = dataArray[i]
-            print("Next Int: \(nextInt)")
-        }
-        
-        
-        
-    }
-    */
-
 }
 
 //*************************************************************************************************************************************//
@@ -2858,30 +3229,30 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
 // MARK - DIRECTION HEADING HANDLING EXTENSION FUNCTION
 //*************************************************************************************************************************************//
 extension RiderStatusViewController{
-
+    
     
     func RadiansToDegrees(radians: Double) -> Double {
         return (radians * 190.0/Double.pi)
     }
     
     func DegreesToRadians(degrees: Double) -> Double {
-    
+        
         return (degrees * Double.pi/180.0)
     }
     
     
     /*
-    func imageRotatedByDegrees(degrees: CGFloat, image: UIImage) -> UIImage {
-    
-        var size = image.size
-        
-        
-        UIGraphicsBeginImageContext(size)
-        var context = UIGraphicsGetCurrentContext()
-        
-        //CGAffineTransform(
-        
-    }
+     func imageRotatedByDegrees(degrees: CGFloat, image: UIImage) -> UIImage {
+     
+     var size = image.size
+     
+     
+     UIGraphicsBeginImageContext(size)
+     var context = UIGraphicsGetCurrentContext()
+     
+     //CGAffineTransform(
+     
+     }
      */
     
     func setLatLongForBearingAngle(userLocation: CLLocation) -> Double {
@@ -2963,10 +3334,10 @@ extension RiderStatusViewController: SegueHandlerType {
             
         case .setting:
             _ = segue.destination as! SettingViewController
-       
+            
         case .termsAndPrivacy:
             _ = segue.destination as! TermsAndPrivacyViewController
-        
+            
         case .bikeTypes:
             _ = segue.destination as! BikeTypesViewController
             

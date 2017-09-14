@@ -35,7 +35,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         
         return imageView
     }()
-
+    
     
     let emailTextfield: UITextField = {
         let email = UITextField(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
@@ -71,7 +71,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         password.textColor = UIColor.white
         password.attributedPlaceholder = NSAttributedString(string: "  Password", attributes: [NSForegroundColorAttributeName: UIColor(white: 1.0, alpha: 0.7)])
         password.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return password
     }()
     
@@ -90,14 +90,14 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         return button
     }()
     func loginAction() {
-    
+        
         guard let email = emailTextfield.text else { return }
         guard let password = passwordField.text else { return }
         
         let isEmailAddressValid = StringVerification.emailValidation(emailAddressString: email)
         
         if isEmailAddressValid {
-        
+            
             print("Email Address is valid")
             
         } else {
@@ -107,19 +107,17 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
             alertViewController.addAction(cancel)
             present(alertViewController, animated: true, completion: nil)
             return
-        
+            
         }
-
+        ProgressHUD.show("Progress...", interaction: false)
+        
         
         AuthService.signIn(email: email, password: password, onSuccess: {
+            ProgressHUD.showSuccess("Success")
             self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.loginButton)
         }, onError: { error in
-            
             guard let err = error else { return }
-            let alertViewController = UIAlertController(title: "Authentication Error", message: "\(String(describing: err))", preferredStyle: .alert)
-            let cancel = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alertViewController.addAction(cancel)
-            self.present(alertViewController, animated: true, completion: nil)
+            ProgressHUD.showError(err)
         })
         
         
@@ -142,7 +140,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         self.performSegue(withIdentifier: "LoginToSignupSegue", sender: self.signupButton)
     }
     
-
+    
     
     lazy var signInWithTouchIDButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
@@ -157,9 +155,9 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     }()
     
     func signInWithTouchID() {
-    
+        
         authenticationWithTouchID()
-    
+        
     }
     
     
@@ -187,10 +185,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
                         }, onError: { error in
                             
                             guard let err = error else { return }
-                            let alertViewController = UIAlertController(title: "Authentication Error", message: "\(String(describing: err))", preferredStyle: .alert)
-                            let cancel = UIAlertAction(title: "OK", style: .default, handler: nil)
-                            alertViewController.addAction(cancel)
-                            self.present(alertViewController, animated: true, completion: nil)
+                            ProgressHUD.showError(err)
                         })
                     }
                     
@@ -248,24 +243,24 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     //*****************************************************************************************************************************//
     
     /*
-    lazy var googleSignInButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        button.contentMode = .scaleAspectFit
-        button.backgroundColor = UIColor.clear
-        button.tintColor = UIColor.white
-        button.setImage(UIImage(named: "googleIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        
-        button.addTarget(self, action: #selector(googleLogin), for: .touchUpInside)
-        
-        return button
-    }()
-    
-    func googleLogin() {
-        //let button = GIDSignInButton()
-    
-        
-    }
-    */
+     lazy var googleSignInButton: UIButton = {
+     let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+     button.contentMode = .scaleAspectFit
+     button.backgroundColor = UIColor.clear
+     button.tintColor = UIColor.white
+     button.setImage(UIImage(named: "googleIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
+     
+     button.addTarget(self, action: #selector(googleLogin), for: .touchUpInside)
+     
+     return button
+     }()
+     
+     func googleLogin() {
+     //let button = GIDSignInButton()
+     
+     
+     }
+     */
     
     fileprivate func setupGoogle() {
         let googleButton = GIDSignInButton()
@@ -287,7 +282,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //let keyChain = DataServiceFirebase().keyChain
-
+        
     }
     
     
@@ -313,7 +308,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+        
         self.view.backgroundColor = UIColor.black
         
         
@@ -328,29 +323,29 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         //view.addSubview(googleSignInButton)
         
         _ = mainLogoImage.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 100, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 100)
-            mainLogoImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        mainLogoImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
         _ = emailTextfield.anchor(nil, left: nil, bottom: view.centerYAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 5, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            emailTextfield.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        emailTextfield.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = passwordField.anchor(view.centerYAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            passwordField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        passwordField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = loginButton.anchor(passwordField.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = signupButton.anchor(loginButton.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 50)
-            signupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        signupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = signInWithTouchIDButton.anchor(nil, left: nil, bottom: view.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 300, heightConstant: 30)
-            signInWithTouchIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        signInWithTouchIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         //_ = googleSignInButton.anchor(passwordField.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
-            //googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        //googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         handleTextField()
         //setupGoogle()
     }
-
+    
 }

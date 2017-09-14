@@ -13,14 +13,14 @@ import GooglePlaces
 import CoreData
 
 class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UICollectionViewDelegateFlowLayout {
-
+    
     var location: [Locations]?
     
     var arrayRide: [Ride]?
     
     
     private let cellId = "cellId"
-
+    
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -35,7 +35,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! RideCell
         if let ride = arrayRide?[indexPath.item]{
             cell.ride = ride
-        
+            
         }
         
         return cell
@@ -89,8 +89,8 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         return segment
     }()
     
-
-    lazy var fetchedResultesController: NSFetchedResultsController = { () -> NSFetchedResultsController<Ride> in 
+    
+    lazy var fetchedResultesController: NSFetchedResultsController = { () -> NSFetchedResultsController<Ride> in
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
@@ -103,14 +103,14 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     
     
     func changeDataSort(sender: UISegmentedControl){
-    
+        
         let context = getContext()
         let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
-
-    
+        
+        
         
         if sender.selectedSegmentIndex == 0{
-        
+            
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
             
             do {
@@ -129,10 +129,10 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
                 print("Error with request: \(error)")
                 
             }
-        
+            
         }
         else if sender.selectedSegmentIndex == 1{
-        
+            
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "distance", ascending: false)]
             
             do {
@@ -152,9 +152,9 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         }
         else {
             print("There is an error")
-        
+            
         }
-    
+        
     }
     
     override func viewDidLoad() {
@@ -163,9 +163,9 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         
         do {
             try fetchedResultesController.performFetch()
-        
+            
         } catch {
-        
+            
             print("There was an error")
         }
         
@@ -187,7 +187,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         collectionView?.register(RideCell.self, forCellWithReuseIdentifier: cellId)
         collectionView?.alwaysBounceVertical = true
         collectionView?.alwaysBounceHorizontal = false
-
+        
         loadData()
         //clearData()
         
@@ -204,10 +204,10 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     }
     
     
-   
     
-
-
+    
+    
+    
     
     func getContext () -> NSManagedObjectContext {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -237,7 +237,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     }
     
     func clearData() {
-    
+        
         let context = getContext()
         let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
         
@@ -246,7 +246,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
             
             for ride in Rides {
                 context.delete(ride)
-            
+                
             }
             
             try(context.save())
@@ -255,26 +255,26 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
             print("Error with request: \(error)")
             
         }
-    
-    }
-    
-
-
-
-    /*
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return listItems.count
-    }
-
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")! as UITableViewCell
-        let item = listItems[indexPath.row]
         
-        print(item)
-        cell.textLabel?.text = ride.name! as String
-        return cell
     }
+    
+    
+    
+    
+    /*
+     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+     return listItems.count
+     }
+     
+     
+     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")! as UITableViewCell
+     let item = listItems[indexPath.row]
+     
+     print(item)
+     cell.textLabel?.text = ride.name! as String
+     return cell
+     }
      */
     
 }
@@ -286,7 +286,7 @@ class RideCell: BaseCells {
     fileprivate let path = GMSMutablePath()
     
     var ride: Ride? {
-    
+        
         didSet{
             
             nameOfTheRoute.text = ride?.name
@@ -308,7 +308,7 @@ class RideCell: BaseCells {
             
             
         }
-    
+        
     }
     
     
@@ -321,9 +321,9 @@ class RideCell: BaseCells {
             locations.count > 0
             else {
                 /*
-                let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-                present(alert, animated: true)*/
+                 let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
+                 alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                 present(alert, animated: true)*/
                 print("Error")
                 return
         }
@@ -349,9 +349,9 @@ class RideCell: BaseCells {
             
             
             mapView.animate(with: update)
-        
+            
         }
-
+        
     }
     
     let nameOfTheRoute: UILabel = {
@@ -399,7 +399,7 @@ class RideCell: BaseCells {
         return time
         
     }()
-
+    
     let mapView: GMSMapView = {
         let map = GMSMapView()
         map.mapType = .normal
@@ -431,9 +431,9 @@ class RideCell: BaseCells {
     
     override func setupViews() {
         backgroundColor = UIColor.black
-            //UIColor(red:0.95, green:0.95, blue:0.96, alpha:1.00)
+        //UIColor(red:0.95, green:0.95, blue:0.96, alpha:1.00)
         
-        addSubview(lightBackgroundView)
+        //addSubview(lightBackgroundView)
         addSubview(mapView)
         addSubview(dividerLineView)
         
@@ -441,8 +441,8 @@ class RideCell: BaseCells {
         
         
         // light Background image constraints
-        addConstraintsWithFormat(format: "H:|[v0]|", views: lightBackgroundView)
-        addConstraintsWithFormat(format: "V:|[v0]|", views: lightBackgroundView)
+        //addConstraintsWithFormat(format: "H:|[v0]|", views: lightBackgroundView)
+        //addConstraintsWithFormat(format: "V:|[v0]|", views: lightBackgroundView)
         
         
         // mapView constraints in the UICollectionView
@@ -450,11 +450,11 @@ class RideCell: BaseCells {
         addConstraintsWithFormat(format: "V:[v0(80)]", views: mapView)
         
         addConstraints([NSLayoutConstraint(item: mapView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)])
-
+        
         // dividerLineView constraints in the UICollectionView
         addConstraintsWithFormat(format: "H:|[v0]|", views: dividerLineView)
         addConstraintsWithFormat(format: "V:[v0(1)]|", views: dividerLineView)
-
+        
         
         
     }
@@ -463,7 +463,7 @@ class RideCell: BaseCells {
         let containerView = UIView()
         containerView.backgroundColor = UIColor.clear
         addSubview(containerView)
-    
+        
         addConstraintsWithFormat(format: "H:|-100-[v0]|", views: containerView)
         addConstraintsWithFormat(format: "V:[v0(80)]", views: containerView)
         
@@ -493,21 +493,21 @@ class RideCell: BaseCells {
         // speed Label constraints
         containerView.addConstraintsWithFormat(format: "H:|-10-[v0(100)]|", views: averageSpeed)
         containerView.addConstraintsWithFormat(format: "V:|-55-[v0(20)]|", views: averageSpeed)
-    
-    
+        
+        
         // Duratin Label constraints
         containerView.addConstraintsWithFormat(format: "H:|-120-[v0(100)]|", views: duration)
         containerView.addConstraintsWithFormat(format: "V:|-55-[v0(20)]|", views: duration)
         
     }
-
+    
 }
 
 
 
 class BaseCells: UICollectionViewCell {
-
-
+    
+    
     override init(frame: CGRect){
         super.init(frame: frame)
         setupViews()
@@ -522,5 +522,5 @@ class BaseCells: UICollectionViewCell {
         
         
     }
-
+    
 }

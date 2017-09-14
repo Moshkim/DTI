@@ -10,19 +10,6 @@
 import CoreBluetooth
 
 
-struct Device {
-    
-    //Heart Rate Monitor UUID
-    //Wahoo Fitness Equipment Service
-    
-    static let heartRateServiceInfoUUID = "180A"
-    
-    static let totalServiceUUID = "A026EE07-0A7D-4AB3-97FAF1500F9FEB8B"
- 
-    
-    
-    static let characteristicUUID = "A026E01D-0A7D-4AB3-97FAF1500F9FEB8B"
-}
 
 
 enum ServiceUUID: String{
