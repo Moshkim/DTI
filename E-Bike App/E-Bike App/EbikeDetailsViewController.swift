@@ -323,7 +323,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         graphView.shouldAdaptRange = false
         graphView.adaptAnimationType = ScrollableGraphViewAnimationType.easeOut
         graphView.animationDuration = 0.5
-        graphView.rangeMax = 500
+        graphView.rangeMax = 100
         graphView.shouldRangeAlwaysStartAtZero = true
         graphView.showsVerticalScrollIndicator = true
         graphView.showsHorizontalScrollIndicator = true
@@ -662,40 +662,43 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         
         
-        let locationPoints = ride.locations?.array as! [Locations]
+        
+        
+        let locationPoints = ride?.locations?.array as! [Locations]
         
         for i in 0..<locationPoints.count{
-            if locationPoints[i].elevation > 0{
+            if locationPoints[i].elevation > 0 {
                 let elevation = locationPoints[i].elevation
                 let lat = locationPoints[i].latitude
                 let long = locationPoints[i].longitude
                 let position = CLLocation(latitude: lat, longitude: long)
                 
+                print(elevation)
                 elevationTempLabels.append(position)
                 
                 elevationData.append(elevation)
             }
-            //elevationLabels.append(String(format: "%.1f",FormatDisplay.distance(Measurement(value: distanceFromStart, unit: UnitLength.meters))))
+            
         }
         
         var cumulativeDistance = 0.0
         
+        
         for i in 0..<elevationTempLabels.count {
             if i == 0 {
                 self.elevationLabels.append(String(format: "%.1f", 0.0))
-            
+                
             } else {
                 cumulativeDistance += self.elevationTempLabels[i].distance(from: self.elevationTempLabels[i-1])
                 let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
-                
-                
+                //self.elevationLabels.append(String(format: "%.1f", cumulativeDistance))
                 self.elevationLabels.append(String(format: "%.1f", cumulativeDistanceInMiles))
             }
-        
+            
         }
         
-        
         graphView.set(data: elevationData, withLabels: elevationLabels)
+        
         
     }
     

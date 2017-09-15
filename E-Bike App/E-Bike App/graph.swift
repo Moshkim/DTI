@@ -45,7 +45,7 @@ struct Graph {
         graphView.shouldAdaptRange = false
         graphView.adaptAnimationType = ScrollableGraphViewAnimationType.easeOut
         graphView.animationDuration = 0.5
-        graphView.rangeMax = 500
+        graphView.rangeMax = 100
         graphView.shouldRangeAlwaysStartAtZero = true
         graphView.showsVerticalScrollIndicator = true
         graphView.showsHorizontalScrollIndicator = true

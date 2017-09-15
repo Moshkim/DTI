@@ -1,13 +1,4 @@
-//
-//  GooglePlacesAutocomplete.swift
-//  GooglePlacesAutocomplete
-//
-//  Created by Howard Wilson on 10/02/2015.
-//  Copyright (c) 2015 Howard Wilson. All rights reserved.
-//
-//
-//  Created by Dmitry Shmidt on 6/28/15.
-//  Copyright (c) 2015 Dmitry Shmidt. All rights reserved.
+
 
 import UIKit
 import CoreLocation

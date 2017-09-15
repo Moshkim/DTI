@@ -392,7 +392,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             /******************************************************************************************************/
             
-            let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom: 18, bearing: cameraBearing, viewingAngle: 25)
+            let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom:15, bearing: cameraBearing, viewingAngle: 25)
             self.mapView.animate(to: camera)
             startEbike()
         }
@@ -424,7 +424,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             //let heading = trueHeading*Double.pi/180
             
             let head = locationManager.location?.course ?? 0
-            self.cameraBearing = head
+            self.cameraBearing = trueHeading
             //userCurrentLocationMarker.rotation = trueHeading
             //userCurrentLocationMarker.map = mapView
             
@@ -625,7 +625,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         self.cameraTag = 0
         //UIScreen.main.brightness = CGFloat(0.7)
         
-        let camera = GMSCameraPosition.camera(withTarget: position, zoom: 18, bearing: cameraBearing, viewingAngle: 25)
+        let camera = GMSCameraPosition.camera(withTarget: position, zoom: 15, bearing: cameraBearing, viewingAngle: 25)
         self.mapView.animate(to: camera)
         /*
         if cameraBearing != nil{
@@ -677,7 +677,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             self.infoMarker.snippet = place.formattedAddress
             self.infoMarker.map = self.mapView
             
-            let camera = GMSCameraPosition.camera(withTarget: place.coordinate, zoom: 10)
+            let camera = GMSCameraPosition.camera(withTarget: place.coordinate, zoom: 12)
             self.mapView.animate(to: camera)
             
             self.drawRouteBetweenTwoPoints(coordinate: place.coordinate)
@@ -1748,7 +1748,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             
             
-            if age < 10 && location.horizontalAccuracy > 0 && location.horizontalAccuracy <= 50 {
+            if age < 10 && location.horizontalAccuracy > 0 && location.horizontalAccuracy <= 100 {
                 print("Location quality is good enough")
                 
                 //if let kalmanLocation = hcKalmanFilter?.processState(currentLocation: location) {
@@ -2405,6 +2405,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         }
         locationManager.startUpdatingLocation()
+        let camera = GMSCameraPosition(target: (self.mapView.myLocation?.coordinate)!, zoom: 15, bearing: 0, viewingAngle: 25)
+        mapView.animate(to: camera)
         
         mySearchButton.isHidden = true
         coffeSearchButton.isHidden = true
@@ -2549,14 +2551,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         }
         
         
-        if newRide.address != nil {
-            newRide.address = address[address.count/2]
+        if address.count > 0 {
+            newRide.address = address[0]
+        } else {
+            newRide.address = "No address is registered"
         }
+        
         
 
         for location in locationList {
             let locationObject = Locations(context: CoreDataStack.context)
-            locationObject.elevation = location.altitude
+            locationObject.elevation = location.altitude as Double
             locationObject.timestamp = location.timestamp as NSDate?
             locationObject.latitude = location.coordinate.latitude
             locationObject.longitude = location.coordinate.longitude
