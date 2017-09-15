@@ -160,6 +160,20 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         return label
     }()
     
+    var maxElevationLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .left
+        label.textColor = UIColor.white
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.backgroundColor = UIColor.clear
+        
+        return label
+        
+    }()
+    
     var addressLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textColor = UIColor.white
@@ -318,17 +332,20 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
                 let long = locationPoints[i].longitude
                 let position = CLLocation(latitude: lat, longitude: long)
                 
-                print(elevation)
+                //print(elevation)
                 elevationTempLables.append(position)
                 
-                elevationData.append(elevation)
+                elevationData.append(elevation*(3.28084))
             }
             
         }
         
         var cumulativeDistance = 0.0
         
-        print("******************************************************************************************************************************************************************************")
+        guard let maxElevationPoint = elevationData.max() else { return }
+        maxElevationLabel.text = "Max Elev: \(String(format: "%.1f", maxElevationPoint)) ft"
+        
+        //print("******************************************************************************************************************************************************************************")
         
         for i in 0..<elevationTempLables.count {
             if i == 0 {
@@ -498,7 +515,12 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         
         
         // Average Moving Speed
+        view.addSubview(maxElevationLabel)
+        
+        
+        // Average Moving Speed
         view.addSubview(heartRateLabel)
+        
         
         // Address
         view.addSubview(addressLabel)
@@ -522,8 +544,10 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         
         _ = heartRateLabel.anchor(timeLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
+        _ = maxElevationLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
-        _ = addressLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
+        
+        _ = addressLabel.anchor(maxElevationLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
         
         drawGraph()
         

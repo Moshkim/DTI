@@ -402,6 +402,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         latDirection = marker.position.latitude
         longDirection = marker.position.longitude
+        
+        
         print("wow")
         directionToDestButton.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
         directionToDestButton.isHidden = false
@@ -431,7 +433,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             if cameraTag == 0 {
                 //let camera = GMSCameraUpdate.
-                mapView.animate(toBearing: trueHeading)
+                //mapView.animate(toBearing: trueHeading)
             }
             
         } else {
@@ -669,7 +671,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         infoMarker.map = nil
         
         controller.didSelectGooglePlace{(place) -> Void in
-            print(place.description)
+            //print(place.description)
             
             let position = place.coordinate
             self.infoMarker = GMSMarker(position: position)
@@ -677,8 +679,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             self.infoMarker.snippet = place.formattedAddress
             self.infoMarker.map = self.mapView
             
-            let camera = GMSCameraPosition.camera(withTarget: place.coordinate, zoom: 12)
-            self.mapView.animate(to: camera)
+            //let camera = GMSCameraPosition.camera(withTarget: place.coordinate, zoom: 10)
+            //self.mapView.animate(to: camera)
+            let bounds = GMSCoordinateBounds(coordinate: place.coordinate, coordinate: (self.mapView.myLocation?.coordinate)!)
+            self.mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 30.0))
             
             self.drawRouteBetweenTwoPoints(coordinate: place.coordinate)
             
@@ -737,18 +741,18 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         throw JSONError.ConversionFailed
                     }
                     
-                    print(json)
+                    //print(json)
                     
                     
                     let arrayRoutes = json["routes"] as! NSArray
                     let arrayLegs = (arrayRoutes[0] as! NSDictionary).object(forKey: "legs") as! NSArray
-                    print(arrayLegs)
+                    //print(arrayLegs)
                     let arraySteps = arrayLegs[0] as! NSDictionary
                     
                     
                     let dicDistance = arraySteps["distance"] as! NSDictionary
                     let totalDistance = dicDistance["text"] as! String
-                    self.totalremainingDistance = dicDistance["value"] as! Double
+                    self.totalremainingDistance = (dicDistance["value"] as! Double)*(1/1000)*(1.61)
                     
                     
                     let dicDuration = arraySteps["duration"] as! NSDictionary
@@ -779,7 +783,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         
                         let dic1 = dic["overview_polyline"] as! NSDictionary
                         let points = dic1["points"] as! String
-                        print(points)
+                        //print(points)
                         
                         DispatchQueue.main.async {
                             
@@ -1714,14 +1718,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
 
-
+        /*
         if resetKalmanFilter == true {
             hcKalmanFilter?.resetKalman(newStartLocation: locations.first!)
             resetKalmanFilter = false
         }
-        
+        */
         if startLocation == nil {
-            self.hcKalmanFilter = HCKalmanAlgorithm(initialLocation: locations.first!)
+            //self.hcKalmanFilter = HCKalmanAlgorithm(initialLocation: locations.first!)
             
             startLocation = locations.first
             path.add(startLocation.coordinate)
@@ -1748,7 +1752,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             
             
-            if age < 10 && location.horizontalAccuracy > 0 && location.horizontalAccuracy <= 100 {
+            if age < 10 && location.horizontalAccuracy > 0 && location.horizontalAccuracy <= 50 {
                 print("Location quality is good enough")
                 
                 //if let kalmanLocation = hcKalmanFilter?.processState(currentLocation: location) {
@@ -1762,9 +1766,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                     // Since we search for the place and set the destination we should start tracking
                     if destinationTag == 1 {
-                        totalRemainingDistanceInMiles = (totalremainingDistance/1000)*1.61
+                        //totalRemainingDistanceInMiles = (totalremainingDistance/1000)*1.61
                         // FIXIT - I need to fix the Alert View
-                        if totalRemainingDistanceInMiles < 0.05 && totalRemainingDistanceInMiles > 0.00{
+                        if totalremainingDistance < 0.05 && totalremainingDistance > 0.00{
                             totalDistanceToDestination.text = "Remaining Distance = \(0.0)mi"
                             destinationTag = 0
                             
@@ -1776,11 +1780,22 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                             
                             present(destinationAlertView, animated: true, completion: nil)
                             
-                        } else if totalRemainingDistanceInMiles > 0.05 {
+                        } else if totalremainingDistance > 0.05 {
                             
-                            totalremainingDistance -= lastLocation.distance(from: location)
-                            totalDistanceToDestination.text = "Remaining Distance \n \(String(format: "%.2f",(totalremainingDistance/1000)*1.61))mi"
-                        } else if totalRemainingDistanceInMiles < 0.00{
+                            if lastLocation.distance(from: location) < 10{
+                                let distanceSegnment = (lastLocation.distance(from: location))*(1/1000)*(1.61)
+                                totalremainingDistance -= distanceSegnment
+                                
+                                print("*******************************************************************************************************")
+                                print(totalremainingDistance)
+                                print("*******************************************************************************************************")
+                                print(distanceSegnment)
+                                print("********************************************************************************************************")
+                                
+                                totalDistanceToDestination.text = "Remaining Distance \n \(String(format: "%.2f", totalremainingDistance))mi"
+                            }
+                            
+                        } else if totalremainingDistance < 0.00{
                             totalDistanceToDestination.text = "Distance = There is something wrong with total remaining distance"
                             
                         }
@@ -1831,9 +1846,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                     
                     if cameraTag == 0{
-                        let camera = GMSCameraUpdate.setTarget(location.coordinate, zoom: 18)
+                        let heading = location.course
+                        //let camera = GMSCameraUpdate.setTarget(location.coordinate, zoom: 16)
+                        let camera1 = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 16, bearing: heading, viewingAngle: 25)
                         
-                        mapView.animate(with: camera)
+                        
+                        mapView.animate(to: camera1)
                         reverseGeocodeCoordinate(coordinate: location.coordinate)
                     }
                     
@@ -2738,7 +2756,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         loadFeatures()
         
         // MAIN RIDE STATUS VIEW
-        _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 30)
+        _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 30)
         mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         

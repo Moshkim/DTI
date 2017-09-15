@@ -157,6 +157,20 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         return label
     }()
     
+    var maxElevationLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .left
+        label.textColor = UIColor.white
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.backgroundColor = UIColor.clear
+        
+        return label
+    
+    }()
+    
     var addressLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .left
@@ -281,58 +295,6 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     }
     
     
-    
-    
-    
-    
-    
-    
-    // functions for the graph scrollView
-    
-    fileprivate func createDarkGraph(_ frame: CGRect) -> ScrollableGraphView {
-        let graphView = ScrollableGraphView(frame: frame)
-        graphView.layer.cornerRadius = 5
-        graphView.backgroundFillColor = UIColor.colorFromHex(hexString: "#333333")
-        
-        graphView.lineWidth = 2
-        graphView.lineColor = UIColor.colorFromHex(hexString: "#777777")
-        graphView.lineStyle = ScrollableGraphViewLineStyle.straight
-        
-        graphView.shouldFill = true
-        graphView.fillType = ScrollableGraphViewFillType.gradient
-        graphView.fillColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
-        
-        //UIColor.colorFromHex(hexString: "#555555")
-        graphView.fillGradientType = ScrollableGraphViewGradientType.radial
-        graphView.fillGradientStartColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
-        //UIColor.colorFromHex(hexString: "#555555")
-        graphView.fillGradientEndColor = UIColor(red:0.99, green:0.42, blue:0.80, alpha:1.0)
-        //UIColor.colorFromHex(hexString: "#444444")
-        
-        graphView.dataPointSpacing = 25
-        graphView.dataPointSize = 4
-        graphView.dataPointFillColor = UIColor(red:0.99, green:0.10, blue:0.56, alpha:1.00)
-        
-        graphView.referenceLineLabelFont = UIFont.boldSystemFont(ofSize: 8)
-        graphView.referenceLineColor = UIColor.white.withAlphaComponent(0.2)
-        graphView.referenceLineLabelColor = UIColor.white
-        graphView.numberOfIntermediateReferenceLines = 5
-        graphView.dataPointLabelColor = UIColor.white.withAlphaComponent(0.5)
-        
-        graphView.shouldAnimateOnStartup = true
-        graphView.shouldAdaptRange = false
-        graphView.adaptAnimationType = ScrollableGraphViewAnimationType.easeOut
-        graphView.animationDuration = 0.5
-        graphView.rangeMax = 100
-        graphView.shouldRangeAlwaysStartAtZero = true
-        graphView.showsVerticalScrollIndicator = true
-        graphView.showsHorizontalScrollIndicator = true
-        //graphView.shouldAutomaticallyDetectRange = true
-        
-        graphView.shouldShowLabels = true
-        
-        return graphView
-    }
     
     
     
@@ -494,9 +456,9 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                         //print(self.distanceRelateToElevation)
                         //self.labels.removeAll()
                         
-                        for i in 0..<self.distanceRelateToElevation.count {
+                        //for i in 0..<self.distanceRelateToElevation.count {
                             //self.labels.append(String(format: "%.1f",self.distanceRelateToElevation[i]))
-                        }
+                        //}
                         
                         
                         DispatchQueue.main.async {
@@ -530,7 +492,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         //getElevationInfo()
         
-        graphView = createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 200))
+        graphView = Graph.createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 200))
         
         
         
@@ -577,6 +539,9 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         // Average Moving Speed
         view.addSubview(heartRateLabel)
         
+        // Max Elevation Point
+        view.addSubview(maxElevationLabel)
+        
         // Address
         view.addSubview(addressLabel)
         
@@ -607,8 +572,9 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         _ = heartRateLabel.anchor(timeLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
+        _ = maxElevationLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
-        _ = addressLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
+        _ = addressLabel.anchor(maxElevationLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
         
         
         
@@ -673,13 +639,17 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                 let long = locationPoints[i].longitude
                 let position = CLLocation(latitude: lat, longitude: long)
                 
-                print(elevation)
+                //print(elevation)
                 elevationTempLabels.append(position)
                 
-                elevationData.append(elevation)
+                elevationData.append(elevation*(3.28084))
             }
             
         }
+        
+        guard let maxElevationPoint = elevationData.max() else { return }
+        maxElevationLabel.text = "Max Elev: \(String(format: "%.1f", maxElevationPoint)) ft"
+        
         
         var cumulativeDistance = 0.0
         
