@@ -109,7 +109,7 @@ class SettingMenuSlide: NSObject {
     }()
     
     
-    func moveToMyStatsViewController() {
+    @objc func moveToMyStatsViewController() {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
@@ -145,7 +145,7 @@ class SettingMenuSlide: NSObject {
     }()
     
     
-    func moveToBikeTypesViewController() {
+    @objc func moveToBikeTypesViewController() {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
@@ -181,7 +181,7 @@ class SettingMenuSlide: NSObject {
     }()
     
     
-    func connectToDevices() {
+    @objc func connectToDevices() {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
         
@@ -218,7 +218,7 @@ class SettingMenuSlide: NSObject {
     }()
     
     
-    func moveToTermsAndPrivacyViewController() {
+    @objc func moveToTermsAndPrivacyViewController() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
             self.slideMenuView.layer.shadowOpacity = 0
@@ -262,7 +262,7 @@ class SettingMenuSlide: NSObject {
     
     }()
     
-    func moveToSettingViewController() {
+    @objc func moveToSettingViewController() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
             self.blackView.alpha = 0
             self.slideMenuView.layer.shadowOpacity = 0
@@ -297,7 +297,7 @@ class SettingMenuSlide: NSObject {
         
     }()
     
-    func logoutAction() {
+    @objc func logoutAction() {
         
         
         do {
@@ -415,7 +415,7 @@ class SettingMenuSlide: NSObject {
     
     
     
-    func DismissMenuBar() {
+    @objc func DismissMenuBar() {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             

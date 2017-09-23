@@ -44,7 +44,7 @@ class SignupController: UIViewController {
         return profile
     }()
     
-    func handleSelectProfileImageView() {
+    @objc func handleSelectProfileImageView() {
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
         pickerController.sourceType = .photoLibrary
@@ -65,8 +65,8 @@ class SignupController: UIViewController {
         name.layer.addSublayer(bottomLayer)
         
         name.textColor = UIColor.white
-        name.typingAttributes?[NSForegroundColorAttributeName] = UIColor.white
-        name.attributedPlaceholder = NSAttributedString(string: "  Name", attributes: [NSForegroundColorAttributeName: UIColor(white: 1.0, alpha: 0.7)])
+        name.typingAttributes?[NSAttributedStringKey.font.rawValue] = UIColor.white
+        name.attributedPlaceholder = NSAttributedString(string: "  Name", attributes: [NSAttributedStringKey.foregroundColor: UIColor(white: 1.0, alpha: 0.7)])
         name.translatesAutoresizingMaskIntoConstraints = false
         return name
     }()
@@ -84,8 +84,8 @@ class SignupController: UIViewController {
         
         
         email.textColor = UIColor.white
-        email.typingAttributes?[NSForegroundColorAttributeName] = UIColor.white
-        email.attributedPlaceholder = NSAttributedString(string: "  Email", attributes: [NSForegroundColorAttributeName: UIColor(white: 1.0, alpha: 0.7)])
+        email.typingAttributes?[NSAttributedStringKey.font.rawValue] = UIColor.white
+        email.attributedPlaceholder = NSAttributedString(string: "  Email", attributes: [NSAttributedStringKey.foregroundColor: UIColor(white: 1.0, alpha: 0.7)])
         email.translatesAutoresizingMaskIntoConstraints = false
         return email
     }()
@@ -103,7 +103,7 @@ class SignupController: UIViewController {
         
         password.isSecureTextEntry = true
         password.textColor = UIColor.white
-        password.attributedPlaceholder = NSAttributedString(string: "  Password", attributes: [NSForegroundColorAttributeName: UIColor(white: 1.0, alpha: 0.7)])
+        password.attributedPlaceholder = NSAttributedString(string: "  Password", attributes: [NSAttributedStringKey.foregroundColor: UIColor(white: 1.0, alpha: 0.7)])
         password.translatesAutoresizingMaskIntoConstraints = false
         return password
     }()
@@ -124,7 +124,7 @@ class SignupController: UIViewController {
     }()
     
     
-    func SignupAction() {
+    @objc func SignupAction() {
         
         saveCoreData()
         
@@ -210,7 +210,7 @@ class SignupController: UIViewController {
         return button
     }()
     
-    func backToLoginAction() {
+    @objc func backToLoginAction() {
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -259,7 +259,7 @@ class SignupController: UIViewController {
         passwordTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
-    func textFieldDidChange() {
+    @objc func textFieldDidChange() {
         guard let name = nameTextField.text, !name.isEmpty, let email = emailTextField.text, !email.isEmpty, let password = passwordTextField.text, !password.isEmpty  else {
             print("what?? what?? what??????")
             

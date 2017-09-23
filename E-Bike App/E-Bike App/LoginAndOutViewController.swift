@@ -49,8 +49,8 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         email.layer.addSublayer(bottomLayer)
         
         email.textColor = UIColor.white
-        email.typingAttributes?[NSForegroundColorAttributeName] = UIColor.white
-        email.attributedPlaceholder = NSAttributedString(string: "  Email", attributes: [NSForegroundColorAttributeName: UIColor(white: 1.0, alpha: 0.7)])
+        email.typingAttributes?[NSAttributedStringKey.foregroundColor.rawValue] = UIColor.white
+        email.attributedPlaceholder = NSAttributedString(string: "  Email", attributes: [NSAttributedStringKey.foregroundColor: UIColor(white: 1.0, alpha: 0.7)])
         email.translatesAutoresizingMaskIntoConstraints = false
         return email
     }()
@@ -69,7 +69,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         
         password.isSecureTextEntry = true
         password.textColor = UIColor.white
-        password.attributedPlaceholder = NSAttributedString(string: "  Password", attributes: [NSForegroundColorAttributeName: UIColor(white: 1.0, alpha: 0.7)])
+        password.attributedPlaceholder = NSAttributedString(string: "  Password", attributes: [NSAttributedStringKey.foregroundColor: UIColor(white: 1.0, alpha: 0.7)])
         password.translatesAutoresizingMaskIntoConstraints = false
         
         return password
@@ -89,7 +89,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         button.setTitleColor(UIColor(white: 1.0, alpha:0.7), for: .normal)
         return button
     }()
-    func loginAction() {
+    @objc func loginAction() {
         
         guard let email = emailTextfield.text else { return }
         guard let password = passwordField.text else { return }
@@ -136,7 +136,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         return button
     }()
     
-    func signupAction() {
+    @objc func signupAction() {
         self.performSegue(withIdentifier: "LoginToSignupSegue", sender: self.signupButton)
     }
     
@@ -154,7 +154,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         
     }()
     
-    func signInWithTouchID() {
+    @objc func signInWithTouchID() {
         
         authenticationWithTouchID()
         
@@ -291,7 +291,7 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
         passwordField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
-    func textFieldDidChange() {
+    @objc func textFieldDidChange() {
         guard let email = emailTextfield.text, !email.isEmpty, let password = passwordField.text, !password.isEmpty  else {
             print("Typing the textfields")
             return

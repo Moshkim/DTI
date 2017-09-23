@@ -42,8 +42,8 @@ class AuthService {
                 
                 
                 guard let uid = user?.uid else { return }
-                let storageRef = Storage.storage().reference(forURL: "gs://e-bike-app.appspot.com").child("profile_image").child(uid)
-                let userRef = Database.database().reference(fromURL: "https://e-bike-app.firebaseio.com").child("users").child(uid)
+                let storageRef = Storage.storage().reference(forURL: Config.STORAGE_ROOT_REF).child("profile_image").child(uid)
+                let userRef = Database.database().reference(fromURL: Config.DATABASE_ROOT_REF).child("users").child(uid)
                 
 
                 storageRef.putData(imageData, metadata: nil, completion: { (metaData, error) in

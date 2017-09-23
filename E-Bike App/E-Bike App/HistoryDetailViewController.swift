@@ -11,34 +11,427 @@ import UIKit
 import CoreLocation
 import GoogleMaps
 import GooglePlaces
+import SwiftChart
 
+class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrollViewDelegate, ChartDelegate{
 
-// UICollectionViewController, UICollectionViewDelegateFlowLayout
-class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
-    
-    
+    // Draw The Route on the Map
     fileprivate let path = GMSMutablePath()
     
-    lazy var elevationData = [Double]()
-    lazy var elevationTempLables = [CLLocation]()
-    lazy var elevationLabels = [String]()
+    
+    //Page of Graph
+    var pageOfGraph = 0
+
+    
+    //Elevation Data Chart
+    var elevationGain: Double = 0
+    var isThisFirst: Bool = true
+    var elevationDataPoints = [Float]()
+    var elevationLocationPoints = [CLLocation]()
+    var elevationXLabels = [Float]()
+    
+    //Speed Data Chart
+    var speedData = [Double]()
+    var speedLocationPoints = [CLLocation]()
+    var averageSpeed: Double = 0
+    var speedXLabels = [Float]()
+    
+    
+    //Heart Rate Chart
+    var heartRateData = [Float]()
+    var heartRateLocationPoints = [CLLocation]()
+    var averageHeartRate: Double = 0
+    var heartRateXLabels = [Float]()
+    var isHeartRateDataAvailable: Bool = false
+    
+    
+    /// Scroll view for the three different chart sections: Elevation, Speed, Heart Rate
+    let scrollViewPagingControl: UIPageControl = {
+        let bar = UIPageControl(frame: CGRect(x: 0, y: 0, width:50, height: 10))
+        bar.pageIndicatorTintColor = UIColor.white
+        bar.currentPageIndicatorTintColor = UIColor.DTIRed()
+        bar.numberOfPages = 3
+        return bar
+    }()
+    
+    
+    lazy var scrollView: UIScrollView = {
+        let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 180))
+        //view.layer.cornerRadius = 5
+        view.backgroundColor = UIColor.black
+        view.isPagingEnabled = true
+        view.delegate = self
+        view.showsHorizontalScrollIndicator = false
+        //ScrollView.contentSize = CGSize(width: self.view.bounds.width * CGFloat(featureArray.count), height: 400)
+        view.contentSize = CGSize(width: self.view.bounds.width * CGFloat(3), height: 180)
+        
+        return view
+        
+    }()
+    
+    // This is main frame view on the top of first scroll view
+    lazy var mainFirstFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(0), y: 0, width: self.scrollView.frame.width, height: 180)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
+    
+    // This is main frame view on the top of second scroll view
+    lazy var mainSecondFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(1), y: 0, width: self.scrollView.frame.width, height: 180)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
+    
+    // This is main frame view on the top of third scroll view
+    lazy var mainThirdFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(2), y: 0, width: self.scrollView.frame.width, height: 180)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
+    
+    
+    // Elevation Chart------------------------------------------------------------------------------------------------->
+    var elevationLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        label.backgroundColor = UIColor.clear
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var elevationChart: Chart = {
+        let chart = Chart(frame: CGRect(x: 0, y: 0, width: 200, height: 150))
+        chart.backgroundColor = UIColor.black
+        chart.axesColor = UIColor.white
+        chart.highlightLineColor = UIColor.white
+        chart.highlightLineWidth = 0.5
+        chart.labelColor = UIColor.white
+        chart.areaAlphaComponent = 0.4
+        chart.lineWidth = 1
+        return chart
+    }()
+    // -------------------------------------------------------------------------------------------------------------->
+    
+    // Speed Chart------------------------------------------------------------------------------------------------->
+    var speedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        label.backgroundColor = UIColor.clear
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        return label
+    }()
+    lazy var speedChart: Chart = {
+        let chart = Chart(frame: CGRect(x:0 , y: 0, width: 300, height: 180))
+        chart.backgroundColor = UIColor.black
+        chart.axesColor = UIColor.white
+        chart.highlightLineColor = UIColor.white
+        chart.highlightLineWidth = 0.5
+        chart.labelColor = UIColor.white
+        chart.areaAlphaComponent = 0.4
+        chart.lineWidth = 1
+        return chart
+    }()
+    // -------------------------------------------------------------------------------------------------------------->
+    
+    
+    // Heart Rate Chart------------------------------------------------------------------------------------------------->
+    var heartRateChartLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        label.backgroundColor = UIColor.clear
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        return label
+    }()
+    lazy var heartRateChart: Chart = {
+        let chart = Chart(frame: CGRect(x:0 , y: 0, width: 300, height: 180))
+        chart.backgroundColor = UIColor.black
+        chart.axesColor = UIColor.white
+        chart.highlightLineColor = UIColor.white
+        chart.highlightLineWidth = 0.5
+        chart.labelColor = UIColor.white
+        chart.areaAlphaComponent = 0.4
+        chart.lineWidth = 1
+        return chart
+    }()
+    // -------------------------------------------------------------------------------------------------------------->
+    
+    
+    
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let page = scrollView.contentOffset.x / scrollView.frame.size.width
+        scrollViewPagingControl.currentPage = Int(page)
+        pageOfGraph = Int(page)
+    }
+    
+    
+    func initializedElevationChart() {
+        
+        elevationChart.delegate = self
+        
+        var seriesData:[(x: Float, y: Float)] = []
+        var cumulativeDistance = 0.0
+        var xMilesLabelLength: Int = 0
+        
+        let locationPoints = ride?.locations?.array as! [Locations]
+        
+    
+        
+        for i in 0..<locationPoints.count{
+            if locationPoints[i].elevation > 0 {
+                let elevation = Float(locationPoints[i].elevation*(3.28084))
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                // Check the elevation difference between two locations in sequence order
+                
+                
+                
+                if i > 0 && abs(locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)) > 50 {
+                    print("What is going on???")
+                    let difference = locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)
+                    if difference > 0 {
+                        //current elevation is droping so fast that the elevation is not correct
+                        locationPoints[i].elevation += difference/2
+                    } else if difference < 0 {
+                        //current elevation is way to high that the elevation is not correct
+                        locationPoints[i].elevation -= difference/2
+                    }
+                    
+                }
+                
+                if isThisFirst == true {
+                    elevationGain += locationPoints[i].elevation*(3.28084)
+                    isThisFirst = false
+                    
+                } else {
+                    if locationPoints[i].elevation > locationPoints[i-1].elevation {
+                        elevationGain += locationPoints[i].elevation - locationPoints[i-1].elevation
+                    }
+                }
+                
+                elevationLocationPoints.append(position)
+                elevationDataPoints.append(elevation)
+            }
+            
+        }
+        
+        
+        guard let maxElevationPoint = elevationDataPoints.max() else { return }
+        maxElevationLabel.text = "Max Elev: \(String(format: "%.1f", maxElevationPoint)) ft"
+        gainElevationLabel.text = "Gain Elev: \(String(format: "%.1f", elevationGain)) ft"
+        
+        
+        for i in 0..<elevationDataPoints.count{
+            let elevationDataPoint = elevationDataPoints[i]
+            
+            if i == 0 {
+                seriesData.append((x: Float(0.0),y:elevationDataPoint))
+                
+            } else {
+                cumulativeDistance += self.elevationLocationPoints[i].distance(from: self.elevationLocationPoints[i-1])
+                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
+                seriesData.append((x:Float(cumulativeDistanceInMiles), y:elevationDataPoint))
+                
+            }
+        }
+        xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
+        
+        for i in 0...xMilesLabelLength {
+            elevationXLabels.append(Float(i))
+        }
+        
+        let series = ChartSeries(data: seriesData)
+        series.area = true
+        elevationChart.xLabels = elevationXLabels
+        elevationChart.xLabelsFormatter = { String(Int(round($1))) }
+        elevationChart.add(series)
+        
+    }
+    
+    
+    
+    func initializedSpeedChart() {
+        speedChart.delegate = self
+        
+        var seriesData:[(x: Float, y: Float)] = []
+        var cumulativeDistance = 0.0
+        var xMilesLabelLength: Int = 0
+        
+    
+        let locationPoints = ride?.locations?.array as! [Locations]
+        
+        for i in 0..<locationPoints.count{
+            
+            if locationPoints[i].speed > 1 {
+                let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                
+                speedData.append(eachSpeed)
+                averageSpeed += eachSpeed
+                speedLocationPoints.append(position)
+                
+            }
+            
+        }
+        
+        for i in 0..<speedLocationPoints.count{
+            let speedEachPoint = Float(speedData[i])
+            
+            if i == 0 {
+                seriesData.append((x: Float(0.0),y:speedEachPoint))
+            } else {
+                cumulativeDistance += self.elevationLocationPoints[i].distance(from: self.elevationLocationPoints[i-1])
+                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
+                seriesData.append((x:Float(cumulativeDistanceInMiles), y:speedEachPoint))
+                
+            }
+        }
+        
+        
+        xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
+        
+        for i in 0...xMilesLabelLength {
+            speedXLabels.append(Float(i))
+        }
+        
+        let series = ChartSeries(data: seriesData)
+        series.area = true
+        speedChart.xLabels = elevationXLabels
+        speedChart.xLabelsFormatter = { String(Int(round($1))) }
+        speedChart.add(series)
+        
+        guard let maxSpeed = speedData.max() else { return }
+        print("max speed is \(maxSpeed) mph")
+        print("average moving speed is \(averageSpeed/Double(speedData.count))")
+        
+    }
+    
+    
+    
+    
+    func initializedHeartRateChart() {
+        heartRateChart.delegate = self
+        
+        var seriesData:[(x: Float, y: Float)] = []
+        var cumulativeDistance = 0.0
+        var xMilesLabelLength: Int = 0
+        
+        let locationPoints = ride?.locations?.array as! [Locations]
+    
+        guard let avgHeartRate = ride?.avgheartrate else { return }
+        
+        // Check if there is heart rate data available to us
+        if avgHeartRate > 0 {
+            isHeartRateDataAvailable = true
+            for i in 0..<locationPoints.count{
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                let h_Rate = locationPoints[i].heartRate
+                
+                heartRateData.append(Float(h_Rate))
+                heartRateLocationPoints.append(position)
+            }
+            
+        } else if avgHeartRate == 0 {
+            // No heart rate is available
+            let temp = 68
+            isHeartRateDataAvailable = false
+            for i in 0..<locationPoints.count{
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                
+                heartRateData.append(Float(temp))
+                heartRateLocationPoints.append(position)
+                
+                
+            }
+            
+        }
+        
+        
+        for i in 0..<heartRateLocationPoints.count{
+            let hearRateEachPoint = heartRateData[i]
+            
+            if i == 0 {
+                seriesData.append((x: Float(0.0),y:hearRateEachPoint))
+            } else {
+                cumulativeDistance += self.heartRateLocationPoints[i].distance(from: self.heartRateLocationPoints[i-1])
+                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
+                seriesData.append((x:Float(cumulativeDistanceInMiles), y:hearRateEachPoint))
+                
+            }
+        }
+        
+        
+        xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
+        
+        for i in 0...xMilesLabelLength {
+            heartRateXLabels.append(Float(i))
+        }
+        
+        let series = ChartSeries(data: seriesData)
+        series.area = true
+        heartRateChart.xLabels = heartRateXLabels
+        heartRateChart.xLabelsFormatter = { String(Int(round($1))) }
+        heartRateChart.add(series)
+
+        /*
+        if ride?.arrayOfHeartRate != nil {
+            
+            //heartRateData = heartRateDataFromCoreData as! Array
+            print("HERE WE ARE TESTING!!!!")
+            //seriesData = Float(heartRateDataFromCoreData)
+        } else {
+            var i = 0
+            while i < 100 {
+                seriesData.append(Float(arc4random_uniform(100)))
+                i += 1
+            }
+        }
+        let series = ChartSeries(seriesData)
+        series.area = true
+        
+        
+        for i in 0...10 {
+            heartRateXLabels.append(Float(i))
+        }
+        
+        //heartRateChart.xLabels = heartRateXLabels
+        //heartRateChart.xLabelsFormatter = { String(Int(round($1)))}
+        heartRateChart.add(series)
+         */
+        
+    }
+    
+
     
     
     var ride: Ride? {
         didSet{
             navigationItem.title = ride?.name
-            self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 16)]
+            self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]
             
             let distance = Measurement(value: (ride?.distance)!, unit: UnitLength.meters)
             let seconds = Int((ride?.duration)!)
-            //let movingSeconds = Int((ride?.movingduration)!)
             let formattedDistance = FormatDisplay.distance(distance)
             let formattedDate = FormatDisplay.date(ride?.timestamp as Date?)
             let formattedTime = FormatDisplay.time(seconds)
             let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
-            //let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
+            
             guard let address = ride?.address else { return }
-            guard let heartRate = ride?.heartrate else { return }
+            guard let heartRate = ride?.avgheartrate else { return }
                         
             dateLabel.text = "Date: \(formattedDate)"
             distanceLabel.text = "Distance: \(formattedDistance)"
@@ -64,7 +457,6 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     
     
     let mapView: GMSMapView = {
-        
         let view = GMSMapView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         view.mapType = .normal
         view.layer.cornerRadius = 5
@@ -84,31 +476,30 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     }()
     
     
-    func goBackToMain() {
+    @objc func goBackToMain() {
         _ = navigationController?.popViewController(animated: true)
-        
     }
     
     lazy var deleteButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.clear
         button.tintColor = UIColor.white
         button.setImage(UIImage(named: "deleteButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        
         button.addTarget(self, action: #selector(alertView), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
     }()
     
     lazy var shareButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.clear
         button.tintColor = UIColor.white
         button.setImage(UIImage(named: "shareButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        
         button.addTarget(self, action: #selector(shareInfoAndExport), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
     }()
@@ -164,8 +555,19 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .left
         label.textColor = UIColor.white
-        //label.layer.borderWidth = 0.5
-        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.backgroundColor = UIColor.clear
+        
+        return label
+        
+    }()
+    
+    
+    var gainElevationLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .left
+        label.textColor = UIColor.white
         label.layer.cornerRadius = 5
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.backgroundColor = UIColor.clear
@@ -187,7 +589,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     
     
     
-    func shareInfoAndExport() {
+    @objc func shareInfoAndExport() {
         
         let exportString = createExportString()
         
@@ -276,18 +678,14 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
             }
         }
         
-        
-        
-        
-        //export += "\(name), \(date), \(address), \(duration), \(totalDistance), \(averageSpeed) \n"
         return export
     }
     
-    func alertView() {
+    @objc func alertView() {
         
         let alertController = UIAlertController(title: "Delete this route?", message: "Are you sure?", preferredStyle: .alert)
-        let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 20)]
-        let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 18)]
+        let titleFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.boldSystemFont(ofSize: 20)]
+        let messageFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.systemFont(ofSize: 18)]
         
         let attributedTitle = NSMutableAttributedString(string: "Delete this route?", attributes: titleFont)
         let attributedMessage = NSMutableAttributedString(string: "Are you sure?", attributes: messageFont)
@@ -311,56 +709,19 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         alertController.addAction(deleteButton)
         alertController.addAction(cancelButton)
         present(alertController, animated: true, completion: nil)
-        
-        
     }
+    
     func moveToRefreshedHistory() {
-        //self.performSegue(withIdentifier: .history, sender: self)
-        
-        //_ = navigationController?.popViewController(animated: true)
         self.dismiss(animated: true, completion: nil)
     }
     
     func drawGraph() {
     
-        let locationPoints = ride?.locations?.array as! [Locations]
+
         
-        for i in 0..<locationPoints.count{
-            if locationPoints[i].elevation > 0 {
-                let elevation = locationPoints[i].elevation
-                let lat = locationPoints[i].latitude
-                let long = locationPoints[i].longitude
-                let position = CLLocation(latitude: lat, longitude: long)
-                
-                //print(elevation)
-                elevationTempLables.append(position)
-                
-                elevationData.append(elevation*(3.28084))
-            }
-            
-        }
         
-        var cumulativeDistance = 0.0
-        
-        guard let maxElevationPoint = elevationData.max() else { return }
-        maxElevationLabel.text = "Max Elev: \(String(format: "%.1f", maxElevationPoint)) ft"
-        
-        //print("******************************************************************************************************************************************************************************")
-        
-        for i in 0..<elevationTempLables.count {
-            if i == 0 {
-                self.elevationLabels.append(String(format: "%.1f", 0.0))
-                
-            } else {
-                cumulativeDistance += self.elevationTempLables[i].distance(from: self.elevationTempLables[i-1])
-                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
-                //self.elevationLabels.append(String(format: "%.1f", cumulativeDistance))
-                self.elevationLabels.append(String(format: "%.1f", cumulativeDistanceInMiles))
-            }
-            
-        }
-        
-        graphView.set(data: elevationData, withLabels: elevationLabels)
+        //print("**************************************************************************************************************************")
+
     }
     
     
@@ -385,52 +746,27 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
             let lat = locationPoints[i].latitude
             let long = locationPoints[i].longitude
             let position = CLLocationCoordinate2D(latitude: lat, longitude: long)
+        
             
             
             if i == 0{
-                
                 let startPointMapPin = GMSMarker()
-                
+                startPointMapPin.title = "Start"
                 let markerImage = UIImage(named: "startPin")
-                //!.withRenderingMode(.alwaysTemplate)
-                
                 //creating a marker view
                 let markerView = UIImageView(image: markerImage)
-                
-                startPointMapPin.iconView = markerView
-                
-                startPointMapPin.layer.cornerRadius = 25
-                startPointMapPin.position = position
-                startPointMapPin.title = "Start"
-                startPointMapPin.opacity = 1
-                startPointMapPin.infoWindowAnchor.y = 1
-                startPointMapPin.map = mapView
-                startPointMapPin.appearAnimation = GMSMarkerAnimation.pop
-                startPointMapPin.isTappable = true
+                markerPinConfig(marker: startPointMapPin, imageView: markerView, position: position)
+
                 
             } else if i == locationPoints.count - 1{
-                
                 let endPointMapPin = GMSMarker()
-                
-                
+                endPointMapPin.title = "end"
                 let markerImage = UIImage(named: "endPin")
-                //!.withRenderingMode(.alwaysTemplate)
-                
                 //creating a marker view
                 let markerView = UIImageView(image: markerImage)
-                
-                
-                endPointMapPin.iconView = markerView
-                endPointMapPin.layer.cornerRadius = 25
-                endPointMapPin.position = position
-                endPointMapPin.title = "end"
-                endPointMapPin.opacity = 1
-                endPointMapPin.infoWindowAnchor.y = 1
-                endPointMapPin.map = mapView
-                endPointMapPin.appearAnimation = GMSMarkerAnimation.pop
-                endPointMapPin.isTappable = true
+                markerPinConfig(marker: endPointMapPin, imageView: markerView, position: position)
+
             }
-            
             
             path.add(position)
             bounds = bounds.includingPath(path)
@@ -438,8 +774,8 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         }
         
         let update = GMSCameraUpdate.fit(bounds, withPadding: 1)
-        
         let polyline = GMSPolyline(path: path)
+        
         polyline.strokeWidth = 3
         polyline.geodesic = true
         polyline.strokeColor = UIColor(red:0.14, green:0.17, blue:0.17, alpha:1.00)
@@ -447,6 +783,21 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         
         
         mapView.animate(with: update)
+        
+        
+    }
+    
+    
+    func markerPinConfig(marker: GMSMarker, imageView: UIImageView, position: CLLocationCoordinate2D){
+        
+        marker.iconView = imageView
+        marker.layer.cornerRadius = 25
+        marker.position = position
+        marker.opacity = 1
+        marker.infoWindowAnchor.y = 1
+        marker.map = mapView
+        marker.appearAnimation = GMSMarkerAnimation.pop
+        marker.isTappable = true
         
     }
     
@@ -472,12 +823,75 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
     }
     
     
+    
+    func didTouchChart(_ chart: Chart, indexes: [Int?], x: Float, left: CGFloat) {
+        
+        if let value = chart.valueForSeries(0, atIndex: indexes[0]) {
+            
+            let numberFormatter = NumberFormatter()
+            numberFormatter.minimumFractionDigits = 2
+            numberFormatter.maximumFractionDigits = 2
+            guard let data = numberFormatter.string(from: NSNumber(value: value)) else { return }
+            
+            if pageOfGraph == 0 {
+                elevationLabel.text = "⛰: \(data) ft"
+            } else if pageOfGraph == 1 {
+                speedLabel.text = "🚴🏼: \(String(format: "%.0f", value)) mph"
+            } else if pageOfGraph == 2 {
+                if isHeartRateDataAvailable == true {
+                    heartRateChartLabel.text = "❤️: \(String(format: "%.0f", value)) bpm"
+                    
+                } else {
+                    heartRateChartLabel.text = "❤️: No Data Available"
+                    
+                }
+                
+            }
+            
+            
+            
+            /*
+             // Align the label to the touch left position, centered
+             var constant = labelLeadingMarginInitialConstant + left - (label.frame.width / 2)
+             
+             // Avoid placing the label on the left of the chart
+             if constant < labelLeadingMarginInitialConstant {
+             constant = labelLeadingMarginInitialConstant
+             }
+             
+             // Avoid placing the label on the right of the chart
+             let rightMargin = chart.frame.width - label.frame.width
+             if constant > rightMargin {
+             constant = rightMargin
+             }
+             
+             labelLeadingMarginConstraint.constant = constant
+             */
+        }
+    }
+    func didFinishTouchingChart(_ chart: Chart) {
+        elevationLabel.text = ""
+        speedLabel.text = ""
+        heartRateChartLabel.text = ""
+    }
+    func didEndTouchingChart(_ chart: Chart) {
+        
+    }
+    
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        elevationChart.setNeedsDisplay()
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black
         
         navigationController?.navigationBar.barTintColor = UIColor.black
-        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
         
         let item = UIBarButtonItem(customView: deleteButton)
         let item1 = UIBarButtonItem(customView: shareButton)
@@ -488,15 +902,67 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         navigationItem.leftBarButtonItem = backButton
         
         
-        
-        graphView = Graph.createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 200))
-        
-        
         view.addSubview(mapView)
         
+        // Charts of Elevations, Speed, Heart Rate
+        view.addSubview(scrollView)
         
-        // Graph
-        view.addSubview(graphView)
+        _ = scrollView.anchor(mapView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 180)
+        scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        view.addSubview(scrollViewPagingControl)
+        
+        _ = scrollViewPagingControl.anchor(scrollView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 3, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 10)
+        scrollViewPagingControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        
+        scrollView.addSubview(mainFirstFrameView)
+        scrollView.addSubview(mainSecondFrameView)
+        scrollView.addSubview(mainThirdFrameView)
+        
+        
+        mainFirstFrameView.addSubview(elevationChart)
+        mainFirstFrameView.addSubview(elevationLabel)
+        
+        mainSecondFrameView.addSubview(speedChart)
+        mainSecondFrameView.addSubview(speedLabel)
+        
+        mainThirdFrameView.addSubview(heartRateChart)
+        mainThirdFrameView.addSubview(heartRateChartLabel)
+        
+        
+        
+        // Elevation Chart ----------------------------------------------------------------------------------------------------------------->
+        _ = elevationChart.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width-20, heightConstant: 180)
+        elevationChart.centerYAnchor.constraint(equalTo: mainFirstFrameView.centerYAnchor).isActive = true
+        elevationChart.centerXAnchor.constraint(equalTo: mainFirstFrameView.centerXAnchor).isActive = true
+        
+        _ = elevationLabel.anchor(mainFirstFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 30)
+        elevationLabel.centerXAnchor.constraint(equalTo: elevationChart.centerXAnchor).isActive = true
+        
+        //---------------------------------------------------------------------------------------------------------------------------------->
+
+        
+        // Speed Chart ----------------------------------------------------------------------------------------------------------------->
+        _ = speedChart.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width-20, heightConstant: 180)
+        speedChart.centerXAnchor.constraint(equalTo: mainSecondFrameView.centerXAnchor).isActive = true
+        speedChart.centerYAnchor.constraint(equalTo: mainSecondFrameView.centerYAnchor).isActive = true
+        
+        _ = speedLabel.anchor(mainSecondFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 30)
+        speedLabel.centerXAnchor.constraint(equalTo: speedChart.centerXAnchor).isActive = true
+        //---------------------------------------------------------------------------------------------------------------------------------->
+        
+        // Heart Rate Chart ---------------------------------------------------------------------------------------------------------------->
+        _ = heartRateChart.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width-20, heightConstant: 180)
+        heartRateChart.centerYAnchor.constraint(equalTo: mainThirdFrameView.centerYAnchor).isActive = true
+        heartRateChart.centerXAnchor.constraint(equalTo: mainThirdFrameView.centerXAnchor).isActive = true
+        
+        _ = heartRateChartLabel.anchor(mainThirdFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 30)
+        heartRateChartLabel.centerXAnchor.constraint(equalTo: heartRateChart.centerXAnchor).isActive = true
+        
+        //---------------------------------------------------------------------------------------------------------------------------------->
+        
+        
         
         
         // Date
@@ -522,6 +988,9 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         view.addSubview(heartRateLabel)
         
         
+        // Gain Elevation
+        view.addSubview(gainElevationLabel)
+        
         // Address
         view.addSubview(addressLabel)
         
@@ -529,9 +998,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         _ = mapView.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 80, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 250)
         
         
-        _ = graphView.anchor(mapView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 180)
-        
-        _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
+        _ = dateLabel.anchor(scrollViewPagingControl.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
         dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
@@ -545,11 +1012,14 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate{
         _ = heartRateLabel.anchor(timeLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
         _ = maxElevationLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
-        
+    
+        _ = gainElevationLabel.anchor(heartRateLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
         _ = addressLabel.anchor(maxElevationLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
         
-        drawGraph()
+        initializedElevationChart()
+        initializedSpeedChart()
+        initializedHeartRateChart()
         
     }
     

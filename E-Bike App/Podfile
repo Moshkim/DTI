@@ -6,6 +6,9 @@ target 'E-Bike App' do
     use_frameworks!
   	
 	
+	#This is swifty chart
+	pod 'SwiftChart'
+
 	#This is firebase authentication!
 
     pod 'Firebase/Storage'

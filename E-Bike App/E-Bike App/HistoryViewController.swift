@@ -62,7 +62,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         return button
     }()
     
-    func backToMainRideStatusView() {
+    @objc func backToMainRideStatusView() {
         
         print("clicking!")
         self.dismiss(animated: true, completion: nil)
@@ -75,7 +75,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         segment.insertSegment(withTitle: "Time", at: 0, animated: true)
         segment.insertSegment(withTitle: "Distance", at: 1, animated: true)
         let font = UIFont.systemFont(ofSize: 10)
-        segment.setTitleTextAttributes([NSFontAttributeName: font], for: .normal)
+        segment.setTitleTextAttributes([NSAttributedStringKey.font: font], for: .normal)
         segment.selectedSegmentIndex = 0
         segment.tintColor = UIColor.white
         segment.backgroundColor = UIColor.clear
@@ -174,7 +174,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         
         navigationItem.title = "History"
         navigationController?.navigationBar.barTintColor = UIColor.black
-        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
         //navigationItem.titleView = segmentedControl
         
         

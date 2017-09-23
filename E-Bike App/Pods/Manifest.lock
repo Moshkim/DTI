@@ -64,6 +64,7 @@ PODS:
   - GTMSessionFetcher/Full (1.1.10):
     - GTMSessionFetcher/Core (= 1.1.10)
   - KeychainSwift (8.0.2)
+  - SwiftChart (0.5.0)
   - SwiftyJSON (3.0.0)
 
 DEPENDENCIES:
@@ -78,6 +79,7 @@ DEPENDENCIES:
   - GooglePlacesSearchController
   - GoogleSignIn
   - KeychainSwift
+  - SwiftChart
   - SwiftyJSON (from `https://github.com/appsailor/SwiftyJSON.git`, branch `swift3`)
 
 EXTERNAL SOURCES:
@@ -108,8 +110,9 @@ SPEC CHECKSUMS:
   GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
   GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
   KeychainSwift: 213db04dfe7244988e61f77c72a2afb2f775954a
+  SwiftChart: d1d22d2b1c4582f4d561edf97a210059c00ee256
   SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
 
-PODFILE CHECKSUM: a6971c7de1a371a2de507a88e21aa981a3469019
+PODFILE CHECKSUM: 441c02c377ff7215a2b2e13272e0df23954c7269
 
 COCOAPODS: 1.2.1

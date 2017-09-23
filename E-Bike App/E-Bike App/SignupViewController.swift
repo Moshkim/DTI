@@ -61,7 +61,7 @@ class SignUpViewController: UIViewController {
         return button
     }()
     
-    func moveToMapView() {
+    @objc func moveToMapView() {
     
         //let detinationVC = MapViewController()
         

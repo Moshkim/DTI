@@ -11,11 +11,13 @@ import UIKit
 import CoreLocation
 import GoogleMaps
 import GooglePlaces
+import SwiftChart
 
-class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate {
-    
-    
+class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate, ChartDelegate, UIScrollViewDelegate{
+
     // ScrollView for the graph
+    
+    
     
     lazy var graphView: ScrollableGraphView = {
         var view = ScrollableGraphView(frame: CGRect(x: 0, y: 0, width: 100, height: 150))
@@ -29,11 +31,6 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     
     
     
-    // Data
-    
-    lazy var elevationData = [Double]()
-    lazy var elevationTempLabels = [CLLocation]()
-    lazy var elevationLabels = [String]()
     
     
     var locationsOfElevationSamples = [CLLocation]()
@@ -42,6 +39,405 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     var ride: Ride!
     
     fileprivate let path = GMSMutablePath()
+    
+    
+    
+    //Page of Graph
+    var pageOfGraph = 0
+    
+    
+    //Elevation Data Chart
+    var elevationGain: Double = 0
+    var isThisFirst: Bool = true
+    var elevationDataPoints = [Float]()
+    var elevationLocationPoints = [CLLocation]()
+    var elevationXLabels = [Float]()
+    
+    //Speed Data Chart
+    var speedData = [Double]()
+    var speedLocationPoints = [CLLocation]()
+    var averageSpeed: Double = 0
+    var speedXLabels = [Float]()
+    
+    
+    //Heart Rate Chart
+    var heartRateData = [Float]()
+    var heartRateLocationPoints = [CLLocation]()
+    var averageHeartRate: Double = 0
+    var heartRateXLabels = [Float]()
+    var isHeartRateDataAvailable: Bool = false
+    
+    
+    /// Scroll view for the three different chart sections: Elevation, Speed, Heart Rate
+    let scrollViewPagingControl: UIPageControl = {
+        let bar = UIPageControl(frame: CGRect(x: 0, y: 0, width:50, height: 10))
+        bar.pageIndicatorTintColor = UIColor.white
+        bar.currentPageIndicatorTintColor = UIColor.DTIRed()
+        bar.numberOfPages = 3
+        return bar
+    }()
+    
+    
+    lazy var scrollView: UIScrollView = {
+        let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 180))
+        //view.layer.cornerRadius = 5
+        view.backgroundColor = UIColor.black
+        view.isPagingEnabled = true
+        view.delegate = self
+        view.showsHorizontalScrollIndicator = false
+        //ScrollView.contentSize = CGSize(width: self.view.bounds.width * CGFloat(featureArray.count), height: 400)
+        view.contentSize = CGSize(width: self.view.bounds.width * CGFloat(3), height: 180)
+        
+        return view
+        
+    }()
+    
+    // This is main frame view on the top of first scroll view
+    lazy var mainFirstFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(0), y: 0, width: self.scrollView.frame.width, height: 180)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
+    
+    // This is main frame view on the top of second scroll view
+    lazy var mainSecondFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(1), y: 0, width: self.scrollView.frame.width, height: 180)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
+    
+    // This is main frame view on the top of third scroll view
+    lazy var mainThirdFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(2), y: 0, width: self.scrollView.frame.width, height: 180)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
+    
+    
+    // Elevation Chart------------------------------------------------------------------------------------------------->
+    var elevationLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        label.backgroundColor = UIColor.clear
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var elevationChart: Chart = {
+        let chart = Chart(frame: CGRect(x: 0, y: 0, width: 200, height: 150))
+        chart.backgroundColor = UIColor.black
+        chart.axesColor = UIColor.white
+        chart.highlightLineColor = UIColor.white
+        chart.highlightLineWidth = 0.5
+        chart.labelColor = UIColor.white
+        chart.areaAlphaComponent = 0.4
+        chart.lineWidth = 1
+        return chart
+    }()
+    // -------------------------------------------------------------------------------------------------------------->
+    
+    // Speed Chart------------------------------------------------------------------------------------------------->
+    var speedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        label.backgroundColor = UIColor.clear
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        return label
+    }()
+    lazy var speedChart: Chart = {
+        let chart = Chart(frame: CGRect(x:0 , y: 0, width: 300, height: 180))
+        chart.backgroundColor = UIColor.black
+        chart.axesColor = UIColor.white
+        chart.highlightLineColor = UIColor.white
+        chart.highlightLineWidth = 0.5
+        chart.labelColor = UIColor.white
+        chart.areaAlphaComponent = 0.4
+        chart.lineWidth = 1
+        return chart
+    }()
+    // -------------------------------------------------------------------------------------------------------------->
+    
+    
+    // Heart Rate Chart------------------------------------------------------------------------------------------------->
+    var heartRateChartLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        label.backgroundColor = UIColor.clear
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        return label
+    }()
+    lazy var heartRateChart: Chart = {
+        let chart = Chart(frame: CGRect(x:0 , y: 0, width: 300, height: 180))
+        chart.backgroundColor = UIColor.black
+        chart.axesColor = UIColor.white
+        chart.highlightLineColor = UIColor.white
+        chart.highlightLineWidth = 0.5
+        chart.labelColor = UIColor.white
+        chart.areaAlphaComponent = 0.4
+        chart.lineWidth = 1
+        return chart
+    }()
+    // -------------------------------------------------------------------------------------------------------------->
+    
+    
+    
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let page = scrollView.contentOffset.x / scrollView.frame.size.width
+        scrollViewPagingControl.currentPage = Int(page)
+        pageOfGraph = Int(page)
+    }
+    
+    
+    func initializedElevationChart() {
+        
+        elevationChart.delegate = self
+        
+        var seriesData:[(x: Float, y: Float)] = []
+        var cumulativeDistance = 0.0
+        var xMilesLabelLength: Int = 0
+        
+        let locationPoints = ride?.locations?.array as! [Locations]
+        
+        
+        
+        for i in 0..<locationPoints.count{
+            if locationPoints[i].elevation > 0 {
+                let elevation = Float(locationPoints[i].elevation*(3.28084))
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                // Check the elevation difference between two locations in sequence order
+                
+                
+                
+                if i > 0 && abs(locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)) > 50 {
+                    print("What is going on???")
+                    let difference = locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)
+                    if difference > 0 {
+                        //current elevation is droping so fast that the elevation is not correct
+                        locationPoints[i].elevation += difference/2
+                    } else if difference < 0 {
+                        //current elevation is way to high that the elevation is not correct
+                        locationPoints[i].elevation -= difference/2
+                    }
+                    
+                }
+                
+                if isThisFirst == true {
+                    elevationGain += locationPoints[i].elevation*(3.28084)
+                    isThisFirst = false
+                    
+                } else {
+                    if locationPoints[i].elevation > locationPoints[i-1].elevation {
+                        elevationGain += locationPoints[i].elevation - locationPoints[i-1].elevation
+                    }
+                }
+                
+                elevationLocationPoints.append(position)
+                elevationDataPoints.append(elevation)
+            }
+            
+        }
+        
+        
+        guard let maxElevationPoint = elevationDataPoints.max() else { return }
+        maxElevationLabel.text = "Max Elev: \(String(format: "%.1f", maxElevationPoint)) ft"
+        gainElevationLabel.text = "Gain Elev: \(String(format: "%.1f", elevationGain)) ft"
+        
+        
+        for i in 0..<elevationDataPoints.count{
+            let elevationDataPoint = elevationDataPoints[i]
+            
+            if i == 0 {
+                seriesData.append((x: Float(0.0),y:elevationDataPoint))
+                
+            } else {
+                cumulativeDistance += self.elevationLocationPoints[i].distance(from: self.elevationLocationPoints[i-1])
+                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
+                seriesData.append((x:Float(cumulativeDistanceInMiles), y:elevationDataPoint))
+                
+            }
+        }
+        xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
+        
+        for i in 0...xMilesLabelLength {
+            elevationXLabels.append(Float(i))
+        }
+        
+        let series = ChartSeries(data: seriesData)
+        series.area = true
+        elevationChart.xLabels = elevationXLabels
+        elevationChart.xLabelsFormatter = { String(Int(round($1))) }
+        elevationChart.add(series)
+        
+    }
+    
+    
+    
+    func initializedSpeedChart() {
+        speedChart.delegate = self
+        
+        var seriesData:[(x: Float, y: Float)] = []
+        var cumulativeDistance = 0.0
+        var xMilesLabelLength: Int = 0
+        
+        
+        let locationPoints = ride?.locations?.array as! [Locations]
+        
+        for i in 0..<locationPoints.count{
+            
+            if locationPoints[i].speed > 1 {
+                let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                
+                speedData.append(eachSpeed)
+                averageSpeed += eachSpeed
+                speedLocationPoints.append(position)
+                
+            }
+            
+        }
+        
+        for i in 0..<speedLocationPoints.count{
+            let speedEachPoint = Float(speedData[i])
+            
+            if i == 0 {
+                seriesData.append((x: Float(0.0),y:speedEachPoint))
+            } else {
+                cumulativeDistance += self.elevationLocationPoints[i].distance(from: self.elevationLocationPoints[i-1])
+                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
+                seriesData.append((x:Float(cumulativeDistanceInMiles), y:speedEachPoint))
+                
+            }
+        }
+        
+        
+        xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
+        
+        for i in 0...xMilesLabelLength {
+            speedXLabels.append(Float(i))
+        }
+        
+        let series = ChartSeries(data: seriesData)
+        series.area = true
+        speedChart.xLabels = elevationXLabels
+        speedChart.xLabelsFormatter = { String(Int(round($1))) }
+        speedChart.add(series)
+        
+        guard let maxSpeed = speedData.max() else { return }
+        print("max speed is \(maxSpeed) mph")
+        print("average moving speed is \(averageSpeed/Double(speedData.count))")
+        
+    }
+    
+    
+    
+    
+    func initializedHeartRateChart() {
+        heartRateChart.delegate = self
+        
+        var seriesData:[(x: Float, y: Float)] = []
+        var cumulativeDistance = 0.0
+        var xMilesLabelLength: Int = 0
+        
+        let locationPoints = ride?.locations?.array as! [Locations]
+        
+        guard let avgHeartRate = ride?.avgheartrate else { return }
+        
+        // Check if there is heart rate data available to us
+        if avgHeartRate > 0 {
+            isHeartRateDataAvailable = true
+            for i in 0..<locationPoints.count{
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                let h_Rate = locationPoints[i].heartRate
+                
+                heartRateData.append(Float(h_Rate))
+                heartRateLocationPoints.append(position)
+            }
+            
+        } else if avgHeartRate == 0 {
+            // No heart rate is available
+            let temp = 68
+            isHeartRateDataAvailable = false
+            for i in 0..<locationPoints.count{
+                let lat = locationPoints[i].latitude
+                let long = locationPoints[i].longitude
+                let position = CLLocation(latitude: lat, longitude: long)
+                
+                heartRateData.append(Float(temp))
+                heartRateLocationPoints.append(position)
+                
+                
+            }
+            
+        }
+        
+        
+        for i in 0..<heartRateLocationPoints.count{
+            let hearRateEachPoint = heartRateData[i]
+            
+            if i == 0 {
+                seriesData.append((x: Float(0.0),y:hearRateEachPoint))
+            } else {
+                cumulativeDistance += self.heartRateLocationPoints[i].distance(from: self.heartRateLocationPoints[i-1])
+                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
+                seriesData.append((x:Float(cumulativeDistanceInMiles), y:hearRateEachPoint))
+                
+            }
+        }
+        
+        
+        xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
+        
+        for i in 0...xMilesLabelLength {
+            heartRateXLabels.append(Float(i))
+        }
+        
+        let series = ChartSeries(data: seriesData)
+        series.area = true
+        heartRateChart.xLabels = heartRateXLabels
+        heartRateChart.xLabelsFormatter = { String(Int(round($1))) }
+        heartRateChart.add(series)
+        
+        /*
+         if ride?.arrayOfHeartRate != nil {
+         
+         //heartRateData = heartRateDataFromCoreData as! Array
+         print("HERE WE ARE TESTING!!!!")
+         //seriesData = Float(heartRateDataFromCoreData)
+         } else {
+         var i = 0
+         while i < 100 {
+         seriesData.append(Float(arc4random_uniform(100)))
+         i += 1
+         }
+         }
+         let series = ChartSeries(seriesData)
+         series.area = true
+         
+         
+         for i in 0...10 {
+         heartRateXLabels.append(Float(i))
+         }
+         
+         //heartRateChart.xLabels = heartRateXLabels
+         //heartRateChart.xLabelsFormatter = { String(Int(round($1)))}
+         heartRateChart.add(series)
+         */
+        
+    }
+    
     
     
     let nameOfTheRoute: UILabel = {
@@ -69,17 +465,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         return view
     }()
     
-    
-    var graphLabel: UILabel = {
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
-        label.textAlignment = .center
-        label.textColor = UIColor.white
-        label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.backgroundColor = UIColor.clear
-        label.text = "Elevation"
-        
-        return label
-    }()
+
     
     let x_axisLabel: UILabel = {
         let label = UILabel()
@@ -171,6 +557,20 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     
     }()
     
+    var gainElevationLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.textAlignment = .left
+        label.textColor = UIColor.white
+        //label.layer.borderWidth = 0.5
+        //label.layer.borderColor = UIColor.DTIRed().cgColor
+        label.layer.cornerRadius = 5
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.backgroundColor = UIColor.clear
+        
+        return label
+        
+    }()
+    
     var addressLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
         label.textAlignment = .left
@@ -202,7 +602,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         return button
     }()
     
-    func backToPrevious() {
+    @objc func backToPrevious() {
         self.performSegue(withIdentifier: "rideStatusViewSegue", sender: backButton)
         
     }
@@ -322,6 +722,246 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         return label
     }
     
+    
+    
+    
+    func didTouchChart(_ chart: Chart, indexes: [Int?], x: Float, left: CGFloat) {
+        
+        if let value = chart.valueForSeries(0, atIndex: indexes[0]) {
+            
+            let numberFormatter = NumberFormatter()
+            numberFormatter.minimumFractionDigits = 2
+            numberFormatter.maximumFractionDigits = 2
+            guard let data = numberFormatter.string(from: NSNumber(value: value)) else { return }
+            
+            if pageOfGraph == 0 {
+                elevationLabel.text = "⛰: \(data) ft"
+            } else if pageOfGraph == 1 {
+                speedLabel.text = "🚴🏼: \(String(format: "%.0f", value)) mph"
+            } else if pageOfGraph == 2 {
+                if isHeartRateDataAvailable == true {
+                    heartRateChartLabel.text = "❤️: \(String(format: "%.0f", value)) bpm"
+                    
+                } else {
+                    heartRateChartLabel.text = "❤️: No Data Available"
+                    
+                }
+                
+            }
+
+        }
+    }
+    func didFinishTouchingChart(_ chart: Chart) {
+        elevationLabel.text = ""
+        speedLabel.text = ""
+        heartRateChartLabel.text = ""
+    }
+    func didEndTouchingChart(_ chart: Chart) {
+        
+    }
+    
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        elevationChart.setNeedsDisplay()
+    }
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        view.backgroundColor = UIColor.black
+        
+        
+        // Back Button
+        view.addSubview(backButton)
+        
+        
+        // Name of the Route
+        view.addSubview(nameOfTheRoute)
+        
+
+        // Map View
+        view.addSubview(mapView)
+ 
+        
+        // Charts of Elevations, Speed, Heart Rate
+        view.addSubview(scrollView)
+        
+        _ = scrollView.anchor(mapView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 180)
+        scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        view.addSubview(scrollViewPagingControl)
+        
+        _ = scrollViewPagingControl.anchor(scrollView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 3, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 10)
+        scrollViewPagingControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        
+        scrollView.addSubview(mainFirstFrameView)
+        scrollView.addSubview(mainSecondFrameView)
+        scrollView.addSubview(mainThirdFrameView)
+        
+        
+        mainFirstFrameView.addSubview(elevationChart)
+        mainFirstFrameView.addSubview(elevationLabel)
+        
+        mainSecondFrameView.addSubview(speedChart)
+        mainSecondFrameView.addSubview(speedLabel)
+        
+        mainThirdFrameView.addSubview(heartRateChart)
+        mainThirdFrameView.addSubview(heartRateChartLabel)
+        
+        
+        
+        // Elevation Chart ----------------------------------------------------------------------------------------------------------------->
+        _ = elevationChart.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width-20, heightConstant: 180)
+        elevationChart.centerYAnchor.constraint(equalTo: mainFirstFrameView.centerYAnchor).isActive = true
+        elevationChart.centerXAnchor.constraint(equalTo: mainFirstFrameView.centerXAnchor).isActive = true
+        
+        _ = elevationLabel.anchor(mainFirstFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 30)
+        elevationLabel.centerXAnchor.constraint(equalTo: elevationChart.centerXAnchor).isActive = true
+        
+        //---------------------------------------------------------------------------------------------------------------------------------->
+        
+        
+        // Speed Chart ----------------------------------------------------------------------------------------------------------------->
+        _ = speedChart.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width-20, heightConstant: 180)
+        speedChart.centerXAnchor.constraint(equalTo: mainSecondFrameView.centerXAnchor).isActive = true
+        speedChart.centerYAnchor.constraint(equalTo: mainSecondFrameView.centerYAnchor).isActive = true
+        
+        _ = speedLabel.anchor(mainSecondFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 30)
+        speedLabel.centerXAnchor.constraint(equalTo: speedChart.centerXAnchor).isActive = true
+        //---------------------------------------------------------------------------------------------------------------------------------->
+        
+        // Heart Rate Chart ---------------------------------------------------------------------------------------------------------------->
+        _ = heartRateChart.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width-20, heightConstant: 180)
+        heartRateChart.centerYAnchor.constraint(equalTo: mainThirdFrameView.centerYAnchor).isActive = true
+        heartRateChart.centerXAnchor.constraint(equalTo: mainThirdFrameView.centerXAnchor).isActive = true
+        
+        _ = heartRateChartLabel.anchor(mainThirdFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 30)
+        heartRateChartLabel.centerXAnchor.constraint(equalTo: heartRateChart.centerXAnchor).isActive = true
+        
+        //---------------------------------------------------------------------------------------------------------------------------------->
+        
+        
+        
+        
+        // Date
+        view.addSubview(dateLabel)
+        
+        
+        // Distance
+        view.addSubview(distanceLabel)
+        
+        
+        // Time
+        view.addSubview(timeLabel)
+        
+        // Average Speed
+        view.addSubview(averageSpeedLabel)
+        
+        
+        // Average Moving Speed
+        view.addSubview(heartRateLabel)
+        
+        // Max Elevation Point
+        view.addSubview(maxElevationLabel)
+        
+        
+        // Gain Elevation
+        view.addSubview(gainElevationLabel)
+        
+        // Address
+        view.addSubview(addressLabel)
+        
+        _ = backButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 40)
+        
+        _ = nameOfTheRoute.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
+        
+        _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
+
+        
+        _ = dateLabel.anchor(scrollViewPagingControl.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
+        dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        
+        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        
+        _ = averageSpeedLabel.anchor(distanceLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        _ = heartRateLabel.anchor(timeLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        _ = maxElevationLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        _ = gainElevationLabel.anchor(heartRateLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
+        
+        _ = addressLabel.anchor(maxElevationLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
+        
+        
+        
+        // Getting all the core data from previous route that saved in file and assign them to show
+        configureView()
+        
+        
+        // Getting polyline of the routes and show on the mapView
+        DrawPath()
+        
+        
+        initializedElevationChart()
+        initializedSpeedChart()
+        initializedHeartRateChart()
+        
+        // Set the constraints of the scrollview of the graph
+        
+    }
+    
+    private func configureView() {
+        
+        let distance = Measurement(value: ride.distance, unit: UnitLength.meters)
+        let seconds = Int(ride.duration)
+        //let movingSeconds = Int(ride.movingduration)
+        let formattedDistance = FormatDisplay.distance(distance)
+        let formattedDate = FormatDisplay.date(ride.timestamp as Date?)
+        let formattedTime = FormatDisplay.time(seconds)
+        let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
+        //let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
+        
+        
+        if let name = ride.name {
+            nameOfTheRoute.text = name
+        }
+        
+        guard let address = ride.address else { return }
+        
+        
+        
+        dateLabel.text = "Date: \(formattedDate)"
+        distanceLabel.text = "Distance: \(formattedDistance)"
+        timeLabel.text = "Time: \(formattedTime)"
+        averageSpeedLabel.text = "Avg 🚴🏼: \(formattedPace)"
+        heartRateLabel.text = "Avg ❤️ Rate: \(ride.avgheartrate) bpm"
+        addressLabel.text = "Region: \(address)"
+        
+        guard let locations = ride.locations,
+            locations.count > 0
+            else {
+                let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                present(alert, animated: true)
+                return
+        }
+    
+    
+    }
+}
+/*
+extension EbikeDetailsViewController {
+    
+
     
     func getElevationInfo() {
         
@@ -457,7 +1097,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                         //self.labels.removeAll()
                         
                         //for i in 0..<self.distanceRelateToElevation.count {
-                            //self.labels.append(String(format: "%.1f",self.distanceRelateToElevation[i]))
+                        //self.labels.append(String(format: "%.1f",self.distanceRelateToElevation[i]))
                         //}
                         
                         
@@ -484,194 +1124,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         task.resume()
         
     }
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        
-        //getElevationInfo()
-        
-        graphView = Graph.createDarkGraph(CGRect(x: 0, y: 0, width: view.frame.width-20, height: 200))
-        
-        
-        
-        view.backgroundColor = UIColor.black
-        
-        
-        // Back Button
-        view.addSubview(backButton)
-        
-        
-        // Name of the Route
-        view.addSubview(nameOfTheRoute)
-        
-        
-        // Graph Label
-        view.addSubview(graphLabel)
-        
-        
-        // Map View
-        view.addSubview(mapView)
-        
-        
-        // Elevation Graph View
-        view.addSubview(graphView)
-        
-        // Elevation Graph x-axis Label
-        graphView.addSubview(x_axisLabel)
-        
-        // Date
-        view.addSubview(dateLabel)
-        
-        
-        // Distance
-        view.addSubview(distanceLabel)
-        
-        
-        // Time
-        view.addSubview(timeLabel)
-        
-        // Average Speed
-        view.addSubview(averageSpeedLabel)
-        
-        
-        // Average Moving Speed
-        view.addSubview(heartRateLabel)
-        
-        // Max Elevation Point
-        view.addSubview(maxElevationLabel)
-        
-        // Address
-        view.addSubview(addressLabel)
-        
-        _ = backButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 40)
-        
-        _ = nameOfTheRoute.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
-        
-        _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
-        
-        _ = x_axisLabel.anchor(nil, left: graphView.leftAnchor, bottom: graphView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 3, bottomConstant: 3, rightConstant: 0, widthConstant: 10, heightConstant: 5)
-        
-        _ = graphLabel.anchor(mapView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 20)
-        graphLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        _ = graphView.anchor(graphLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 180)
-        
-        
-        _ = dateLabel.anchor(graphView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
-        dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        
-        _ = distanceLabel.anchor(dateLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
-        
-        _ = timeLabel.anchor(dateLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
-        
-        
-        _ = averageSpeedLabel.anchor(distanceLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
-        
-        _ = heartRateLabel.anchor(timeLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
-        
-        _ = maxElevationLabel.anchor(averageSpeedLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.centerXAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 5, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
-        
-        _ = addressLabel.anchor(maxElevationLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
-        
-        
-        
-        // Getting all the core data from previous route that saved in file and assign them to show
-        configureView()
-        
-        
-        // Getting polyline of the routes and show on the mapView
-        DrawPath()
-        
-        
-        // Set the constraints of the scrollview of the graph
-        
-    }
-    
-    private func configureView() {
-        
-        let distance = Measurement(value: ride.distance, unit: UnitLength.meters)
-        let seconds = Int(ride.duration)
-        //let movingSeconds = Int(ride.movingduration)
-        let formattedDistance = FormatDisplay.distance(distance)
-        let formattedDate = FormatDisplay.date(ride.timestamp as Date?)
-        let formattedTime = FormatDisplay.time(seconds)
-        let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
-        //let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
-        
-        
-        if let name = ride.name {
-            nameOfTheRoute.text = name
-        }
-        
-        guard let address = ride.address else { return }
-        
-        
-        
-        dateLabel.text = "Date: \(formattedDate)"
-        distanceLabel.text = "Distance: \(formattedDistance)"
-        timeLabel.text = "Time: \(formattedTime)"
-        averageSpeedLabel.text = "Avg 🚴🏼: \(formattedPace)"
-        heartRateLabel.text = "Avg ❤️ Rate: \(ride.heartrate) bpm"
-        addressLabel.text = "Region: \(address)"
-        
-        guard let locations = ride.locations,
-            locations.count > 0
-            else {
-                let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-                present(alert, animated: true)
-                return
-        }
-        
-        
-        
-        
-        
-        let locationPoints = ride?.locations?.array as! [Locations]
-        
-        for i in 0..<locationPoints.count{
-            if locationPoints[i].elevation > 0 {
-                let elevation = locationPoints[i].elevation
-                let lat = locationPoints[i].latitude
-                let long = locationPoints[i].longitude
-                let position = CLLocation(latitude: lat, longitude: long)
-                
-                //print(elevation)
-                elevationTempLabels.append(position)
-                
-                elevationData.append(elevation*(3.28084))
-            }
-            
-        }
-        
-        guard let maxElevationPoint = elevationData.max() else { return }
-        maxElevationLabel.text = "Max Elev: \(String(format: "%.1f", maxElevationPoint)) ft"
-        
-        
-        var cumulativeDistance = 0.0
-        
-        
-        for i in 0..<elevationTempLabels.count {
-            if i == 0 {
-                self.elevationLabels.append(String(format: "%.1f", 0.0))
-                
-            } else {
-                cumulativeDistance += self.elevationTempLabels[i].distance(from: self.elevationTempLabels[i-1])
-                let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
-                //self.elevationLabels.append(String(format: "%.1f", cumulativeDistance))
-                self.elevationLabels.append(String(format: "%.1f", cumulativeDistanceInMiles))
-            }
-            
-        }
-        
-        graphView.set(data: elevationData, withLabels: elevationLabels)
-        
-        
-    }
-    
+ 
     
 }
-
+*/

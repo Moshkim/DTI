@@ -25,6 +25,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     // Access to the window size
     let windowSize = UIApplication.shared.keyWindow
     
+    // Access to User Defaults 
+    let defaults = UserDefaults.standard
     
     
     // Kalma Filter Algorithm
@@ -89,6 +91,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     // Store Heart Rate Data
     fileprivate var heartRateList: [Int] = []
+    fileprivate var currentHeartRate = 0
     var heartRateTag = 0
     
     /******************************************************************************************************/
@@ -151,6 +154,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     // Weather Infomation Variables
     
+    
+    fileprivate var weatherEnableSwitchOn: Bool?
     fileprivate var currentTemperature: Double?
     fileprivate var currentWeatherIcon: String?
     fileprivate var currentWeatherSummary: String?
@@ -321,7 +326,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // MARK: - Direction to Destination
-    func directionToDest(sender: UIButton) {
+    @objc func directionToDest(sender: UIButton) {
         
         let lat = latDirection
         let long = longDirection
@@ -425,7 +430,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             let trueHeading = newHeading.trueHeading
             //let heading = trueHeading*Double.pi/180
             
-            let head = locationManager.location?.course ?? 0
+            _ = locationManager.location?.course ?? 0
             self.cameraBearing = trueHeading
             //userCurrentLocationMarker.rotation = trueHeading
             //userCurrentLocationMarker.map = mapView
@@ -467,7 +472,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
      }
      */
     
-    func POIForCoffee() {
+    @objc func POIForCoffee() {
         guard let lat = mapView.myLocation?.coordinate.latitude else {return}
         guard let long = mapView.myLocation?.coordinate.longitude else {return}
         let coffee = "cafe"
@@ -552,6 +557,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                             arrayOfAddress.append(arrayForAddress)
                             
                             arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
+                            
                             
                         }
                         
@@ -1446,7 +1452,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return box
     }()
     
-    func moveToHistory() {
+    @objc func moveToHistory() {
         performSegue(withIdentifier: .history, sender: nil)
     }
     
@@ -1542,7 +1548,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 
     
     
-    func dismissPopUp(){
+    @objc func dismissPopUp(){
         rideView.removeFromSuperview()
         infoView.removeFromSuperview()
     }
@@ -1550,7 +1556,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     
-    func moveToPopUp(sender: UIButton) {
+    @objc func moveToPopUp(sender: UIButton) {
         
         
         view.addSubview(rideView)
@@ -1856,7 +1862,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     }
                     
                     
-                    
+                    heartRateList.append(currentHeartRate)
                     locationList.append(location)
                     path.add(location.coordinate)
                     drawPath(path: path)
@@ -1867,13 +1873,23 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         if locationList.count == 1{
-            getWeatherInfo()
+            weatherSwitchCheck()
         }
         
         
         
     }
     
+    func weatherSwitchCheck() {
+        if defaults.value(forKey: "switchOn") != nil {
+            let switchOn:Bool = defaults.value(forKey: "switchOn") as! Bool
+            if switchOn == true {
+                getWeatherInfo()
+            } else {
+                print("You need to go to settings to turn on the weather switch on")
+            }
+        }
+    }
     
 
     
@@ -2024,7 +2040,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }()
     
     
-    func handleSideMenuButton() {
+    @objc func handleSideMenuButton() {
         
         //Show Menu
         settingMenu.handleSideMenuButton()
@@ -2111,7 +2127,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return button
     }()
     
-    func leftScrollView() {
+    @objc func leftScrollView() {
         
         if statusViewControl.currentPage != Int(0) {
             let position = CGPoint(x: ScrollView.contentOffset.x - view.frame.width, y: ScrollView.contentOffset.y)
@@ -2139,7 +2155,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return button
     }()
     
-    func rightScrollView() {
+    @objc func rightScrollView() {
         
         if statusViewControl.currentPage != Int(4) {
             let position = CGPoint(x: ScrollView.contentOffset.x + view.frame.width, y: ScrollView.contentOffset.y)
@@ -2184,7 +2200,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     
-    func pauseTheRoute(sender: UIButtonY) {
+    @objc func pauseTheRoute(sender: UIButtonY) {
         
         
         if (sender.tag == 1) {
@@ -2204,11 +2220,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             sender.tag = 2
             
             // MARK - Disappear the History tool bar when start button clicked
+            /*
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!+40, width: (self.windowSize?.frame.width)!, height: 40)
                 
             }, completion: nil)
-            
+            */
             //weatherAlert()
             startEbike()
             
@@ -2285,8 +2302,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             if let summary = currentWeatherSummary {
                 let alertController = UIAlertController(title: "Weather", message: "Temperature: \(temp)F° \n Condition: \(summary)", preferredStyle: .alert)
                 
-                let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18)]
-                let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 16)]
+                let titleFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.boldSystemFont(ofSize: 18)]
+                let messageFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.systemFont(ofSize: 16)]
                 
                 
                 let attributedTitle = NSMutableAttributedString(string: "Weather", attributes: titleFont)
@@ -2426,6 +2443,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         let camera = GMSCameraPosition(target: (self.mapView.myLocation?.coordinate)!, zoom: 15, bearing: 0, viewingAngle: 25)
         mapView.animate(to: camera)
         
+        // MARK - Disappear the History tool bar when start button clicked
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!+40, width: (self.windowSize?.frame.width)!, height: 40)
+            
+        }, completion: nil)
+        
+        
         mySearchButton.isHidden = true
         coffeSearchButton.isHidden = true
         
@@ -2467,8 +2491,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     fileprivate func alertView(sender: UIButtonY) {
         let alertController = UIAlertController(title: "End Ride?", message: "Do you want to end your ride?", preferredStyle: .alert)
-        let titleFont: [String:AnyObject] = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 20)]
-        let messageFont: [String: AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 18)]
+        let titleFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.boldSystemFont(ofSize: 20)]
+        let messageFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.systemFont(ofSize: 18)]
         
         let attributedTitle = NSMutableAttributedString(string: "End Ride?", attributes: titleFont)
         let attributedMessage = NSMutableAttributedString(string: "Do you want to save your ride?", attributes: messageFont)
@@ -2550,8 +2574,19 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         let newRide = Ride(context: CoreDataStack.context)
         newRide.distance = distance.value
         newRide.duration = Int16(seconds)
-        newRide.timestamp = Date() as NSDate?
+        newRide.timestamp = Date()
         newRide.name = name
+        
+        /*
+        if !heartRateList.isEmpty {
+            // Trying to store the array of heart rate data to the core data as NSData
+            newRide.arrayOfHeartRate = NSKeyedArchiver.archivedData(withRootObject: heartRateList)
+        } else {
+            let randomHeartRate = [68,68,68,68,68,68,68,68,68,68,68,78,78,78,78,87,78,78,78]
+            newRide.arrayOfHeartRate = NSKeyedArchiver.archivedData(withRootObject: randomHeartRate)
+        }
+        */
+        
         //newRide.heartrate = Int16(heartRateList.reduce(0, +)/heartRateList.count)
         //newRide.movingduration = Int16(movingSeconds)
         
@@ -2562,10 +2597,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 sumOfHeartRate += heartRateList[i]
             }
             avgHeartRate = sumOfHeartRate/heartRateList.count
-            newRide.heartrate = Int16(avgHeartRate)
+            newRide.avgheartrate = Int16(avgHeartRate)
         
         } else {
-            newRide.heartrate = 0
+            newRide.avgheartrate = 0
         }
         
         
@@ -2580,35 +2615,18 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         for location in locationList {
             let locationObject = Locations(context: CoreDataStack.context)
             locationObject.elevation = location.altitude as Double
-            locationObject.timestamp = location.timestamp as NSDate?
+            locationObject.timestamp = location.timestamp as Date
+            locationObject.speed = location.speed as Double
             locationObject.latitude = location.coordinate.latitude
             locationObject.longitude = location.coordinate.longitude
             newRide.addToLocations(locationObject)
         }
+        for i in 0..<heartRateList.count {
+            let locationObject = Locations(context: CoreDataStack.context)
+            locationObject.heartRate = Int16(heartRateList[i])
+            newRide.addToLocations(locationObject)
+        }
         
-        /*
-         for i in 0..<locationListWithDistance.count{
-         
-         let locationObj = Locations(context: CoreDataStack.context)
-         for j in 0..<locationListWithDistance[i].count{
-         if j == 0 {
-         var locObj = CLLocation()
-         locObj = locationListWithDistance[i][0] as! CLLocation
-         locationObj.elevation = locObj.altitude
-         locationObj.latitude = locObj.coordinate.latitude
-         locationObj.longitude = locObj.coordinate.longitude
-         locationObj.timestamp = locObj.timestamp as NSDate?
-         
-         }
-         if j == 1 {
-         var locObjDistance = Double()
-         locObjDistance = locationListWithDistance[i][1] as! Double
-         locationObj.distanceFromStart = locObjDistance
-         }
-         newRide.addToLocations(locationObj)
-         }
-         }
-         */
         CoreDataStack.saveContext()
         ride = newRide
         
@@ -2645,7 +2663,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }
     */
     
-    func showTurnOnLocationServiceAlert(_ notification: NSNotification){
+    @objc func showTurnOnLocationServiceAlert(_ notification: NSNotification){
         let alert = UIAlertController(title: "Turn on Location Service", message: "To use location tracking feature of the app, please turn on the location service from the Settings app.", preferredStyle: .alert)
         
         let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
@@ -2814,7 +2832,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        mapView.settings.compassButton = true
+        mapView.isMyLocationEnabled = true
+        guard let target = mapView.myLocation?.coordinate else { return }
+        
+        let camera = GMSCameraPosition(target: target, zoom: 12, bearing: 0, viewingAngle: 0)
+        mapView.animate(to: camera)
     }
     
     
@@ -3209,7 +3231,8 @@ extension RiderStatusViewController: CBCentralManagerDelegate, CBPeripheralDeleg
             self.heartRate.text = "\(actualBpm) bpm"
             if heartRateTag == 1 {
                 heartRateLabel.text = "\(actualBpm) bpm"
-                heartRateList.append(Int(actualBpm))
+                currentHeartRate = Int(actualBpm)
+                //heartRateList.append(Int(actualBpm))
             }
             
             

@@ -471,7 +471,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
 
     
-    func moveBack() {
+    @objc func moveBack() {
         performSegue(withIdentifier: "menuViewSegue", sender: self)
     }
     
@@ -530,7 +530,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
     }()
     
-    func handleNav() {
+    @objc func handleNav() {
         
         //show setting menu
         //settingLauncher.mapViewController = self
@@ -549,7 +549,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         settingViewController.navigationItem.title = setting.name.rawValue
         
         navController.navigationController?.navigationBar.tintColor = UIColor.DTIBlue()
-        navController.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.DTIBlue()]
+        navController.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.DTIBlue()]
         navController.navigationController?.pushViewController(settingViewController, animated: true)
     }
     

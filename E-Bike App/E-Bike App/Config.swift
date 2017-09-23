@@ -9,6 +9,18 @@
 
 import Foundation
 
+
+
+struct Window {
+    static let Size = UIApplication.shared.keyWindow
+
+}
+
+struct SettingConfig {
+    static var WeatherEnable            = true
+}
+
+
 struct Config {
     static var STORAGE_ROOT_REF         = "gs://e-bike-app.appspot.com"
     static var DATABASE_ROOT_REF        = "https://e-bike-app.firebaseio.com"

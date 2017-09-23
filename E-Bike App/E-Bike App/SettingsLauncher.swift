@@ -88,7 +88,7 @@ class SettingLauncher: NSObject, UICollectionViewDataSource, UICollectionViewDel
     }
     
     
-    func handleDismiss(setting: Settings) {
+    @objc func handleDismiss(setting: Settings) {
 
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
