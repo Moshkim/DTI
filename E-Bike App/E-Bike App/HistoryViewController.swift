@@ -48,6 +48,7 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         control.ride = arrayRide?[indexPath.item]
         navigationController?.pushViewController(control, animated: true)
         
+        
     }
     
     
@@ -65,7 +66,8 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     @objc func backToMainRideStatusView() {
         
         print("clicking!")
-        self.dismiss(animated: true, completion: nil)
+        performSegue(withIdentifier: "backToRideStatusViewSegue", sender: self)
+        //navigationController?.popToRootViewController(animated: true)
     }
     
     
@@ -304,7 +306,25 @@ class RideCell: BaseCells {
             distance.text = formattedDistance
             averageSpeed.text = FormatDisplay.pace(distance: dist, seconds: seconds, outputUnit: .milesPerHour)
             duration.text = formattedTime
-            DrawPath(ride: ride!)
+            
+            let totalDistance = ((ride?.distance)!/1000.0)/1.61
+            if totalDistance >= 0.0 && totalDistance < 5.0 {
+                badges.image = UIImage(named: "low-3")
+                
+                //?.withRenderingMode(.alwaysTemplate)
+                
+            } else if totalDistance < 10.0 && totalDistance >= 5.0 {
+                badges.image = UIImage(named: "medium-3")
+                //?.withRenderingMode(.alwaysTemplate)
+                
+            } else if totalDistance >= 10.0 {
+                badges.image = UIImage(named: "super-3")
+                //?.withRenderingMode(.alwaysTemplate)
+                
+            }
+            
+            //DrawPath(ride: ride!)
+            
             
             
         }
@@ -410,6 +430,15 @@ class RideCell: BaseCells {
         return map
     }()
     
+    let badges: UIImageView = {
+        let image = UIImage()
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        //imageView.tintColor = UIColor(red:1.00, green:0.84, blue:0.19, alpha:1.00)
+        imageView.backgroundColor = UIColor.clear
+        return imageView
+    }()
+    
     
     let dividerLineView: UIView = {
         let view = UIView()
@@ -434,7 +463,7 @@ class RideCell: BaseCells {
         //UIColor(red:0.95, green:0.95, blue:0.96, alpha:1.00)
         
         //addSubview(lightBackgroundView)
-        addSubview(mapView)
+        addSubview(badges)
         addSubview(dividerLineView)
         
         setupContainerView()
@@ -446,10 +475,10 @@ class RideCell: BaseCells {
         
         
         // mapView constraints in the UICollectionView
-        addConstraintsWithFormat(format: "H:|-10-[v0(80)]|", views: mapView)
-        addConstraintsWithFormat(format: "V:[v0(80)]", views: mapView)
+        addConstraintsWithFormat(format: "H:|-10-[v0(80)]|", views: badges)
+        addConstraintsWithFormat(format: "V:[v0(80)]", views: badges)
         
-        addConstraints([NSLayoutConstraint(item: mapView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)])
+        addConstraints([NSLayoutConstraint(item: badges, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)])
         
         // dividerLineView constraints in the UICollectionView
         addConstraintsWithFormat(format: "H:|[v0]|", views: dividerLineView)

@@ -90,6 +90,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // Store Heart Rate Data
+    var cumulativeSumOfHeartRateData = 0
     fileprivate var heartRateList: [Int] = []
     fileprivate var currentHeartRate = 0
     var heartRateTag = 0
@@ -137,6 +138,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var ride:Ride?
     fileprivate var distance = Measurement(value: 0, unit: UnitLength.miles)
     fileprivate var address: [String] = []
+    fileprivate var defaultAddressTag: Bool = true
+    fileprivate var defaultAddress: String?
     fileprivate var locationList: [CLLocation] = []
     fileprivate var elevationList: [CLLocationDistance] = []
     fileprivate var locationListWithDistance = [[CLLocation(),Double()]]
@@ -153,15 +156,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // Weather Infomation Variables
-    
-    
     fileprivate var weatherEnableSwitchOn: Bool?
     fileprivate var currentTemperature: Double?
     fileprivate var currentWeatherIcon: String?
     fileprivate var currentWeatherSummary: String?
     fileprivate var iconString: String?
-    
-    
     
     
     // Direction to Coffee places
@@ -179,6 +178,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     // Overall Path between two points
     var polyPath = GMSPolyline()
+    
+    var polylineSegementIndex = Double()
     
     
     let placesClient = GMSPlacesClient.shared()
@@ -1256,6 +1257,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 middleFrameOfView.borderWidth = 3
                 middleFrameOfView.borderColor = UIColor.DTIRed()
                 middleFrameOfView.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
+                middleFrameOfView.translatesAutoresizingMaskIntoConstraints = false
                 
                 
                 
@@ -1425,7 +1427,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.clear
         button.tintColor = UIColor.white
-        
+        button.isHidden = true
         return button
         
     }()
@@ -1812,6 +1814,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     print("Traveled Distance:",  totalTravelDistance)
                     print("Straight Distance:", startLocation.distance(from: location))
                     print("Elevation:", location.altitude)
+                    print("Speed:", location.speed)
                     
                     let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
                     
@@ -1863,9 +1866,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                     
                     heartRateList.append(currentHeartRate)
+                    // Just keep adding all the heart rate data to get the average heart rate in the saved
+                    cumulativeSumOfHeartRateData += currentHeartRate
+                
                     locationList.append(location)
                     path.add(location.coordinate)
-                    drawPath(path: path)
+                    drawPath(path: path, speed: msTomph)
 
                 //}
             }
@@ -1895,12 +1901,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // draw black line on the map that shows how current object moving
-    func drawPath(path: GMSPath) {
+    func drawPath(path: GMSPath, speed: Double) {
         
         let polyline = GMSPolyline(path: path)
-        polyline.strokeWidth = 3
+        polyline.strokeWidth = 5
         polyline.geodesic = true
-        polyline.strokeColor = UIColor(red:0.14, green:0.17, blue:0.17, alpha:1.00)
+        
+        polyline.strokeColor = UIColor.black
+        //polyline.strokeColor = UIColor(red:0.14, green:0.17, blue:0.17, alpha:1.00)
         polyline.map = self.mapView
     }
     
@@ -1931,7 +1939,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                                 guard let locality = place.locality else { return }
                                 guard let administrativeArea = place.administrativeArea else { return }
                                 guard let country = place.country else { return }
+                                if self.defaultAddressTag == true {
+                                    self.defaultAddress = "\(locality)"
+                                    self.defaultAddressTag = false
+                                }
                                 self.address.append("\(locality) \(administrativeArea) \(country)")
+                                
+                                
                             }
                             
                         } else {
@@ -2473,62 +2487,77 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }
     
     
-    fileprivate func trackingMovingTime(speed: Double) {
-        totalMovingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true){ _ in
-            
-            if speed < 0 {
-                self.movingSeconds += 0
-            }
-            else if speed > 0 {
-                self.movingSeconds += 1
-            }
-            else {
-                //self.movingSeconds += 1
-            }
-        }
-    }
-    
-    
     fileprivate func alertView(sender: UIButtonY) {
-        let alertController = UIAlertController(title: "End Ride?", message: "Do you want to end your ride?", preferredStyle: .alert)
-        let titleFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.boldSystemFont(ofSize: 20)]
-        let messageFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.systemFont(ofSize: 18)]
         
-        let attributedTitle = NSMutableAttributedString(string: "End Ride?", attributes: titleFont)
-        let attributedMessage = NSMutableAttributedString(string: "Do you want to save your ride?", attributes: messageFont)
         
-        alertController.setValue(attributedTitle, forKey: "attributedTitle")
-        alertController.setValue(attributedMessage, forKey: "attributedMessage")
-        
-        let saveButton = UIAlertAction(title: "Save The Route", style: .default) {
-            _ in
+        if locationList.count > 1 {
+            let alertController = UIAlertController(title: "End Ride?", message: "Do you want to end your ride?", preferredStyle: .alert)
+            let titleFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.boldSystemFont(ofSize: 20)]
+            let messageFont: [NSAttributedStringKey : Any] = [NSAttributedStringKey(rawValue: NSAttributedStringKey.font.rawValue): UIFont.systemFont(ofSize: 18)]
             
-            // Stop storing the heart rate data to the array
-            self.heartRateTag = 2
+            let attributedTitle = NSMutableAttributedString(string: "End Ride?", attributes: titleFont)
+            let attributedMessage = NSMutableAttributedString(string: "Do you want to save your ride?", attributes: messageFont)
+            
+            alertController.setValue(attributedTitle, forKey: "attributedTitle")
+            alertController.setValue(attributedMessage, forKey: "attributedMessage")
+            
+            let saveButton = UIAlertAction(title: "Save", style: .default) {
+                _ in
+                
+                // Stop storing the heart rate data to the array
+                self.heartRateTag = 2
+                
+                
+                sender.setTitle("Start", for: .normal)
+                sender.tag = 1
+                
+                guard let defaultName = self.defaultAddress else { return }
+                self.stopEbike()
+                self.saveEbike(name: "\(defaultName) Ride")
+                self.performSegue(withIdentifier: .stopAndSave, sender: nil)
+                
+            }
+            
+            let changeNameButton = UIAlertAction(title: "New Route", style: .default) {
+                _ in
+                
+                self.heartRateTag = 2
+                
+                sender.setTitle("Start", for: .normal)
+                sender.tag = 1
+                
+                self.saveNameOfRoute()
+                
+            }
+            
+            let cancelButton = UIAlertAction(title: "Resume", style: .cancel)
             
             
-            sender.setTitle("Start", for: .normal)
-            sender.tag = 1
-            self.saveNameOfRoute()
+            alertController.view.tintColor = UIColor.DTIBlue()
+            alertController.view.layer.cornerRadius = 25
+            alertController.view.backgroundColor = UIColor.darkGray
+            
+            
+            alertController.addAction(saveButton)
+            alertController.addAction(changeNameButton)
+            alertController.addAction(cancelButton)
+            present(alertController, animated: true, completion: nil)
+            
+        } else {
+            let alertController = UIAlertController(title: "Go take some ride!", message: "We need to have at least few location points in order to analyze your data", preferredStyle: .alert)
+            
+            let cancel = UIAlertAction(title: "Okay", style: .cancel)
+            
+            alertController.addAction(cancel)
+            self.present(alertController, animated: true, completion: nil)
+            
         }
-        
-        let cancelButton = UIAlertAction(title: "Resume", style: .cancel)
-        
-        
-        alertController.view.tintColor = UIColor.DTIBlue()
-        alertController.view.layer.cornerRadius = 25
-        alertController.view.backgroundColor = UIColor.darkGray
-        
-        
-        alertController.addAction(saveButton)
-        alertController.addAction(cancelButton)
-        present(alertController, animated: true, completion: nil)
+
         
         
     }
     
     fileprivate func saveNameOfRoute() {
-        
         
         
         let alertController = UIAlertController(title: "Add New Name", message: "", preferredStyle: .alert)
@@ -2548,7 +2577,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         alertController.addAction(saveNameAction)
         self.present(alertController, animated: true, completion: nil)
-        
+
     }
     
     
@@ -2558,7 +2587,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         timer?.invalidate()
         locationManager.stopUpdatingLocation()
         locationManager.stopUpdatingHeading()
-        
+        defaultAddressTag = true
         
     }
     
@@ -2570,7 +2599,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     fileprivate func saveEbike(name: String) {
         
-        
+        // Each ride has a set of locations and each location has to be only one instance not multiple
         let newRide = Ride(context: CoreDataStack.context)
         newRide.distance = distance.value
         newRide.duration = Int16(seconds)
@@ -2591,13 +2620,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         //newRide.movingduration = Int16(movingSeconds)
         
         if heartRateList.count > 0 {
-            var sumOfHeartRate = 0
-            var avgHeartRate = 0
-            for i in 0..<heartRateList.count {
-                sumOfHeartRate += heartRateList[i]
-            }
-            avgHeartRate = sumOfHeartRate/heartRateList.count
-            newRide.avgheartrate = Int16(avgHeartRate)
+            newRide.avgheartrate = Int16(cumulativeSumOfHeartRateData/heartRateList.count)
         
         } else {
             newRide.avgheartrate = 0
@@ -2610,26 +2633,30 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             newRide.address = "No address is registered"
         }
         
-        
-
-        for location in locationList {
-            let locationObject = Locations(context: CoreDataStack.context)
-            locationObject.elevation = location.altitude as Double
-            locationObject.timestamp = location.timestamp as Date
-            locationObject.speed = location.speed as Double
-            locationObject.latitude = location.coordinate.latitude
-            locationObject.longitude = location.coordinate.longitude
-            newRide.addToLocations(locationObject)
+        if locationList.count > 0 {
+            for i in 0..<locationList.count {
+                let locationObject = Locations(context: CoreDataStack.context)
+                locationObject.elevation = locationList[i].altitude as Double
+                locationObject.timestamp = locationList[i].timestamp as Date
+                locationObject.speed = locationList[i].speed as Double
+                locationObject.latitude = locationList[i].coordinate.latitude
+                locationObject.longitude = locationList[i].coordinate.longitude
+                locationObject.heartRate = Int16(heartRateList[i])
+                newRide.addToLocations(locationObject)
+            }
+            
+            // I am sure this was the issue with heart rate data
+            /*
+            for i in 0..<heartRateList.count {
+                let locationObject = Locations(context: CoreDataStack.context)
+                locationObject.heartRate = Int16(heartRateList[i])
+                newRide.addToLocations(locationObject)
+            }
+            */
+            CoreDataStack.saveContext()
+            ride = newRide
+            
         }
-        for i in 0..<heartRateList.count {
-            let locationObject = Locations(context: CoreDataStack.context)
-            locationObject.heartRate = Int16(heartRateList[i])
-            newRide.addToLocations(locationObject)
-        }
-        
-        CoreDataStack.saveContext()
-        ride = newRide
-        
     }
     
     //************************************************************************************************************************************//
@@ -2736,7 +2763,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         // TOP RIGHT
         view.addSubview(weatherIcon)
-        weatherIcon.isHidden = true
         
         // MIDDLE
         view.addSubview(ScrollView)

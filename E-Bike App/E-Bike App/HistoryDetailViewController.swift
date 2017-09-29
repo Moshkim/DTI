@@ -17,6 +17,8 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
 
     // Draw The Route on the Map
     fileprivate let path = GMSMutablePath()
+    // Polyline segment colored lines
+    var arrayOfSegementColor = [GMSStyleSpan]()
     
     
     //Page of Graph
@@ -108,6 +110,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     
     lazy var elevationChart: Chart = {
         let chart = Chart(frame: CGRect(x: 0, y: 0, width: 200, height: 150))
+        chart.xLabelsSkipLast = true
         chart.backgroundColor = UIColor.black
         chart.axesColor = UIColor.white
         chart.highlightLineColor = UIColor.white
@@ -129,6 +132,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     }()
     lazy var speedChart: Chart = {
         let chart = Chart(frame: CGRect(x:0 , y: 0, width: 300, height: 180))
+        chart.xLabelsSkipLast = true
         chart.backgroundColor = UIColor.black
         chart.axesColor = UIColor.white
         chart.highlightLineColor = UIColor.white
@@ -151,6 +155,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     }()
     lazy var heartRateChart: Chart = {
         let chart = Chart(frame: CGRect(x:0 , y: 0, width: 300, height: 180))
+        chart.xLabelsSkipLast = true
         chart.backgroundColor = UIColor.black
         chart.axesColor = UIColor.white
         chart.highlightLineColor = UIColor.white
@@ -250,6 +255,9 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         let series = ChartSeries(data: seriesData)
         series.area = true
+        series.colors.above = UIColor.DTIRed()
+        series.colors.below = UIColor(red:0.91, green:0.71, blue:0.70, alpha:1.00)
+        series.colors.zeroLevel = 50
         elevationChart.xLabels = elevationXLabels
         elevationChart.xLabelsFormatter = { String(Int(round($1))) }
         elevationChart.add(series)
@@ -270,7 +278,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         for i in 0..<locationPoints.count{
             
-            if locationPoints[i].speed > 1 {
+            if locationPoints[i].speed >= 0.0 {
                 let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
                 let lat = locationPoints[i].latitude
                 let long = locationPoints[i].longitude
@@ -290,7 +298,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             if i == 0 {
                 seriesData.append((x: Float(0.0),y:speedEachPoint))
             } else {
-                cumulativeDistance += self.elevationLocationPoints[i].distance(from: self.elevationLocationPoints[i-1])
+                cumulativeDistance += self.speedLocationPoints[i].distance(from: self.speedLocationPoints[i-1])
                 let cumulativeDistanceInMiles = ((cumulativeDistance/1000.0)/1.61)
                 seriesData.append((x:Float(cumulativeDistanceInMiles), y:speedEachPoint))
                 
@@ -306,6 +314,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         let series = ChartSeries(data: seriesData)
         series.area = true
+        series.color = UIColor(red:0.91, green:0.71, blue:0.70, alpha:1.00)
         speedChart.xLabels = elevationXLabels
         speedChart.xLabelsFormatter = { String(Int(round($1))) }
         speedChart.add(series)
@@ -383,6 +392,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         let series = ChartSeries(data: seriesData)
         series.area = true
+        series.color = UIColor.DTIRed()
         heartRateChart.xLabels = heartRateXLabels
         heartRateChart.xLabelsFormatter = { String(Int(round($1))) }
         heartRateChart.add(series)
@@ -477,7 +487,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     
     
     @objc func goBackToMain() {
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popToRootViewController(animated: true)
     }
     
     lazy var deleteButton: UIButton = {
@@ -695,8 +705,9 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         let deleteButton = UIAlertAction(title: "Delete", style: .default) {
             _ in
-            self.moveToRefreshedHistory()
             self.clearData()
+            self.moveToRefreshedHistory()
+            
         }
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
@@ -710,19 +721,17 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         alertController.addAction(cancelButton)
         present(alertController, animated: true, completion: nil)
     }
-    
+    // FIXIT - I need to fix it!
     func moveToRefreshedHistory() {
+        //let vc = HistoryViewController()
+        //navigationController?.popViewController(animated: true)
+        //self.performSegue(withIdentifier: "backToHistoryViewSegue", sender: self)
+        //navigationController?.pushViewController(vc, animated: true)
+        //navigationController?.popToRootViewController(animated: true)
         self.dismiss(animated: true, completion: nil)
     }
     
-    func drawGraph() {
-    
 
-        
-        
-        //print("**************************************************************************************************************************")
-
-    }
     
     
     func DrawPath(){
@@ -741,14 +750,15 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         let locationPoints = ride?.locations?.array as! [Locations]
         
+        
+        
 
         for i in 0..<locationPoints.count{
+            let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
             let lat = locationPoints[i].latitude
             let long = locationPoints[i].longitude
             let position = CLLocationCoordinate2D(latitude: lat, longitude: long)
         
-            
-            
             if i == 0{
                 let startPointMapPin = GMSMarker()
                 startPointMapPin.title = "Start"
@@ -771,19 +781,67 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             path.add(position)
             bounds = bounds.includingPath(path)
             
+            
+            
+            if eachSpeed < 5 && eachSpeed >= 0 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidRed))
+            } else if eachSpeed >= 5 && eachSpeed < 10 {
+                
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.redToYellow))
+            } else if eachSpeed >= 10 && eachSpeed < 13 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidYellow))
+            } else if eachSpeed >= 13 && eachSpeed < 15 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.yellowToGreen))
+            } else if eachSpeed >= 15 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidGreen))
+            }
+            
+            
+            //drawTraffic(path: path, speed: eachSpeed)
         }
         
-        let update = GMSCameraUpdate.fit(bounds, withPadding: 1)
-        let polyline = GMSPolyline(path: path)
-        
-        polyline.strokeWidth = 3
-        polyline.geodesic = true
-        polyline.strokeColor = UIColor(red:0.14, green:0.17, blue:0.17, alpha:1.00)
-        polyline.map = self.mapView
-        
-        
+        let update = GMSCameraUpdate.fit(bounds, with: UIEdgeInsets.zero)
+
         mapView.animate(with: update)
         
+        let polyline = GMSPolyline(path: path)
+        polyline.strokeWidth = 3
+        polyline.geodesic = true
+        polyline.spans = arrayOfSegementColor
+        polyline.map = self.mapView
+        
+    }
+    /*
+    func polyline() -> [MulticolorPolyline] {
+        let locations = ride?.locations?.array as! [Locations]
+        var coordinates: [(CLLocation, CLLocation)] = []
+        var speeds: [Double] = []
+        var minSpeed = Double.greatestFiniteMagnitude
+        var maxSpeed = 0.0
+        
+        for (first, second) in zip(locations, locations.dropFirst()) {
+            let start = CLLocation(latitude: first.latitude, longitude: first.longitude)
+            let end = CLLocation(latitude: second.latitude, longitude: second.longitude)
+            coordinates.append((start,end))
+            
+            let distance = end.distance(from: start)
+            let time = second.timestamp!.timeIntervalSince(first.timestamp!)
+            let speed = time > 0 ? distance / time : 0
+            speeds.append(speed)
+            minSpeed = min(minSpeed, speed)
+            maxSpeed = max(maxSpeed, speed)
+        }
+        let avgSpeed = speeds.reduce(0, +) / Double(speeds.count)
+        
+        var segments: [MulticolorPolyline] = []
+        for ((start, end), speed) in zip(coordinates, speeds) {
+            let coords = [start.coordinate, end.coordinate]
+            //let segment =
+        }
+    }
+    */
+    func drawTraffic(path: GMSPath, speed: Double) {
+
         
     }
     
@@ -832,6 +890,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             numberFormatter.minimumFractionDigits = 2
             numberFormatter.maximumFractionDigits = 2
             guard let data = numberFormatter.string(from: NSNumber(value: value)) else { return }
+            
             
             if pageOfGraph == 0 {
                 elevationLabel.text = "⛰: \(data) ft"
