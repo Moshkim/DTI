@@ -565,6 +565,15 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
             elevationXLabels.append(Float(i))
         }
         
+        
+        if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
+            elevationChart.labelFont = UIFont.systemFont(ofSize: 10)
+        } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
+            elevationChart.labelFont = UIFont.systemFont(ofSize: 8)
+        } else if xMilesLabelLength > 20 {
+            elevationChart.labelFont = UIFont.systemFont(ofSize: 6)
+        }
+        
         let series = ChartSeries(data: seriesData)
         series.area = true
         elevationChart.xLabels = elevationXLabels
@@ -620,6 +629,15 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         for i in 0...xMilesLabelLength {
             speedXLabels.append(Float(i))
         }
+        
+        if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
+            speedChart.labelFont = UIFont.systemFont(ofSize: 10)
+        } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
+            speedChart.labelFont = UIFont.systemFont(ofSize: 8)
+        } else if xMilesLabelLength > 20 {
+            speedChart.labelFont = UIFont.systemFont(ofSize: 6)
+        }
+        
         
         let series = ChartSeries(data: seriesData)
         series.area = true
@@ -696,6 +714,15 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         for i in 0...xMilesLabelLength {
             heartRateXLabels.append(Float(i))
+        }
+        
+        
+        if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
+            heartRateChart.labelFont = UIFont.systemFont(ofSize: 10)
+        } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
+            heartRateChart.labelFont = UIFont.systemFont(ofSize: 8)
+        } else if xMilesLabelLength > 20 {
+            heartRateChart.labelFont = UIFont.systemFont(ofSize: 6)
         }
         
         let series = ChartSeries(data: seriesData)
@@ -938,7 +965,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         let formattedDistance = FormatDisplay.distance(distance)
         let formattedDate = FormatDisplay.date(ride.timestamp as Date?)
         let formattedTime = FormatDisplay.time(seconds)
-        let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
+        //let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
         //let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
         let distanceInMiles = ((ride.distance/1000.0)/1.61)
         
@@ -959,13 +986,13 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         }
         
         guard let address = ride.address else { return }
-        
+        //guard let avgMovingSpeed = ride.avgMovingSpeed else { return }
         
         
         dateLabel.text = "Date: \(formattedDate)"
         distanceLabel.text = "Distance: \(formattedDistance)"
         timeLabel.text = "Time: \(formattedTime)"
-        averageSpeedLabel.text = "Avg 🚴🏼: \(formattedPace)"
+        averageSpeedLabel.text = "Avg 🚴🏼: \(ride.avgMovingSpeed) mph"
         heartRateLabel.text = "Avg ❤️ Rate: \(ride.avgheartrate) bpm"
         addressLabel.text = "Region: \(address)"
         

@@ -26,7 +26,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     let windowSize = UIApplication.shared.keyWindow
     
     // Access to User Defaults 
-    let defaults = UserDefaults.standard
+    let userDefault = UserDefaults.standard
     
     
     // Kalma Filter Algorithm
@@ -103,7 +103,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     lazy var userCurrentLocationMarker: GMSMarker = {
         let marker = GMSMarker()
         
-        let markerImage = UIImage(named: "headingDirection")?.withRenderingMode(.alwaysTemplate)
+        let markerImage = UIImage(named: "headingDirection")
+            //?.withRenderingMode(.alwaysTemplate)
         let markerView = UIImageView(image: markerImage)
         
         marker.tracksViewChanges = true
@@ -152,6 +153,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var lastLocation: CLLocation!
     fileprivate var totalTravelDistance: Double = 0
     fileprivate var movingSeconds = 0
+    fileprivate var avgSpeed: Double = 0
+    fileprivate var avgMovingSpeed: Double = 0
     fileprivate var speedTag = 0
     
     
@@ -1436,6 +1439,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     //************************************************************************************************************************************//
 
+    // History Tag for sort by Distance -> 0
+    // History Tag for sort by Data(Time) -> 1
+    
+    var historySortingTag: Bool = true
+    
     lazy var toolBox: UIToolbar = {
         let box = UIToolbar(frame: CGRect(x: 0, y: (self.windowSize?.frame.height)!-40, width: (self.windowSize?.frame.width)!, height: 40))
         box.backgroundColor = UIColor.black
@@ -1454,8 +1462,49 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return box
     }()
     
+    func isKeyPresentInUserDefaults(key: String) -> Bool {
+        return userDefault.object(forKey: key) != nil
+    }
+    
+    
     @objc func moveToHistory() {
-        performSegue(withIdentifier: .history, sender: nil)
+        //userDefault.set(nil, forKey: "historyListSortTypeTag")
+        
+        if isKeyPresentInUserDefaults(key: "historyListSortTypeTag") == true {
+            performSegue(withIdentifier: .history, sender: nil)
+            
+        } else if isKeyPresentInUserDefaults(key: "historyListSortTypeTag") == false {
+            userDefault.set(true, forKey: "historyListSortTypeTag")
+            
+            let alertViewController = UIAlertController(title: "History by distance? or History by date?", message: "You can change it in the user setting later on", preferredStyle: .alert)
+            
+            let distance = UIAlertAction(title: "Distance", style: .default) {
+                _ in
+                
+                self.userDefault.set("Distance", forKey: "historyListSortType")
+                self.performSegue(withIdentifier: .history, sender: nil)
+            }
+            let date = UIAlertAction(title: "Date", style: .default, handler: {
+                _ in
+                
+                self.userDefault.set("Date", forKey: "historyListSortType")
+                self.performSegue(withIdentifier: .history, sender: nil)
+                
+            })
+            
+            alertViewController.addAction(distance)
+            alertViewController.addAction(date)
+            present(alertViewController, animated: true, completion: nil)
+            
+            
+        }
+        
+        
+        
+        
+        
+        
+        
     }
     
     
@@ -1887,8 +1936,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }
     
     func weatherSwitchCheck() {
-        if defaults.value(forKey: "switchOn") != nil {
-            let switchOn:Bool = defaults.value(forKey: "switchOn") as! Bool
+        if userDefault.value(forKey: "switchOn") != nil {
+            let switchOn:Bool = userDefault.value(forKey: "switchOn") as! Bool
             if switchOn == true {
                 getWeatherInfo()
             } else {
@@ -2200,6 +2249,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         button.cornerRadius = button.frame.width/2
         button.borderWidth = 2
         button.borderColor = UIColor.white
+        button.backgroundColor = UIColor.clear
         button.tintColor = UIColor.white
         button.titleLabel?.textColor = UIColor.white
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
@@ -2638,12 +2688,31 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 let locationObject = Locations(context: CoreDataStack.context)
                 locationObject.elevation = locationList[i].altitude as Double
                 locationObject.timestamp = locationList[i].timestamp as Date
-                locationObject.speed = locationList[i].speed as Double
+                if locationList[i].speed < 0 {
+                    locationObject.speed = 0
+                }
+                else {
+                    locationObject.speed = locationList[i].speed as Double
+                    if locationObject.speed > 0 {
+                        avgMovingSpeed += locationObject.speed
+                    } else if locationObject.speed >= 0 {
+                        avgSpeed += locationObject.speed
+                    }
+                }
                 locationObject.latitude = locationList[i].coordinate.latitude
                 locationObject.longitude = locationList[i].coordinate.longitude
                 locationObject.heartRate = Int16(heartRateList[i])
                 newRide.addToLocations(locationObject)
             }
+            
+            
+            ride?.avgSpeed = avgSpeed*(1/1000)*(1/1.61)*(3600).rounded()
+            ride?.avgMovingSpeed = avgMovingSpeed*(1/1000)*(1/1.61)*(3600).rounded()
+            
+            
+                
+            
+            
             
             // I am sure this was the issue with heart rate data
             /*

@@ -92,6 +92,7 @@
 		A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */; };
 		A6D7D7FC1F7BFA7E00AA8A0D /* IntroductionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D7D7FB1F7BFA7E00AA8A0D /* IntroductionViewController.swift */; };
 		A6D7D7FE1F7CC17800AA8A0D /* MulticolorPolyline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D7D7FD1F7CC17800AA8A0D /* MulticolorPolyline.swift */; };
+		A6D7D8001F7EF45700AA8A0D /* MapAndStatusMenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D7D7FF1F7EF45600AA8A0D /* MapAndStatusMenuBar.swift */; };
 		A6F1C4181F1FD29F000B03AE /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = A6F1C4171F1FD29F000B03AE /* style.json */; };
 		A6F1C41A1F201063000B03AE /* EbikeDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */; };
 		A6FC1B3C1F58A7DE00B08DC3 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FC1B3B1F58A7DE00B08DC3 /* AuthService.swift */; };
@@ -197,6 +198,7 @@
 		A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuButton.swift; sourceTree = "<group>"; };
 		A6D7D7FB1F7BFA7E00AA8A0D /* IntroductionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroductionViewController.swift; sourceTree = "<group>"; };
 		A6D7D7FD1F7CC17800AA8A0D /* MulticolorPolyline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MulticolorPolyline.swift; sourceTree = "<group>"; };
+		A6D7D7FF1F7EF45600AA8A0D /* MapAndStatusMenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MapAndStatusMenuBar.swift; path = "E-Bike App/MapAndStatusMenuBar.swift"; sourceTree = SOURCE_ROOT; };
 		A6F1C4171F1FD29F000B03AE /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = style.json; path = "E-Bike App/style.json"; sourceTree = SOURCE_ROOT; };
 		A6F1C4191F201063000B03AE /* EbikeDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EbikeDetailsViewController.swift; path = "E-Bike App/EbikeDetailsViewController.swift"; sourceTree = SOURCE_ROOT; };
 		A6FC1B3B1F58A7DE00B08DC3 /* AuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthService.swift; path = "../../../../Documents/E-Bike/E-bikeApp/E-Bike App/E-Bike App/AuthService.swift"; sourceTree = "<group>"; };
@@ -513,6 +515,7 @@
 				A6FC1B481F5B299900B08DC3 /* TermsAndPrivacyViewController.swift */,
 				A6FC1B4D1F5BB84400B08DC3 /* BikeTypesViewController.swift */,
 				A60EBC641F5F125D004AF307 /* MyStatsViewController.swift */,
+				A6D7D7FF1F7EF45600AA8A0D /* MapAndStatusMenuBar.swift */,
 			);
 			name = "Menu Controller";
 			sourceTree = "<group>";
@@ -721,6 +724,7 @@
 				A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */,
 				A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */,
 				A6FC1B3E1F59D7BD00B08DC3 /* SettingMenuSlide.swift in Sources */,
+				A6D7D8001F7EF45700AA8A0D /* MapAndStatusMenuBar.swift in Sources */,
 				A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */,
 				A64966471F3583240039D768 /* HistoryDetailViewController.swift in Sources */,
 				A625DDDD1EC623B600DB521E /* AppDelegate.swift in Sources */,

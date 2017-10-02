@@ -253,6 +253,16 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             elevationXLabels.append(Float(i))
         }
         
+        if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
+            elevationChart.labelFont = UIFont.systemFont(ofSize: 10)
+        } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
+            elevationChart.labelFont = UIFont.systemFont(ofSize: 8)
+        } else if xMilesLabelLength > 20 {
+            elevationChart.labelFont = UIFont.systemFont(ofSize: 6)
+        }
+        
+        
+        
         let series = ChartSeries(data: seriesData)
         series.area = true
         series.colors.above = UIColor.DTIRed()
@@ -276,7 +286,11 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     
         let locationPoints = ride?.locations?.array as! [Locations]
         
+        
+        
+        
         for i in 0..<locationPoints.count{
+            
             
             if locationPoints[i].speed >= 0.0 {
                 let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
@@ -310,6 +324,15 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         for i in 0...xMilesLabelLength {
             speedXLabels.append(Float(i))
+        }
+        
+        
+        if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
+            speedChart.labelFont = UIFont.systemFont(ofSize: 10)
+        } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
+            speedChart.labelFont = UIFont.systemFont(ofSize: 8)
+        } else if xMilesLabelLength > 20 {
+            speedChart.labelFont = UIFont.systemFont(ofSize: 6)
         }
         
         let series = ChartSeries(data: seriesData)
@@ -386,8 +409,19 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
         
+        
+        
         for i in 0...xMilesLabelLength {
             heartRateXLabels.append(Float(i))
+        }
+        
+        
+        if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
+            heartRateChart.labelFont = UIFont.systemFont(ofSize: 10)
+        } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
+            heartRateChart.labelFont = UIFont.systemFont(ofSize: 8)
+        } else if xMilesLabelLength > 20 {
+            heartRateChart.labelFont = UIFont.systemFont(ofSize: 6)
         }
         
         let series = ChartSeries(data: seriesData)
@@ -438,15 +472,16 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             let formattedDistance = FormatDisplay.distance(distance)
             let formattedDate = FormatDisplay.date(ride?.timestamp as Date?)
             let formattedTime = FormatDisplay.time(seconds)
-            let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
+            //let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
             
             guard let address = ride?.address else { return }
             guard let heartRate = ride?.avgheartrate else { return }
+            guard let avgMovingSpeed = ride?.avgMovingSpeed else { return }
                         
             dateLabel.text = "Date: \(formattedDate)"
             distanceLabel.text = "Distance: \(formattedDistance)"
             timeLabel.text = "Time: \(formattedTime)"
-            averageSpeedLabel.text = "Avg 🚴🏼: \(formattedPace)"
+            averageSpeedLabel.text = "Avg 🚴🏼: \(avgMovingSpeed) mph"
             heartRateLabel.text = "Avg ❤️ Rate: \(heartRate) bpm"
             addressLabel.text = "Region: \(address)"
             

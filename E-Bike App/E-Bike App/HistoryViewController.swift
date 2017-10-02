@@ -18,6 +18,8 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     
     var arrayRide: [Ride]?
     
+    let userDefault = UserDefaults.standard
+    
     
     private let cellId = "cellId"
     
@@ -71,106 +73,15 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     }
     
     
-    let segmentedControl: UISegmentedControl = {
-        
-        let segment = UISegmentedControl(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
-        segment.insertSegment(withTitle: "Time", at: 0, animated: true)
-        segment.insertSegment(withTitle: "Distance", at: 1, animated: true)
-        let font = UIFont.systemFont(ofSize: 10)
-        segment.setTitleTextAttributes([NSAttributedStringKey.font: font], for: .normal)
-        segment.selectedSegmentIndex = 0
-        segment.tintColor = UIColor.white
-        segment.backgroundColor = UIColor.clear
-        segment.layer.cornerRadius = 5.0
-        segment.layer.borderColor = UIColor.white.cgColor
-        segment.layer.borderWidth = 1
-        
-        
-        //segment.addTarget(self, action: #selector(loadData), for: .valueChanged)
-        
-        return segment
-    }()
+
+
     
-    
-    lazy var fetchedResultesController: NSFetchedResultsController = { () -> NSFetchedResultsController<Ride> in
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
-        
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
-        
-        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-        return frc
-    }()
-    
-    
-    func changeDataSort(sender: UISegmentedControl){
-        
-        let context = getContext()
-        let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
-        
-        
-        
-        if sender.selectedSegmentIndex == 0{
-            
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
-            
-            do {
-                arrayRide?.removeAll()
-                arrayRide = try context.fetch(fetchRequest)
-                
-                fetchedResultesController.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
-                
-                
-                //try frc.performFetch()
-                self.collectionView?.reloadData()
-                
-                
-                
-            } catch {
-                print("Error with request: \(error)")
-                
-            }
-            
-        }
-        else if sender.selectedSegmentIndex == 1{
-            
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "distance", ascending: false)]
-            
-            do {
-                arrayRide?.removeAll()
-                arrayRide = try context.fetch(fetchRequest)
-                fetchedResultesController.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "distance", ascending: false)]
-                
-                
-                //try frc.performFetch()
-                self.collectionView?.reloadData()
-                
-            } catch {
-                print("Error with request: \(error)")
-                
-            }
-            
-        }
-        else {
-            print("There is an error")
-            
-        }
-        
-    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        do {
-            try fetchedResultesController.performFetch()
-            
-        } catch {
-            
-            print("There was an error")
-        }
-        
+
         collectionView?.backgroundColor = UIColor.black
         UIApplication.shared.statusBarStyle = .lightContent
         
@@ -180,9 +91,9 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         //navigationItem.titleView = segmentedControl
         
         
-        let item = UIBarButtonItem(customView: segmentedControl)
+        //let item = UIBarButtonItem(customView: segmentedControl)
         let backButton = UIBarButtonItem(customView: self.backButton)
-        navigationItem.setRightBarButton(item, animated: true)
+        //navigationItem.setRightBarButton(item, animated: true)
         navigationItem.leftBarButtonItem = backButton
         
         
@@ -225,17 +136,37 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         
         let context = getContext()
         let fetchRequest: NSFetchRequest<Ride> = Ride.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
         
-        do {
-            arrayRide = try context.fetch(fetchRequest)
-            
-        } catch {
-            print("Error with request: \(error)")
+        
+        if let sortType = userDefault.value(forKey: "historyListSortType") {
+            if (sortType as! String) == "Distance" {
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "distance", ascending: false)]
+                
+                do {
+                    arrayRide = try context.fetch(fetchRequest)
+                    
+                } catch {
+                    print("Error with request: \(error)")
+                    
+                }
+                
+                
+            } else if (sortType as! String) == "Date" {
+                
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+                
+                do {
+                    arrayRide = try context.fetch(fetchRequest)
+                    
+                } catch {
+                    print("Error with request: \(error)")
+                    
+                }
+                
+            }
             
         }
-        
-        
+
     }
     
     func clearData() {

@@ -12,9 +12,10 @@ import UIKit
 
 class SettingViewController: UIViewController{
     
-    let defaults = UserDefaults.standard
+    let userDefaults = UserDefaults.standard
     var switchOn: Bool = true
 
+    // MARK: - Back Button ****************************************************************************************************************
     lazy var backToHome: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
@@ -28,6 +29,47 @@ class SettingViewController: UIViewController{
         return button
     }()
     
+    @objc func moveBack() {
+        
+        
+        self.dismiss(animated: true, completion: nil)
+        
+    }
+    
+    // ************************************************************************************************************************************
+    
+    
+    // MARK: - History List Sort Type Setting *********************************************************************************************
+    
+    lazy var historyListSortTypeSetting: UISegmentedControl = {
+        let segment = UISegmentedControl(items: ["Distance", "Date"])
+        segment.translatesAutoresizingMaskIntoConstraints = false
+        if userDefaults.value(forKey: "historyListSortType") as! String == "Distance"{
+            segment.selectedSegmentIndex = 0
+        } else {
+            segment.selectedSegmentIndex = 1
+        }
+        
+        segment.addTarget(self, action: #selector(historySortType), for: .valueChanged)
+        return segment
+    }()
+    
+    @objc func historySortType(sender: UISegmentedControl) {
+        
+        switch sender.selectedSegmentIndex {
+        case 0:
+            userDefaults.set("Distance", forKey: "historyListSortType")
+        case 1:
+            userDefaults.set("Date", forKey: "historyListSortType")
+        default:
+            break
+        }
+        
+    }
+    // ************************************************************************************************************************************
+    
+    
+    // MARK: - Weather Setting*************************************************************************************************************
     var weatherLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 50, height: 40))
         label.text = "Weather Enable"
@@ -46,8 +88,8 @@ class SettingViewController: UIViewController{
     
     
     func setTheWeatherSwitch() {
-        if defaults.value(forKey: "switchOn") != nil {
-            switchOn = defaults.value(forKey: "switchOn") as! Bool
+        if userDefaults.value(forKey: "switchOn") != nil {
+            switchOn = userDefaults.value(forKey: "switchOn") as! Bool
             if switchOn == true {
                 weatherSwitch.isOn = true
             
@@ -57,28 +99,25 @@ class SettingViewController: UIViewController{
         
         } else {
             weatherSwitch.isOn = true
-            defaults.set(true, forKey: "switchOn")
+            userDefaults.set(true, forKey: "switchOn")
         }
     }
     
     @objc func checkState(_ sender: UISwitch) {
         if sender.isOn {
             switchOn = true
-            defaults.set(switchOn, forKey: "switchOn")
+            userDefaults.set(switchOn, forKey: "switchOn")
         }
         if sender.isOn == false {
             switchOn = false
-            defaults.set(switchOn, forKey: "switchOn")
+            userDefaults.set(switchOn, forKey: "switchOn")
         }
     }
     
     
-    @objc func moveBack() {
-        
-        
-        self.dismiss(animated: true, completion: nil)
-        
-    }
+    //************************************************************************************************************************************
+    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -89,6 +128,8 @@ class SettingViewController: UIViewController{
         view.addSubview(backToHome)
         view.addSubview(weatherLabel)
         view.addSubview(weatherSwitch)
+        
+        view.addSubview(historyListSortTypeSetting)
         
         
         
@@ -101,6 +142,9 @@ class SettingViewController: UIViewController{
         _ = weatherSwitch.anchor(weatherLabel.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 60, heightConstant: 40)
         weatherSwitch.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
+        
+        _ = historyListSortTypeSetting.anchor(weatherSwitch.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 50)
+        historyListSortTypeSetting.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         // Do any additional setup after loading the view.
     }
