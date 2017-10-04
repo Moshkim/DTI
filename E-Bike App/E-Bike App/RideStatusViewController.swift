@@ -13,6 +13,7 @@ import GooglePlaces
 import GooglePlacesSearchController
 import CoreLocation
 import CoreData
+import CoreMotion
 import MapKit
 import LocalAuthentication
 import CoreBluetooth
@@ -157,6 +158,19 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var avgMovingSpeed: Double = 0
     fileprivate var speedTag = 0
     
+    // MARK: - Altemeter & Pedometer & Barometer will be used for distance and altitude.
+    fileprivate var trackingElevationData: Double = 0
+    fileprivate var trackingPressureData: Double = 0
+    
+    var elevationDataTag: Bool = false
+    fileprivate var elevationDataArray = [Double]()
+    fileprivate var pressureDataArray = [Double]()
+    let dataProcessingQueue = OperationQueue()
+    let pedometer = CMPedometer()
+    let altimeter = CMAltimeter()
+    let activityManager = CMMotionActivityManager()
+    //********************************************************************************
+    
     
     // Weather Infomation Variables
     fileprivate var weatherEnableSwitchOn: Bool?
@@ -238,6 +252,44 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     var featureArray = [Dictionary<String, Any>]()
+    
+    
+    // Overall structure layout
+    
+    lazy var entireScrollView: UIScrollView = {
+        let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+        view.backgroundColor = UIColor.gray
+        view.isPagingEnabled = true
+        view.bounces = false
+        view.contentSize = CGSize(width: self.view.bounds.width * CGFloat(2), height: 180)
+        //view.layer.zPosition = 5
+        view.isScrollEnabled = true
+        view.alwaysBounceHorizontal = true
+        view.isUserInteractionEnabled = true
+        view.delegate = self
+        return view
+    }()
+    
+    
+    // Main two frames on the entire scroll view
+    
+    // This is main frame view on the top of first scroll view
+    lazy var mainFirstFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(0), y: 0, width: self.entireScrollView.frame.width, height: self.view.frame.height-150)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
+    
+    // This is main frame view on the top of second scroll view
+    lazy var mainSecondFrameView: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: self.view.frame.width * CGFloat(1), y: 0, width: self.entireScrollView.frame.width, height: self.view.frame.height-150)
+        view.backgroundColor = UIColor.black
+        view.frame.size.width = self.view.bounds.size.width
+        return view
+    }()
     
     
     lazy var ScrollView: UIScrollView = {
@@ -841,7 +893,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     //************************************************************************************************************************************//
     
     func featureViewController() {
-        featureArray = [screenOne,screenTwo, screenThree, screenFour, screenFive]
+        featureArray = [screenOne, screenTwo, screenThree, screenFour]
         ScrollView.isPagingEnabled = true
         ScrollView.contentSize = CGSize(width: self.view.bounds.width * CGFloat(featureArray.count), height: 400)
         statusViewControl.numberOfPages = featureArray.count
@@ -1206,42 +1258,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 }
                 
             }
-                
-            else if (index == 3){
-                
-                let mainFrameOfView = UIView()
-                mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
-                mainFrameOfView.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
-                mainFrameOfView.frame.size.width = self.view.bounds.size.width
-                
-                
-                
-                
-                ScrollView.addSubview(mainFrameOfView)
-                ScrollView.addSubview(mapView)
-                mapView.addSubview(myLocationButton)
-                mapView.addSubview(mySearchButton)
-                mapView.addSubview(coffeSearchButton)
-                mapView.addSubview(directionToDestButton)
-                
-                directionToDestButton.isHidden = true
-                
-                
-                _ = mapView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFrameOfView.frame.width, heightConstant: mainFrameOfView.frame.height)
-                mapView.centerXAnchor.constraint(equalTo: mainFrameOfView.centerXAnchor).isActive = true
-                mapView.centerYAnchor.constraint(equalTo: mainFrameOfView.centerYAnchor).isActive = true
-                
-                _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 40, heightConstant: 40)
-                
-                _ = coffeSearchButton.anchor(mapView.topAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
-                
-                _ = directionToDestButton.anchor(coffeSearchButton.bottomAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
-                
-                _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 40, heightConstant: 40)
-                
-                
-            }
-            else if (index == 4) {
+
+            else if (index == 3) {
                 
                 
                 // MARK - LAST SCROLL VIEW WITH BIGGER DASH BOARD
@@ -1374,6 +1392,24 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
 
+    
+    /*
+    else if (index == 3){
+    
+    let mainFrameOfView = UIView()
+    mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
+    mainFrameOfView.backgroundColor = UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
+    mainFrameOfView.frame.size.width = self.view.bounds.size.width
+    
+    
+    
+    
+    ScrollView.addSubview(mainFrameOfView)
+
+    
+    
+    }
+    */
     
     
     let totalDistanceLabel: UILabelX = {
@@ -1610,14 +1646,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     @objc func moveToPopUp(sender: UIButton) {
         
         
-        view.addSubview(rideView)
-        view.addSubview(infoView)
+        mainSecondFrameView.addSubview(rideView)
+        mainSecondFrameView.addSubview(infoView)
         infoView.addSubview(closeButton)
         infoView.addSubview(titleLabel)
         
         _ = rideView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: view.frame.height)
-        rideView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        rideView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        rideView.centerXAnchor.constraint(equalTo: mainSecondFrameView.centerXAnchor).isActive = true
+        rideView.centerYAnchor.constraint(equalTo: mainSecondFrameView.centerYAnchor).isActive = true
         
         
         _ = infoView.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 300, heightConstant: 350)
@@ -1863,6 +1899,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     print("Traveled Distance:",  totalTravelDistance)
                     print("Straight Distance:", startLocation.distance(from: location))
                     print("Elevation:", location.altitude)
+                    print("Relative Elevation:", trackingElevationData)
                     print("Speed:", location.speed)
                     
                     let msTomph = ((location.speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
@@ -1919,6 +1956,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     cumulativeSumOfHeartRateData += currentHeartRate
                 
                     locationList.append(location)
+                    elevationDataArray.append(trackingElevationData)
+                    pressureDataArray.append(trackingPressureData)
                     path.add(location.coordinate)
                     drawPath(path: path, speed: msTomph)
 
@@ -2196,7 +2235,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             let position = CGPoint(x: ScrollView.contentOffset.x - view.frame.width, y: ScrollView.contentOffset.y)
             ScrollView.setContentOffset(position, animated: true)
         } else {
-            let position = CGPoint(x: ScrollView.contentOffset.x + (view.frame.width*4), y: ScrollView.contentOffset.y)
+            let position = CGPoint(x: ScrollView.contentOffset.x + (view.frame.width*3), y: ScrollView.contentOffset.y)
             ScrollView.setContentOffset(position, animated: true)
             
         }
@@ -2220,7 +2259,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     @objc func rightScrollView() {
         
-        if statusViewControl.currentPage != Int(4) {
+        if statusViewControl.currentPage != Int(3) {
             let position = CGPoint(x: ScrollView.contentOffset.x + view.frame.width, y: ScrollView.contentOffset.y)
             ScrollView.setContentOffset(position, animated: true)
         } else {
@@ -2494,6 +2533,25 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // Start store the heart rate data to the array
         heartRateTag = 1
         
+        // Start store the altimeter elevation data to the array
+        elevationDataTag = true
+        
+        if CMAltimeter.isRelativeAltitudeAvailable() {
+            altimeter.startRelativeAltitudeUpdates(to: dataProcessingQueue, withHandler: {(data, error) in
+                if error != nil {
+                    print(error?.localizedDescription as Any)
+                } else {
+                    DispatchQueue.main.async{
+                        print(data?.relativeAltitude as! Double)
+                        self.trackingElevationData = data?.relativeAltitude as! Double
+                        self.trackingPressureData = data?.pressure as! Double
+                    }
+                }
+                
+            })
+            
+        }
+        
         // MARK - Destination tag should be on in order to keep track remaining distance and time
         destinationTag = 1
         
@@ -2501,11 +2559,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         if CLLocationManager.headingAvailable() {
             locationManager.headingFilter = 5
             locationManager.startUpdatingHeading()
-        
         }
         locationManager.startUpdatingLocation()
         let camera = GMSCameraPosition(target: (self.mapView.myLocation?.coordinate)!, zoom: 15, bearing: 0, viewingAngle: 25)
         mapView.animate(to: camera)
+        
+        
+        
+        
         
         // MARK - Disappear the History tool bar when start button clicked
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
@@ -2634,8 +2695,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate func stopEbike() {
         
         mySearchButton.isHidden = false
+        
+        // stop timer for this ride
         timer?.invalidate()
+        
+        // stop update altemeter altidue update and press
+        altimeter.stopRelativeAltitudeUpdates()
+        
+        // stop update the location
         locationManager.stopUpdatingLocation()
+        
+        // stop update the heading of the device
         locationManager.stopUpdatingHeading()
         defaultAddressTag = true
         
@@ -2650,6 +2720,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate func saveEbike(name: String) {
         
         // Each ride has a set of locations and each location has to be only one instance not multiple
+        var countForAvgMovingSpeedInstance = 0
+        var countForAvgSpeedInstance = 0
         let newRide = Ride(context: CoreDataStack.context)
         newRide.distance = distance.value
         newRide.duration = Int16(seconds)
@@ -2686,8 +2758,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         if locationList.count > 0 {
             for i in 0..<locationList.count {
                 let locationObject = Locations(context: CoreDataStack.context)
-                locationObject.elevation = locationList[i].altitude as Double
+                
+                    
+                    //locationList[i].altitude as Double
                 locationObject.timestamp = locationList[i].timestamp as Date
+                if elevationDataArray[i] < 0 {
+                    locationObject.elevation = 0.0
+                } else {
+                    locationObject.elevation = elevationDataArray[i]
+                    locationObject.pressure = pressureDataArray[i]
+                }
+                
+                
+                
+                
                 if locationList[i].speed < 0 {
                     locationObject.speed = 0
                 }
@@ -2695,8 +2779,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     locationObject.speed = locationList[i].speed as Double
                     if locationObject.speed > 0 {
                         avgMovingSpeed += locationObject.speed
+                        countForAvgMovingSpeedInstance += 1
                     } else if locationObject.speed >= 0 {
                         avgSpeed += locationObject.speed
+                        countForAvgSpeedInstance += 1
                     }
                 }
                 locationObject.latitude = locationList[i].coordinate.latitude
@@ -2706,8 +2792,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             }
             
             
-            ride?.avgSpeed = avgSpeed*(1/1000)*(1/1.61)*(3600).rounded()
-            ride?.avgMovingSpeed = avgMovingSpeed*(1/1000)*(1/1.61)*(3600).rounded()
+            ride?.avgSpeed = (avgSpeed/Double(countForAvgSpeedInstance))*(1/1000)*(1/1.61)*(3600).rounded()
+            ride?.avgMovingSpeed = (avgMovingSpeed/Double(countForAvgMovingSpeedInstance))*(1/1000)*(1/1.61)*(3600).rounded()
             
             
                 
@@ -2824,6 +2910,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         view.backgroundColor = UIColor.black
         
+        
+        
         // TOP LEFT
         view.addSubview(slideMenuButton)
         
@@ -2833,30 +2921,62 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // TOP RIGHT
         view.addSubview(weatherIcon)
         
+        
+        // The entire scroll view
+        view.addSubview(entireScrollView)
+        
+        entireScrollView.addSubview(mainFirstFrameView)
+        
+        entireScrollView.addSubview(mainSecondFrameView)
+        
         // MIDDLE
-        view.addSubview(ScrollView)
+        mainSecondFrameView.addSubview(ScrollView)
         
         
         // LEFT ARROW
-        view.addSubview(leftArrowButton)
+        mainSecondFrameView.addSubview(leftArrowButton)
         
         // RIGHT ARROW
-        view.addSubview(rightArrowButton)
+        mainSecondFrameView.addSubview(rightArrowButton)
         
         // BELOW MAP VIEW
-        view.addSubview(statusViewControl)
+        mainSecondFrameView.addSubview(statusViewControl)
         
         // BELOW PAGE CONTROL
-        view.addSubview(addressLabel)
+        mainSecondFrameView.addSubview(addressLabel)
         
-        view.addSubview(totalDistanceToDestination)
+        mainSecondFrameView.addSubview(totalDistanceToDestination)
         
-        view.addSubview(totalDurationToDestination)
+        mainSecondFrameView.addSubview(totalDurationToDestination)
         
         view.addSubview(startButton)
         
         // BOTTOM
         view.addSubview(toolBox)
+        
+        
+        
+        mainFirstFrameView.addSubview(mapView)
+        mapView.addSubview(myLocationButton)
+        mapView.addSubview(mySearchButton)
+        mapView.addSubview(coffeSearchButton)
+        mapView.addSubview(directionToDestButton)
+        
+        directionToDestButton.isHidden = true
+        
+        
+        _ = mapView.anchor(mainFirstFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: mainFirstFrameView.frame.width, heightConstant: mainFirstFrameView.frame.height-50)
+        mapView.centerXAnchor.constraint(equalTo: mainFirstFrameView.centerXAnchor).isActive = true
+        //mapView.centerYAnchor.constraint(equalTo: mainFirstFrameView.centerYAnchor).isActive = true
+        
+        _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 10, widthConstant: 40, heightConstant: 40)
+        
+        _ = coffeSearchButton.anchor(mapView.topAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
+        
+        _ = directionToDestButton.anchor(coffeSearchButton.bottomAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
+        
+        _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 40, heightConstant: 40)
+        
         
         
         // MAP STYLE FUNC
@@ -2873,6 +2993,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         
+        
+        
         // PROFILE SETTING VIEW
         
         _ = slideMenuButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 23, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 25, heightConstant: 25)
@@ -2881,35 +3003,39 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         _ = weatherIcon.anchor(view.topAnchor, left: mainTitle.rightAnchor, bottom: nil, right: view.rightAnchor, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 30, heightConstant: 30)
         
+        
+        _ = entireScrollView.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 60, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: view.frame.height-150)
+        entireScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
         // MAIN SCROLL VIEW OF THE DASHBOARD & GOOGLE MAP
         
-        _ = ScrollView.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 60, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
-        ScrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        _ = ScrollView.anchor(mainSecondFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
+        ScrollView.centerXAnchor.constraint(equalTo: mainSecondFrameView.centerXAnchor).isActive = true
         
         
         // RIGHT & LEFT ARROW TO NAVIGATE SCROLL VIEW
         
-        _ = leftArrowButton.anchor(ScrollView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
+        _ = leftArrowButton.anchor(ScrollView.bottomAnchor, left: mainSecondFrameView.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
         
-        _ = rightArrowButton.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
+        _ = rightArrowButton.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: mainSecondFrameView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 40)
         
         
         // PAGING CONTROL VIEW SHOWS WHICH PAGE YOU ARE ON
         _ = statusViewControl.anchor(ScrollView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 30, heightConstant: 20)
-        statusViewControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        statusViewControl.centerXAnchor.constraint(equalTo: mainSecondFrameView.centerXAnchor).isActive = true
         
         
         // STREET NAME CORRESPONDING TO CURRENT LOCATION
-        _ = addressLabel.anchor(statusViewControl.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 50)
+        _ = addressLabel.anchor(mapView.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 50)
         
         
         // TOTAL TRAVEL DISTANCE LABEL
-        _ = totalDistanceToDestination.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: startButton.leftAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 40, rightConstant: 0, widthConstant: (view.frame.width/2)-25, heightConstant: 40)
+        _ = totalDistanceToDestination.anchor(nil, left: mainSecondFrameView.leftAnchor, bottom: mainSecondFrameView.bottomAnchor, right: startButton.leftAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 40, rightConstant: 0, widthConstant: (view.frame.width/2)-25, heightConstant: 40)
         
         
         
         // TOTAL TIME LABEL
-        _ = totalDurationToDestination.anchor(nil, left: startButton.rightAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 40, rightConstant: 0, widthConstant: view.frame.width/2-25, heightConstant: 40)
+        _ = totalDurationToDestination.anchor(nil, left: startButton.rightAnchor, bottom: mainSecondFrameView.bottomAnchor, right: mainSecondFrameView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 40, rightConstant: 0, widthConstant: view.frame.width/2-25, heightConstant: 40)
         
         
         // TRIGER BUTTON TO START JOURNEY

@@ -502,7 +502,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         
         for i in 0..<locationPoints.count{
-            if locationPoints[i].elevation > 0 {
+            if locationPoints[i].elevation >= 0 {
                 let elevation = Float(locationPoints[i].elevation*(3.28084))
                 let lat = locationPoints[i].latitude
                 let long = locationPoints[i].longitude
@@ -511,31 +511,44 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                 
                 
                 
-                if i > 0 && abs(locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)) > 50 {
-                    print("What is going on???")
-                    let difference = locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)
-                    if difference > 0 {
-                        //current elevation is droping so fast that the elevation is not correct
-                        locationPoints[i].elevation += difference/2
-                    } else if difference < 0 {
-                        //current elevation is way to high that the elevation is not correct
-                        locationPoints[i].elevation -= difference/2
+                if elevation.isFinite == true {
+                    
+                    
+                    if i > 0 && abs(locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)) > 100 {
+                        print("What is going on???")
+                        //let difference = abs(locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084))
+                        //print(difference)
+                        //print(Float(locationPoints[i-1].elevation*(3.28084)))
+                        
+                        elevationDataPoints.append(500)
+                        
+                        elevationLocationPoints.append(position)
+                        /*
+                         if difference > 0 {
+                         //current elevation is droping so fast that the elevation is not correct
+                         locationPoints[i].elevation += difference/2
+                         } else if difference < 0 {
+                         //current elevation is way to high that the elevation is not correct
+                         locationPoints[i].elevation -= difference/2
+                         }
+                         */
+                    } else {
+                        // Gain elevation calculation
+                        if isThisFirst == true {
+                            elevationGain += locationPoints[i].elevation*(3.28084)
+                            isThisFirst = false
+                            
+                        } else {
+                            if locationPoints[i].elevation > locationPoints[i-1].elevation {
+                                elevationGain += locationPoints[i].elevation - locationPoints[i-1].elevation
+                            }
+                        }
+                        
+                        elevationLocationPoints.append(position)
+                        elevationDataPoints.append(elevation)
                     }
                     
                 }
-                
-                if isThisFirst == true {
-                    elevationGain += locationPoints[i].elevation*(3.28084)
-                    isThisFirst = false
-                    
-                } else {
-                    if locationPoints[i].elevation > locationPoints[i-1].elevation {
-                        elevationGain += locationPoints[i].elevation - locationPoints[i-1].elevation
-                    }
-                }
-                
-                elevationLocationPoints.append(position)
-                elevationDataPoints.append(elevation)
             }
             
         }
@@ -644,6 +657,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         speedChart.xLabels = elevationXLabels
         speedChart.xLabelsFormatter = { String(Int(round($1))) }
         speedChart.add(series)
+        
         
         guard let maxSpeed = speedData.max() else { return }
         print("max speed is \(maxSpeed) mph")
