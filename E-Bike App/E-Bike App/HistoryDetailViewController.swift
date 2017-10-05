@@ -306,7 +306,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             
             
             if locationPoints[i].speed >= 0.0 {
-                let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+                let eachSpeed = Double((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded(toPlaces: 2)
                 print(eachSpeed)
                 let lat = locationPoints[i].latitude
                 let long = locationPoints[i].longitude
@@ -480,22 +480,23 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         didSet{
             navigationItem.title = ride?.name
             self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]
+            let roundDistance = Double((ride?.distance)!).rounded(toPlaces: 2)
             
-            let distance = Measurement(value: (ride?.distance)!, unit: UnitLength.meters)
+            let distance = Measurement(value: roundDistance, unit: UnitLength.meters)
             let seconds = Int((ride?.duration)!)
             let formattedDistance = FormatDisplay.distance(distance)
             let formattedDate = FormatDisplay.date(ride?.timestamp as Date?)
             let formattedTime = FormatDisplay.time(seconds)
-            //let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
+            let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
             
             guard let address = ride?.address else { return }
             guard let heartRate = ride?.avgheartrate else { return }
-            guard let avgMovingSpeed = ride?.avgMovingSpeed else { return }
+            //guard let avgMovingSpeed = ride?.avgMovingSpeed else { return }
                         
             dateLabel.text = "Date: \(formattedDate)"
             distanceLabel.text = "Distance: \(formattedDistance)"
             timeLabel.text = "Time: \(formattedTime)"
-            averageSpeedLabel.text = "Avg 🚴🏼: \(avgMovingSpeed) mph"
+            averageSpeedLabel.text = "Avg 🚴🏼: \(formattedPace) mph"
             heartRateLabel.text = "Avg ❤️ Rate: \(heartRate) bpm"
             addressLabel.text = "Region: \(address)"
             
@@ -663,9 +664,9 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             name = titleName
         }
         //NSTemporaryDirectory()
-        
+        //"/Users/Moses/Desktop/"
         //Temporary I save csv file to the desktop to see if it is really export
-        let exportFilePath = "/Users/Moses/Desktop/" + "\(name!).csv"
+        let exportFilePath = NSTemporaryDirectory() + "\(name!).csv"
         let exportFileURL = NSURL(fileURLWithPath: exportFilePath)
         //FileManager.default.createFile(atPath: exportFilePath, contents: Data?, attributes: nil)
         
@@ -803,7 +804,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
 
         for i in 0..<locationPoints.count{
-            let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+            let eachSpeed = Double((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded(toPlaces: 2)
             let lat = locationPoints[i].latitude
             let long = locationPoints[i].longitude
             let position = CLLocationCoordinate2D(latitude: lat, longitude: long)

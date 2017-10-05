@@ -375,7 +375,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         //print(locations.array as! [Locations])
         
         for i in 0..<locationPoints.count{
-            let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+            let eachSpeed = Double((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded(toPlaces: 2)
             let lat = locationPoints[i].latitude
             let long = locationPoints[i].longitude
             let position = CLLocationCoordinate2D(latitude: lat, longitude: long)
@@ -610,7 +610,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         for i in 0..<locationPoints.count{
             
             if locationPoints[i].speed >= 0.0 {
-                let eachSpeed = ((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded()
+                let eachSpeed = Double((locationPoints[i].speed as Double)*(1/1000)*(1/1.61)*(3600)).rounded(toPlaces: 2)
                 let lat = locationPoints[i].latitude
                 let long = locationPoints[i].longitude
                 let position = CLLocation(latitude: lat, longitude: long)
@@ -973,13 +973,14 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     
     private func configureView() {
         
-        let distance = Measurement(value: ride.distance, unit: UnitLength.meters)
+        let roundDistance = Double(ride.distance).rounded(toPlaces: 2)
+        let distance = Measurement(value: roundDistance, unit: UnitLength.meters)
         let seconds = Int(ride.duration)
         //let movingSeconds = Int(ride.movingduration)
         let formattedDistance = FormatDisplay.distance(distance)
         let formattedDate = FormatDisplay.date(ride.timestamp as Date?)
         let formattedTime = FormatDisplay.time(seconds)
-        //let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
+        let formattedPace = FormatDisplay.pace(distance: distance, seconds: seconds, outputUnit: .milesPerHour)
         //let formattedMovingPace = FormatDisplay.pace(distance: distance, seconds: movingSeconds, outputUnit: .milesPerHour)
         let distanceInMiles = ((ride.distance/1000.0)/1.61)
         
@@ -1006,19 +1007,27 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         dateLabel.text = "Date: \(formattedDate)"
         distanceLabel.text = "Distance: \(formattedDistance)"
         timeLabel.text = "Time: \(formattedTime)"
-        averageSpeedLabel.text = "Avg 🚴🏼: \(ride.avgMovingSpeed) mph"
+        averageSpeedLabel.text = "Avg 🚴🏼: \(formattedPace) mph"
         heartRateLabel.text = "Avg ❤️ Rate: \(ride.avgheartrate) bpm"
         addressLabel.text = "Region: \(address)"
         
-        guard let locations = ride.locations,
-            locations.count > 0
-            else {
-                let alert = UIAlertController(title: "Error", message: "Sorry, this run has no locations saved", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-                present(alert, animated: true)
-                return
-        }
-    
+        
+        /*
+         
+         var countForAvgMovingSpeedInstance = 0
+         var countForAvgSpeedInstance = 0
+         
+         if locationObject.speed > 0 {
+         avgMovingSpeed += locationObject.speed
+         countForAvgMovingSpeedInstance += 1
+         } else if locationObject.speed >= 0 {
+         avgSpeed += locationObject.speed
+         countForAvgSpeedInstance += 1
+         }
+         
+         ride?.avgSpeed = (avgSpeed/Double(countForAvgSpeedInstance))*(1/1000)*(1/1.61)*(3600).rounded()
+         ride?.avgMovingSpeed = (avgMovingSpeed/Double(countForAvgMovingSpeedInstance))*(1/1000)*(1/1.61)*(3600).rounded()
+         */
     
     }
 }
