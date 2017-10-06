@@ -95,6 +95,41 @@ class SettingMenuSlide: NSObject {
     // MARK - MY STATS
     //************************************************************************************************************************************//
     
+    lazy var myHistory: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor.clear
+        button.setTitle("My History", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.isHighlighted = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action: #selector(moveToMyHistoryViewController), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    @objc func moveToMyHistoryViewController() {
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            
+            self.blackView.alpha = 0
+            self.slideMenuView.layer.shadowOpacity = 0
+            self.slideMenuView.frame = CGRect(x: -(((self.windowSize?.frame.width)!/3)*2), y: 0, width: ((self.windowSize?.frame.width)!/3)*2, height: (self.windowSize?.frame.height)!)
+            
+        }, completion: {(completion:Bool) in
+            self.rideStatusView?.showControllerWithMyHistoryButton()
+        })
+    }
+    
+    
+    
+    //************************************************************************************************************************************//
+    
+    
+    // MARK - MY STATS
+    //************************************************************************************************************************************//
+    
     lazy var myStats: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
@@ -345,7 +380,7 @@ class SettingMenuSlide: NSObject {
             slideMenuView.addSubview(profilePicture)
             slideMenuView.addSubview(profileNickName)
             
-            
+            slideMenuView.addSubview(myHistory)
             
             slideMenuView.addSubview(myStats)
             
@@ -374,6 +409,9 @@ class SettingMenuSlide: NSObject {
             _ = profileNickName.anchor(profilePicture.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 profileNickName.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
+            _ = myHistory.anchor(nil, left: nil, bottom: myStats.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            myHistory.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
+            
             
             _ = myStats.anchor(nil, left: nil, bottom: bikeTypes.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 myStats.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
@@ -393,7 +431,7 @@ class SettingMenuSlide: NSObject {
             
             //_ = settingImage.anchor(nil, left: slideMenuView.leftAnchor, bottom: logoutButton.topAnchor, right: settingButton.leftAnchor, topConstant: 0, leftConstant: 40, bottomConstant: 80, rightConstant: 0, widthConstant: 30, heightConstant: 30)
             
-            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 60, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 settingButton.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             _ = logoutButton.anchor(nil, left: nil, bottom: slideMenuView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 40, heightConstant: 40)

@@ -115,7 +115,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         return marker
     }()
-    var GeoAngle = 0.0
     
     
     
@@ -136,7 +135,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     // Core Data stack infomation variables
-    
+    fileprivate var rideStatusTag: Bool = false
     fileprivate var ride:Ride?
     fileprivate var distance = Measurement(value: 0, unit: UnitLength.miles)
     fileprivate var address: [String] = []
@@ -147,7 +146,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var locationListWithDistance = [[CLLocation(),Double()]]
     fileprivate var timer: Timer?
     fileprivate var countdownTimer: Timer?
-    fileprivate var countdownNumber: Float = 5.0
+    fileprivate var countdownNumber: Float = 3.0
     fileprivate var totalMovingTimer: Timer?
     
     fileprivate let locationManager = LocationManager.shared
@@ -261,7 +260,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     lazy var entireScrollView: UIScrollView = {
         let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
         view.backgroundColor = UIColor.black
-        view.isPagingEnabled = true
+        view.isPagingEnabled = false
         view.bounces = false
         view.contentSize = CGSize(width: self.view.bounds.width * CGFloat(2), height: 180)
         //view.layer.zPosition = 5
@@ -327,8 +326,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     let mainTitle: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width:120, height: 30))
         label.textAlignment = .center
-        label.text = "Ride Status"
-        label.font = UIFont.boldSystemFont(ofSize: 15)
+        label.text = "Map"
+        label.font = UIFont.boldSystemFont(ofSize: 18)
         label.textColor = UIColor.white
         label.backgroundColor = UIColor.clear
         label.layer.zPosition = 2
@@ -412,6 +411,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             sender.tag = 0
             sender.setImage(UIImage(named: "coffeePlaces")?.withRenderingMode(.alwaysTemplate), for: .normal)
             
+            startButton.setTitleColor(UIColor.DTIRed(), for: .normal)
             startButton.setTitle("Stop", for: .normal)
             startButton.tag = 2
             
@@ -451,7 +451,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             let endPointMapPin = GMSMarker()
             
             
-            let endMarkerImage = UIImage(named: "endPin")
+            let endMarkerImage = UIImage(named: "dot-1")
             let endMarkerView = UIImageView(image: endMarkerImage)
             
             
@@ -566,9 +566,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             return
         }
         
-        let markerImage = UIImage(named: "dot")?.withRenderingMode(.alwaysTemplate)
+        let markerImage = UIImage(named: "dot-1")//?.withRenderingMode(.alwaysTemplate)
         let markerView = UIImageView(image: markerImage)
-        markerView.tintColor = UIColor.DTIBlue()
+        //markerView.tintColor = UIColor.DTIBlue()
         
         let urlRequest = URLRequest(url: urlString)
         
@@ -835,7 +835,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         
                         DispatchQueue.main.async {
                             
-                            self.totalDistanceToDestination.text = "Remaining Distance \n \(totalDistance)"
+                            //self.totalDistanceToDestination.text = "Remaining Distance \n \(totalDistance)"
                             //self.totalDurationToDestination.text = "Duration \n \(totalDuration)"
                             
                             let path = GMSPath(fromEncodedPath: points)
@@ -880,8 +880,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     func featureViewController() {
         featureArray = [screenOne, screenTwo, screenThree, screenFour]
+        ScrollView.bounces = false
         ScrollView.isPagingEnabled = true
-        ScrollView.contentSize = CGSize(width: self.view.bounds.width * CGFloat(featureArray.count), height: 400)
+        ScrollView.contentSize = CGSize(width: self.view.bounds.width * CGFloat(featureArray.count), height: 480)
         statusViewControl.numberOfPages = featureArray.count
         ScrollView.showsHorizontalScrollIndicator = false
         ScrollView.delegate = self
@@ -898,7 +899,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 // Main Frame of the each scroll view
                 let mainFrameOfView = UIView()
-                mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
+                mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 480)
                 mainFrameOfView.backgroundColor = UIColor.black
                 //UIColor(red:0.02, green:0.19, blue:0.38, alpha:1.00)
                 mainFrameOfView.frame.size.width = self.view.bounds.size.width
@@ -1251,7 +1252,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 // MARK - LAST SCROLL VIEW WITH BIGGER DASH BOARD
                 
                 let mainFrameOfView = UIView()
-                mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 400)
+                mainFrameOfView.frame = CGRect(x: self.view.frame.width * CGFloat(index), y: 0, width: self.ScrollView.frame.width, height: 480)
                 mainFrameOfView.backgroundColor = UIColor.black
                 //UIColor(red:0.06, green:0.08, blue:0.15, alpha:1.00)
                 mainFrameOfView.frame.size.width = self.view.bounds.size.width
@@ -1394,10 +1395,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.textColor = UIColor.black
+        label.textColor = UIColor(red:0.95, green:1.00, blue:1.00, alpha:1.00)
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.backgroundColor = UIColor.darkGray.withAlphaComponent(0.9)
+        label.backgroundColor = UIColor(red:0.10, green:0.10, blue:0.10, alpha:1.00)
         label.numberOfLines = 2
+        label.alpha = 0.9
         return label
     }()
     
@@ -1914,7 +1916,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         let camera1 = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 16, bearing: heading, viewingAngle: 25)
                         mapView.animate(to: camera1)
                         
-                        reverseGeocodeCoordinate(coordinate: location.coordinate)
+                        
                     }
                     
                     
@@ -1926,6 +1928,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                     // The valid location should be store in the array
                     locationList.append(location)
+                
+                
+                    // Look for the address
+                    reverseGeocodeCoordinate(coordinate: location.coordinate)
                 
                     // whenever location changes in which every 3 meters then we pick up the relative altitude and air pressure around device
                     elevationDataArray.append(trackingElevationData)
@@ -1991,6 +1997,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     if let place = placemark?.firstResult() {
                         
                         if place.thoroughfare != nil {
+                            self.addressLabel.alpha = 0.8
                             self.addressLabel.text = " \(place.lines![0]) \n \(place.lines![1])"
                             
                             if place.locality == nil {
@@ -2058,7 +2065,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             
         })
-        
+        infoMarker.infoWindowAnchor = CGPoint(x: 0.5, y: 0.5)
         infoMarker.layer.cornerRadius = 25
         infoMarker.position = location
         infoMarker.title = name
@@ -2070,12 +2077,29 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         mapView.selectedMarker = infoMarker
 
     }
+    /*
+    func mapView(_ mapView: GMSMapView, markerInfoWindow marker: GMSMarker) -> UIView? {
     
-    
+    }
+    */
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let page = scrollView.contentOffset.x / scrollView.frame.size.width
-        statusViewControl.currentPage = Int(page)
+        
+        if entireScrollView.contentOffset.x == view.frame.width {
+            if rideStatusTag == true {
+                rideStatusTag = false
+                statusViewControl.currentPage = Int(0)
+            } else {
+                let page = scrollView.contentOffset.x / scrollView.frame.size.width
+                statusViewControl.currentPage = Int(page)
+            }
+            
+        } else {
+            statusViewControl.currentPage = Int(0)
+            
+        }
+        
+        
     }
     
     //************************************************************************************************************************************//
@@ -2112,6 +2136,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
     }
     
+    
+    func showControllerWithMyHistoryButton() {
+        moveToHistory()
+    }
     
     
     func showControllerWithMyStatsButton() {
@@ -2287,12 +2315,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     @objc func moveToMapView(){
         
+        mainTitle.text = "Map"
         let position = CGPoint(x: 0, y: 0)
         entireScrollView.setContentOffset(position, animated: true)
-        mapButton.isSelected = true
-        rideStatusButton.isSelected = false
-        
-        
+
         mapButton.setTitleColor(UIColor.DTIRed(), for: .normal)
         rideStatusButton.setTitleColor(UIColor.white, for: .normal)
         
@@ -2316,14 +2342,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     @objc func moveToRideStatusView(){
-        let position = CGPoint(x: entireScrollView.contentOffset.x + view.frame.width, y: entireScrollView.contentOffset.y)
-        entireScrollView.setContentOffset(position, animated: true)
-
-        //mapButton.isSelected = false
-        //rideStatusButton.isSelected = true
         
+        mainTitle.text = "Status"
+        
+        let position = CGPoint(x: 0 + view.frame.width, y: entireScrollView.contentOffset.y)
+        entireScrollView.setContentOffset(position, animated: true)
+        rideStatusTag = true
+
         mapButton.setTitleColor(UIColor.white, for: .normal)
         rideStatusButton.setTitleColor(UIColor.DTIRed(), for: .normal)
+        
         
     }
     
@@ -2379,14 +2407,19 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 self.countdownLabel.text = "\(Int(self.countdownNumber))"
                 // TODO: show the time count with some text
+                if self.countdownNumber == 0 {
+                    self.countdownLabel.textColor = UIColor.DTIRed()
+                    self.countdownLabel.text = "Go!"
+                }
+                
                 
                 print(self.countdownNumber)
-                if self.countdownNumber == 0 {
+                if self.countdownNumber == -1 {
                     // Reset the kalman filter algorithm to store new data
                     self.resetKalmanFilter = true
                     
                     
-                    self.countdownLabel.text = "Go!"
+                    
                     
                     // Don't go to sleep mode while app is running or when start button is clicked
                     UIApplication.shared.isIdleTimerDisabled = true
@@ -2425,7 +2458,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 
         } else if (sender.tag == 2){
             
-            sender.setTitleColor(UIColor.white, for: .normal)
+            
             // Can be go to sleep mode after your ride is done and play with apps
             UIApplication.shared.isIdleTimerDisabled = false
             UIScreen.main.brightness = CGFloat(1.0)
@@ -2538,6 +2571,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 // Stop storing the heart rate data to the array
                 self.heartRateTag = 2
+                sender.setTitleColor(UIColor.white, for: .normal)
                 sender.setTitle("Start", for: .normal)
                 sender.tag = 1
                 self.saveAsItIsRoute()
@@ -2547,7 +2581,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 _ in
                 
                 self.heartRateTag = 2
-                
+                sender.setTitleColor(UIColor.white, for: .normal)
                 sender.setTitle("Start", for: .normal)
                 sender.tag = 1
                 
@@ -2673,6 +2707,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         } else {
             newRide.address = "No address is registered"
         }
+        let initialAbsoluteElevation = (locationList[1].altitude*(3.28084))
         
         if locationList.count > 0 {
             for i in 0..<locationList.count {
@@ -2681,10 +2716,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                     //locationList[i].altitude as Double
                 locationObject.timestamp = locationList[i].timestamp as Date
+                
+                
                 if elevationDataArray[i] < 0 {
-                    locationObject.elevation = 0.0
+                    locationObject.elevation = (initialAbsoluteElevation-(elevationDataArray[i]*(3.28084)))
                 } else {
-                    locationObject.elevation = elevationDataArray[i]
+                    locationObject.elevation = (initialAbsoluteElevation+(elevationDataArray[i]*(3.28084)))
                     locationObject.pressure = pressureDataArray[i]
                 }
                 
@@ -3010,7 +3047,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // MARK: - Constraints ********************************************************************************************************************************************************//
         
         // MAIN RIDE STATUS VIEW
-        _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 30)
+        _ = mainTitle.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 100, heightConstant: 30)
         mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         // PROFILE SETTING VIEW
@@ -3044,7 +3081,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         // MAIN SCROLL VIEW OF THE DASHBOARD & GOOGLE MAP
         
-        _ = ScrollView.anchor(mainSecondFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 400)
+        _ = ScrollView.anchor(mainSecondFrameView.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 480)
         ScrollView.centerXAnchor.constraint(equalTo: mainSecondFrameView.centerXAnchor).isActive = true
         
         

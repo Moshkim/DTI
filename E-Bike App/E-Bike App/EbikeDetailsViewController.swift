@@ -73,6 +73,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView(frame: CGRect(x: 0, y: 0, width: 300, height: 180))
         //view.layer.cornerRadius = 5
+        view.bounces = false
         view.backgroundColor = UIColor.black
         view.isPagingEnabled = true
         view.delegate = self
@@ -503,7 +504,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         for i in 0..<locationPoints.count{
             if locationPoints[i].elevation >= 0 {
-                let elevation = Float(locationPoints[i].elevation*(3.28084))
+                let elevation = Float(locationPoints[i].elevation)
                 let lat = locationPoints[i].latitude
                 let long = locationPoints[i].longitude
                 let position = CLLocation(latitude: lat, longitude: long)
@@ -514,7 +515,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                 if elevation.isFinite == true {
                     
                     
-                    if i > 0 && abs(locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084)) > 100 {
+                    if i > 0 && abs(locationPoints[i-1].elevation - locationPoints[i].elevation) > 100 {
                         print("What is going on???")
                         //let difference = abs(locationPoints[i-1].elevation*(3.28084) - locationPoints[i].elevation*(3.28084))
                         //print(difference)
@@ -535,7 +536,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
                     } else {
                         // Gain elevation calculation
                         if isThisFirst == true {
-                            elevationGain += locationPoints[i].elevation*(3.28084)
+                            elevationGain = 0
                             isThisFirst = false
                             
                         } else {
