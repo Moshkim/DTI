@@ -362,32 +362,130 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return view
     }()
     
-    lazy var coffeSearchButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+    lazy var mapMenuSlideView: UIView = {
+        let view = UIView(frame: CGRect(x: -((self.windowSize?.frame.width)!), y: 0, width: self.view.frame.width, height: 50))
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.9)
+        view.layer.cornerRadius = 5
+        
+        return view
+    }()
+    
+    lazy var mapMenuSlideButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.layer.cornerRadius = button.frame.width/2
         button.contentMode = .scaleAspectFit
-        button.backgroundColor = UIColor.DTIBlue()
+        button.backgroundColor = UIColor.clear
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tag = 1
+        button.layer.zPosition = 2
+        
+        button.setImage(UIImage(named: "slideMapMenuOut"), for: .normal)
+        button.addTarget(self, action: #selector(slideMapMenu), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    @objc func slideMapMenu(sender: UIButton) {
+        
+        // hide map menu
+        if sender.tag == 0 {
+            sender.tag = 1
+            sender.setImage(UIImage(named: "slideMapMenuOut"), for: .normal)
+            UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.mapMenuSlideView.frame = CGRect(x: -((self.windowSize?.frame.width)!), y: 0, width: self.view.frame.width, height: 50)
+            }, completion: nil)
+        } else if sender.tag == 1 {
+            sender.tag = 0
+            //show the map menu
+            sender.setImage(UIImage(named: "slideMapMenuIn"), for: .normal)
+            UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.mapMenuSlideView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50)
+            }, completion: nil)
+            
+        }
+        
+    }
+    
+    lazy var myLocationButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        button.layer.cornerRadius = button.frame.width/2
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.black
         button.tintColor = UIColor.white
         button.translatesAutoresizingMaskIntoConstraints = false
         
-        button.setImage(UIImage(named: "coffeePlaces")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.addTarget(self, action: #selector(POIForCoffee), for: .touchUpInside)
+        button.setImage(UIImage(named: "myLocation"), for: .normal)
+        button.addTarget(self, action: #selector(zoomToMyLocation), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    
+    lazy var mySearchButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.black
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        button.setImage(UIImage(named: "searchButton"), for: .normal)
+        button.addTarget(self, action: #selector(searchAddressForDirection), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    
+    lazy var coffeSearchButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.black
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tag = 0
+        
+        button.setImage(UIImage(named: "coffeePlaces"), for: .normal)
+        button.addTarget(self, action: #selector(POIForPlaces), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    lazy var restaurantSearchButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.black
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tag = 1
+        
+        button.setImage(UIImage(named: "foodPlaces"), for: .normal)
+        button.addTarget(self, action: #selector(POIForPlaces), for: .touchUpInside)
         
         return button
     }()
     
     
     lazy var directionToDestButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
         button.contentMode = .scaleAspectFit
-        button.backgroundColor = UIColor.DTIBlue()
-        button.tintColor = UIColor.white
+        button.backgroundColor = UIColor.black
         button.isHidden = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tag = 0
         
-        button.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "bike"), for: .normal)//?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(directionToDest), for: .touchUpInside)
         
         return button
@@ -404,12 +502,14 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         if sender.tag == 0 {
             sender.tag = 1
-            sender.setImage(UIImage(named: "direction")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            sender.setImage(UIImage(named: "direction"), for: .normal)
             drawRouteBetweenTwoPoints(coordinate: position)
         }
         if sender.tag == 1 {
             sender.tag = 0
-            sender.setImage(UIImage(named: "coffeePlaces")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            
+            // TODO: We need to fix here!
+            //sender.setImage(UIImage(named: "coffeePlaces"), for: .normal)
             
             startButton.setTitleColor(UIColor.DTIRed(), for: .normal)
             startButton.setTitle("Stop", for: .normal)
@@ -480,7 +580,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         print("wow")
-        directionToDestButton.setImage(UIImage(named: "bike")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        directionToDestButton.setImage(UIImage(named: "bike"), for: .normal)
         directionToDestButton.isHidden = false
         
         
@@ -516,169 +616,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             return
         }
         
-        
-        
     }
     
     
     //************************************************************************************************************************************//
 
-    
-    @objc func POIForCoffee() {
-        guard let lat = mapView.myLocation?.coordinate.latitude else {return}
-        guard let long = mapView.myLocation?.coordinate.longitude else {return}
-        let coffee = "cafe"
-        
-        
-        var arrayOfLocations = [[Double(),Double()]]
-        var arrayOfNames = [String()]
-        var arrayOfAddress = [String()]
-        
-        var name = String()
-        
-        var latitude = CLLocationDegrees()
-        var longitude = CLLocationDegrees()
-        
-        
-        /*
-         let request = NSMutableURLRequest(url: NSURL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.33165083%2C-122.03029752&radius=3200&type=cafe&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA")! as URL,
-         cachePolicy: .useProtocolCachePolicy,
-         timeoutInterval: 10.0)
-         request.httpMethod = "GET"
-         request.allHTTPHeaderFields = headers
-         
-         let session = URLSession.shared
-         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-         if (error != nil) {
-         print(error)
-         } else {
-         let httpResponse = response as? HTTPURLResponse
-         print(httpResponse)
-         }
-         })
-         
-         dataTask.resume()
-         */
-        let jsonURLString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&radius=3200&type=\(coffee)&key=AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
-        
-        guard let urlString = URL(string: jsonURLString) else {
-            print("Error: Cannot create URL")
-            return
-        }
-        
-        let markerImage = UIImage(named: "dot-1")//?.withRenderingMode(.alwaysTemplate)
-        let markerView = UIImageView(image: markerImage)
-        //markerView.tintColor = UIColor.DTIBlue()
-        
-        let urlRequest = URLRequest(url: urlString)
-        
-        
-        // Set up the session
-        
-        let config = URLSessionConfiguration.default
-        let session = URLSession(configuration: config)
-        
-        
-        let task = session.dataTask(with: urlRequest) { (data, response, error) in
-            
-            
-            guard let httpResponse = response as? HTTPURLResponse else { return }
-            
-            switch httpResponse.statusCode {
-            case 200:
-                do{
-                    
-                    guard let data = data else { return }
-                    
-                    guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? NSDictionary else { return }
-                    
-                    //print(json)
-                    
-                    DispatchQueue.global(qos: .background).async {
-                        
-                        let arrayPlaces = json["results"] as! NSArray
-                        
-                        for i in 0..<arrayPlaces.count {
-                            
-                            let arrayForLocations = (((arrayPlaces[i] as! NSDictionary).object(forKey: "geometry") as! NSDictionary).object(forKey: "location") as! NSDictionary)
-                            
-                            let arrayForName = (arrayPlaces[i] as! NSDictionary).object(forKey: "name") as! String
-                            let arrayForAddress = (arrayPlaces[i] as! NSDictionary).object(forKey: "vicinity") as! String
-                            
-                            arrayOfNames.append(arrayForName)
-                            arrayOfAddress.append(arrayForAddress)
-                            
-                            arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
-                            
-                            
-                        }
-                        
-                        DispatchQueue.main.async {
-                            //print(arrayOfLocations)
-                            //print(arrayOfNames)
-                            for i in 1..<arrayOfLocations.count{
-                                let nearbyMarker = GMSMarker()
-                                nearbyMarker.iconView = markerView
-                                for j in 0..<arrayOfLocations[i].count {
-                                    
-                                    
-                                    if j == 0 {
-                                        latitude = arrayOfLocations[i][j]
-                                    }
-                                    if j == 1 {
-                                        longitude = arrayOfLocations[i][j]
-                                    }
-                                    
-                                    nearbyMarker.position = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                                }
-                                
-                                name = arrayOfNames[i]
-                                nearbyMarker.tracksViewChanges = true
-                                nearbyMarker.title = name
-                                nearbyMarker.snippet = arrayOfAddress[i]
-                                nearbyMarker.map = self.mapView
-                                
-                            }
-                            
-                            
-                        }
-                    }
-                    
-                    
-                    
-                }catch let error as NSError {
-                    print(error.debugDescription)
-                }
-                
-                
-                
-            default:
-                print("HTTP Reponse Code: \(httpResponse.statusCode)")
-                
-            }
-            
-        }
-        task.resume()
-        
-        
-    }
-    
-    
-    lazy var myLocationButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        button.layer.cornerRadius = button.frame.width/2
-        button.contentMode = .scaleAspectFit
-        button.backgroundColor = UIColor.DTIBlue()
-        button.tintColor = UIColor.white
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        button.setImage(UIImage(named: "myLocation")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.addTarget(self, action: #selector(zoomToMyLocation), for: .touchUpInside)
-        
-        return button
-    }()
-    
-    
     @objc fileprivate func zoomToMyLocation(sender: UIButton) {
         guard let position = self.mapView.myLocation?.coordinate else { return }
         
@@ -688,25 +630,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         self.mapView.animate(to: camera)
         
     }
-    
-    
-    lazy var mySearchButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        button.layer.cornerRadius = button.frame.width/2
-        button.contentMode = .scaleAspectFit
-        button.backgroundColor = UIColor.DTIBlue()
-        button.tintColor = UIColor.white
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        button.setImage(UIImage(named: "searchButton")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.addTarget(self, action: #selector(searchAddressForDirection), for: .touchUpInside)
-        
-        return button
-    }()
-    
-    
-    
-    
+
     // Auto SearchBar for the google places
     fileprivate let controller = GooglePlacesSearchController(
         apiKey: Config.GOOGLE_API_KEY,
@@ -744,12 +668,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     func drawRouteBetweenTwoPoints(coordinate: CLLocationCoordinate2D) {
         
-        
-        
-        
         guard let lat = mapView.myLocation?.coordinate.latitude else {return}
         guard let long = mapView.myLocation?.coordinate.longitude else {return}
-        
         
         let aPointCoordinate = "\(lat),\(long)"
         
@@ -789,12 +709,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         throw JSONError.ConversionFailed
                     }
                     
-                    //print(json)
                     
                     
                     let arrayRoutes = json["routes"] as! NSArray
                     let arrayLegs = (arrayRoutes[0] as! NSDictionary).object(forKey: "legs") as! NSArray
-                    //print(arrayLegs)
                     let arraySteps = arrayLegs[0] as! NSDictionary
                     
                     
@@ -2529,9 +2447,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         }, completion: nil)
         
         
-        mySearchButton.isHidden = true
-        coffeSearchButton.isHidden = true
-        
         distance = Measurement(value: 0, unit: UnitLength.meters)
         locationList.removeAll()
         
@@ -2996,14 +2911,28 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         entireScrollView.addSubview(mainFirstFrameView)
         // MAP
         mainFirstFrameView.addSubview(mapView)
+        
+        
+        
+        // Map Menu Slide View
+        mapView.addSubview(mapMenuSlideView)
+        
+        
+        // Map Menu Toggle Button
+        mapView.addSubview(mapMenuSlideButton)
+        
         // find my location
         mapView.addSubview(myLocationButton)
         // place search
-        mapView.addSubview(mySearchButton)
+        mapMenuSlideView.addSubview(mySearchButton)
+        
+        // find restaurant place
+        mapMenuSlideView.addSubview(restaurantSearchButton)
+        
         // find coffee places
-        mapView.addSubview(coffeSearchButton)
+        mapMenuSlideView.addSubview(coffeSearchButton)
         // direct A to B point (navigation)
-        mapView.addSubview(directionToDestButton)
+        mapMenuSlideView.addSubview(directionToDestButton)
         
         
         
@@ -3068,15 +2997,19 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         mapView.centerXAnchor.constraint(equalTo: mainFirstFrameView.centerXAnchor).isActive = true
         mapView.centerYAnchor.constraint(equalTo: mainFirstFrameView.centerYAnchor).isActive = true
         
-        _ = myLocationButton.anchor(nil, left: nil, bottom: addressLabel.topAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 5, rightConstant: 10, widthConstant: 40, heightConstant: 40)
+        _ = mapMenuSlideButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
         
-        _ = coffeSearchButton.anchor(mapView.topAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
-        
-        _ = directionToDestButton.anchor(coffeSearchButton.bottomAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 40, heightConstant: 40)
-        
-        _ = mySearchButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 10, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 40, heightConstant: 40)
+        _ = mySearchButton.anchor(mapMenuSlideView.topAnchor, left: mapMenuSlideView.leftAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
         
         
+        _ = coffeSearchButton.anchor(mapMenuSlideView.topAnchor, left: mySearchButton.rightAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        
+        _ = restaurantSearchButton.anchor(mapMenuSlideView.topAnchor, left: coffeSearchButton.rightAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        
+        _ = directionToDestButton.anchor(mapMenuSlideView.topAnchor, left: nil, bottom: mapMenuSlideView.bottomAnchor, right: mapMenuSlideView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 50, heightConstant: 50)
+        
+        
+        _ = myLocationButton.anchor(nil, left: nil, bottom: addressLabel.topAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 5, rightConstant: 10, widthConstant: 50, heightConstant: 50)
         
         
         // MAIN SCROLL VIEW OF THE DASHBOARD & GOOGLE MAP
@@ -3159,6 +3092,193 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         super.viewDidAppear(animated)
     }
 }
+
+// MARK: - POI Search Function
+//*************************************************************************************************************************************//
+
+extension RiderStatusViewController {
+    
+    
+    @objc func POIForPlaces(sender: UIButton) {
+        print("I am here~~~")
+        var typeOfPlace = String()
+        
+        var markerImage = UIImage()
+        
+        
+        switch sender.tag {
+        case 0:
+            typeOfPlace = "cafe"
+            markerImage = UIImage(named: "cafe")!
+        case 1:
+            typeOfPlace = "restaurant"
+            markerImage = UIImage(named: "restaurant")!
+        default:
+            break
+        }
+        let markerView = UIImageView(image: markerImage)
+        print(typeOfPlace)
+        
+        
+        guard let lat = mapView.myLocation?.coordinate.latitude else {return}
+        guard let long = mapView.myLocation?.coordinate.longitude else {return}
+        
+        
+        var arrayOfLocations = [[Double(),Double()]]
+        var arrayOfNames = [String()]
+        var arrayOfAddress = [String()]
+        var arrayOfRating = [Double()]
+        
+        var name = String()
+        
+        var latitude = CLLocationDegrees()
+        var longitude = CLLocationDegrees()
+
+        print("What is going on?")
+        let jsonURLString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&maxprice=3&radius=3200&opennow&type=\(typeOfPlace)&key=\(Config.GOOGLE_API_KEY)"
+        //"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&radius=3200&opennow&maxprice=3&type=\(typeOfPlace)&key=\(Config.GOOGLE_API_KEY)"
+        
+        print(jsonURLString)
+        
+        
+        guard let urlString = URL(string: jsonURLString) else {
+            print("Error: Cannot create URL")
+            return
+        }
+        
+        
+        //markerView.tintColor = UIColor.DTIBlue()
+        
+        let urlRequest = URLRequest(url: urlString)
+        
+        
+        // Set up the session
+        
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        
+        
+        let task = session.dataTask(with: urlRequest) { (data, response, error) in
+            
+            
+            guard let httpResponse = response as? HTTPURLResponse else { return }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                do{
+                    
+                    guard let data = data else { return }
+                    
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? NSDictionary else { return }
+                    
+                    //print(json)
+                    
+                    DispatchQueue.global(qos: .background).async {
+                        
+                        let arrayPlaces = json["results"] as! NSArray
+                        
+                        for i in 0..<arrayPlaces.count {
+                            
+                            let arrayForLocations = (((arrayPlaces[i] as! NSDictionary).object(forKey: "geometry") as! NSDictionary).object(forKey: "location") as! NSDictionary)
+                            
+                            let arrayForName = (arrayPlaces[i] as! NSDictionary).object(forKey: "name") as! String
+                            let arrayForAddress = (arrayPlaces[i] as! NSDictionary).object(forKey: "vicinity") as! String
+                            
+                            if let arrayForRating = (arrayPlaces[i] as! NSDictionary).object(forKey: "rating") as? NSNumber {
+                                arrayOfRating.append(Double(truncating: arrayForRating).rounded(toPlaces: 1))
+                            } else {
+                                arrayOfRating.append(0.0)
+                            }
+                            
+                            arrayOfNames.append(arrayForName)
+                            arrayOfAddress.append(arrayForAddress)
+                            
+                            
+                            arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
+                            
+                            
+                        }
+                        
+                        DispatchQueue.main.async {
+                            //print(arrayOfLocations)
+                            //print(arrayOfNames)
+                            for i in 1..<arrayOfLocations.count{
+                                let nearbyMarker = GMSMarker()
+                                nearbyMarker.iconView = markerView
+                                for j in 0..<arrayOfLocations[i].count {
+                                    
+                                    
+                                    if j == 0 {
+                                        latitude = arrayOfLocations[i][j]
+                                    }
+                                    if j == 1 {
+                                        longitude = arrayOfLocations[i][j]
+                                    }
+                                    
+                                    nearbyMarker.position = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                                }
+                                
+                                name = arrayOfNames[i]
+                                nearbyMarker.tracksViewChanges = true
+                                nearbyMarker.title = name
+                                
+                                
+                                nearbyMarker.snippet = "Rating = \(arrayOfRating[i]) \(self.ratingSystem(rating: arrayOfRating[i]))\n Address = \(arrayOfAddress[i])"
+                                
+                                nearbyMarker.map = self.mapView
+                                
+                            }
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                }catch let error as NSError {
+                    print(error.debugDescription)
+                }
+                
+                
+                
+            default:
+                print("HTTP Reponse Code: \(httpResponse.statusCode)")
+                
+            }
+            
+        }
+        task.resume()
+        
+        
+    }
+    
+    func ratingSystem(rating: Double) -> String {
+        
+        var stars = ""
+        
+        if rating <= 1.0 {
+            stars = "*"
+        } else if rating <= 2.0 {
+            stars = "**"
+        } else if rating <= 3.0 {
+            stars = "***"
+        } else if rating <= 4.0 {
+            stars = "****"
+        } else if rating <= 5.0 {
+            stars = "*****"
+        }
+        return stars
+    }
+    
+}
+
+
+
+//*************************************************************************************************************************************//
+
+
+
+
 
 
 // MARK: - BLUETOOTH HANDLING PROTOCOL TO FIND AND CONNECT TO BLUETOOTH DEVICES
