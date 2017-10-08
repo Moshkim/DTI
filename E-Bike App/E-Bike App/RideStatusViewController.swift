@@ -318,7 +318,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     let statusViewControl: UIPageControl = {
         let bar = UIPageControl(frame: CGRect(x: 0, y: 0, width:50, height: 30))
-        bar.pageIndicatorTintColor = UIColor.DTIBlue().withAlphaComponent(0.8)
+        bar.pageIndicatorTintColor = UIColor.white
         bar.currentPageIndicatorTintColor = UIColor.DTIRed()
         return bar
     }()
@@ -363,9 +363,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }()
     
     lazy var mapMenuSlideView: UIView = {
-        let view = UIView(frame: CGRect(x: -((self.windowSize?.frame.width)!), y: 0, width: self.view.frame.width, height: 50))
+        let view = UIView(frame: CGRect(x: -((self.windowSize?.frame.width)!), y: 0, width: self.view.frame.width, height: 55))
         view.backgroundColor = UIColor.black.withAlphaComponent(0.9)
-        view.layer.cornerRadius = 5
+        
         
         return view
     }()
@@ -410,6 +410,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     lazy var myLocationButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
         button.contentMode = .scaleAspectFit
         button.backgroundColor = UIColor.black
         button.tintColor = UIColor.white
@@ -492,6 +494,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }()
     
     
+    
+
+    
+    
+    
     // MARK: - Direction to Destination
     @objc func directionToDest(sender: UIButton) {
         
@@ -567,7 +574,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             /******************************************************************************************************/
             
-            let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom:15, bearing: (mapView.myLocation?.course)!, viewingAngle: 25)
+            let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom:15, bearing: (mapView.myLocation?.course)!, viewingAngle: 35)
             self.mapView.animate(to: camera)
             startEbike()
         }
@@ -626,7 +633,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         self.cameraTag = 0
         
-        let camera = GMSCameraPosition.camera(withTarget: position, zoom: 15, bearing: (mapView.myLocation?.course)!, viewingAngle: 25)
+        let camera = GMSCameraPosition.camera(withTarget: position, zoom: 15, bearing: (mapView.myLocation?.course)!, viewingAngle: 35)
         self.mapView.animate(to: camera)
         
     }
@@ -1297,7 +1304,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 
     
     
-    let totalDistanceLabel: UILabelX = {
+    let totalDistanceLabel: UILabel = {
         let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
@@ -1309,13 +1316,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     }()
     
     
-    let addressLabel: UILabelX = {
-        let label = UILabelX(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
-        label.translatesAutoresizingMaskIntoConstraints = false
+    lazy var addressLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: -((self.windowSize?.frame.width)!), y: mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50))
+        //label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.textColor = UIColor(red:0.95, green:1.00, blue:1.00, alpha:1.00)
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.backgroundColor = UIColor(red:0.10, green:0.10, blue:0.10, alpha:1.00)
+        label.backgroundColor = UIColor.black.withAlphaComponent(0.9)
         label.numberOfLines = 2
         label.alpha = 0.9
         return label
@@ -1831,7 +1838,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                          ***/
                         
                         let heading = location.course
-                        let camera1 = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 16, bearing: heading, viewingAngle: 25)
+                        let camera1 = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 16, bearing: heading, viewingAngle: 35)
                         mapView.animate(to: camera1)
                         
                         
@@ -1915,7 +1922,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     if let place = placemark?.firstResult() {
                         
                         if place.thoroughfare != nil {
-                            self.addressLabel.alpha = 0.8
                             self.addressLabel.text = " \(place.lines![0]) \n \(place.lines![1])"
                             
                             if place.locality == nil {
@@ -2032,8 +2038,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     lazy var slideMenuButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
         button.backgroundColor = UIColor.clear
-        button.setImage(UIImage(named: "menu")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = UIColor.DTIRed()
+        button.setImage(UIImage(named: "menu-1"), for: .normal)
+        //button.tintColor = UIColor.DTIRed()
         button.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(handleSideMenuButton), for: .touchUpInside)
         return button
@@ -2273,7 +2279,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
     }
     
-    lazy var startButton: UIButtonY = {
+    lazy var startButton: UIButton = {
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.setTitle("Start", for: .normal)
@@ -2326,7 +2332,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 self.countdownLabel.text = "\(Int(self.countdownNumber))"
                 // TODO: show the time count with some text
                 if self.countdownNumber == 0 {
-                    self.countdownLabel.textColor = UIColor.DTIRed()
+                    self.countdownLabel.textColor = UIColor(red:0.76, green:0.18, blue:0.76, alpha:1.00)
                     self.countdownLabel.text = "Go!"
                 }
                 
@@ -2383,11 +2389,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             alertView(sender: sender)
             
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!-40, width: (self.windowSize?.frame.width)!, height: 40)
+            
+            UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.addressLabel.frame = CGRect(x: -(self.windowSize?.frame.width)!, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
                 
             }, completion: nil)
-            
             
             
             
@@ -2433,18 +2439,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             locationManager.startUpdatingHeading()
         }
         locationManager.startUpdatingLocation()
-        let camera = GMSCameraPosition(target: (self.mapView.myLocation?.coordinate)!, zoom: 15, bearing: 0, viewingAngle: 25)
+        let camera = GMSCameraPosition(target: (self.mapView.myLocation?.coordinate)!, zoom: 15, bearing: (self.mapView.myLocation?.course)!, viewingAngle: 35)
         mapView.animate(to: camera)
         
         
-        
-        
-        
-        // MARK - Disappear the History tool bar when start button clicked
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!+40, width: (self.windowSize?.frame.width)!, height: 40)
+        UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.addressLabel.frame = CGRect(x: 0, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
             
         }, completion: nil)
+        
+        
         
         
         distance = Measurement(value: 0, unit: UnitLength.meters)
@@ -2921,8 +2925,17 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // Map Menu Toggle Button
         mapView.addSubview(mapMenuSlideButton)
         
+        
+        
+    
+        
+        // BELOW PAGE CONTROL
+        mapView.addSubview(addressLabel)
+        
         // find my location
         mapView.addSubview(myLocationButton)
+        
+        
         // place search
         mapMenuSlideView.addSubview(mySearchButton)
         
@@ -2953,8 +2966,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // BELOW MAP VIEW
         mainSecondFrameView.addSubview(statusViewControl)
         
-        // BELOW PAGE CONTROL
-        mainSecondFrameView.addSubview(addressLabel)
+        
         
         mainSecondFrameView.addSubview(totalDistanceToDestination)
         
@@ -2969,7 +2981,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         navItemBarView.addSubview(rideStatusButton)
         
         // BOTTOM
-        view.addSubview(toolBox)
+        //view.addSubview(toolBox)
         
         view.addSubview(navItemBarView)
         
@@ -2999,17 +3011,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         _ = mapMenuSlideButton.anchor(mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
         
-        _ = mySearchButton.anchor(mapMenuSlideView.topAnchor, left: mapMenuSlideView.leftAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
-        
+        _ = mySearchButton.anchor(mapMenuSlideView.topAnchor, left: mapMenuSlideView.leftAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 55, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        mySearchButton.centerYAnchor.constraint(equalTo: mapMenuSlideView.centerYAnchor).isActive = true
         
         _ = coffeSearchButton.anchor(mapMenuSlideView.topAnchor, left: mySearchButton.rightAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        coffeSearchButton.centerYAnchor.constraint(equalTo: mapMenuSlideView.centerYAnchor).isActive = true
         
         _ = restaurantSearchButton.anchor(mapMenuSlideView.topAnchor, left: coffeSearchButton.rightAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        restaurantSearchButton.centerYAnchor.constraint(equalTo: mapMenuSlideView.centerYAnchor).isActive = true
         
         _ = directionToDestButton.anchor(mapMenuSlideView.topAnchor, left: nil, bottom: mapMenuSlideView.bottomAnchor, right: mapMenuSlideView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 50, heightConstant: 50)
+        directionToDestButton.centerYAnchor.constraint(equalTo: mapMenuSlideView.centerYAnchor).isActive = true
         
         
-        _ = myLocationButton.anchor(nil, left: nil, bottom: addressLabel.topAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 5, rightConstant: 10, widthConstant: 50, heightConstant: 50)
+        _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 25, rightConstant: 5, widthConstant: 50, heightConstant: 50)
         
         
         // MAIN SCROLL VIEW OF THE DASHBOARD & GOOGLE MAP
@@ -3031,8 +3046,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         // STREET NAME CORRESPONDING TO CURRENT LOCATION
-        _ = addressLabel.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 50)
-        addressLabel.centerXAnchor.constraint(equalTo: mapView.centerXAnchor).isActive = true
+        //_ = addressLabel.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: self.view.frame.width, heightConstant: 50)
+        //addressLabel.centerXAnchor.constraint(equalTo: mapView.centerXAnchor).isActive = true
         
         
         // TOTAL TRAVEL DISTANCE LABEL
@@ -3256,15 +3271,15 @@ extension RiderStatusViewController {
         
         var stars = ""
         
-        if rating <= 1.0 {
+        if rating >= 1.0 && rating < 2.0 {
             stars = "*"
-        } else if rating <= 2.0 {
+        } else if rating >= 2.0 && rating < 3.0 {
             stars = "**"
-        } else if rating <= 3.0 {
+        } else if rating >= 3.0 && rating < 4.0{
             stars = "***"
-        } else if rating <= 4.0 {
+        } else if rating >= 4.0 && rating < 5.0{
             stars = "****"
-        } else if rating <= 5.0 {
+        } else if rating == 5.0 {
             stars = "*****"
         }
         return stars

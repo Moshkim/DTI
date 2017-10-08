@@ -80,6 +80,7 @@
 		A68A9A1D1F634E9200D1099D /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68A9A1C1F634E9200D1099D /* Graph.swift */; };
 		A690D5701F47722100C75280 /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = A690D56F1F47722100C75280 /* APIKey.swift */; };
 		A690D5721F4774F200C75280 /* RouteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A690D5711F4774F200C75280 /* RouteStore.swift */; };
+		A692AAA51F89ECAD005BCF17 /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A692AAA41F89ECAD005BCF17 /* Emitter.swift */; };
 		A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */; };
 		A69FDB041F0D6DC8003D7D15 /* UIColor+colorFromHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */; };
 		A6BD1C6A1EF842A100E5D8EE /* CGRectEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BD1C651EF842A100E5D8EE /* CGRectEx.swift */; };
@@ -186,6 +187,7 @@
 		A68A9A1C1F634E9200D1099D /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = "E-Bike App/Graph.swift"; sourceTree = SOURCE_ROOT; };
 		A690D56F1F47722100C75280 /* APIKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = APIKey.swift; path = "E-Bike App/APIKey.swift"; sourceTree = SOURCE_ROOT; };
 		A690D5711F4774F200C75280 /* RouteStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteStore.swift; sourceTree = "<group>"; };
+		A692AAA41F89ECAD005BCF17 /* Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emitter.swift; sourceTree = "<group>"; };
 		A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableGraphView.swift; sourceTree = "<group>"; };
 		A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+colorFromHex.swift"; sourceTree = "<group>"; };
 		A6BD1C651EF842A100E5D8EE /* CGRectEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGRectEx.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 				A69FDB011F0D6CF1003D7D15 /* ScrollableGraphView.swift */,
 				A69FDB031F0D6DC8003D7D15 /* UIColor+colorFromHex.swift */,
 				A6F1C4171F1FD29F000B03AE /* style.json */,
+				A692AAA41F89ECAD005BCF17 /* Emitter.swift */,
 			);
 			name = View;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -762,6 +765,7 @@
 				A68447EC1F02C8A400B90B79 /* UIButtonX.swift in Sources */,
 				A68A9A1A1F61E2DC00D1099D /* ProgressHUD.m in Sources */,
 				A68447F31F02C8A400B90B79 /* UISliderX.swift in Sources */,
+				A692AAA51F89ECAD005BCF17 /* Emitter.swift in Sources */,
 				A684A5E41F0AC1E6007C6FCC /* ConfirmActionButton.swift in Sources */,
 				A68447F11F02C8A400B90B79 /* UIViewX.swift in Sources */,
 				A6FC1B421F59FB2A00B08DC3 /* ProfilePicture.swift in Sources */,

@@ -240,16 +240,16 @@ class RideCell: BaseCells {
             
             let totalDistance = ((ride?.distance)!/1000.0)/1.61
             if totalDistance >= 0.0 && totalDistance < 5.0 {
-                badges.image = UIImage(named: "low-3")
+                badges.image = UIImage(named: "low-4")
                 
                 //?.withRenderingMode(.alwaysTemplate)
                 
             } else if totalDistance < 10.0 && totalDistance >= 5.0 {
-                badges.image = UIImage(named: "medium-3")
+                badges.image = UIImage(named: "medium-4")
                 //?.withRenderingMode(.alwaysTemplate)
                 
             } else if totalDistance >= 10.0 {
-                badges.image = UIImage(named: "super-3")
+                badges.image = UIImage(named: "super-4")
                 //?.withRenderingMode(.alwaysTemplate)
                 
             }

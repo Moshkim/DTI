@@ -321,8 +321,8 @@ class SettingMenuSlide: NSObject {
         button.layer.cornerRadius = button.frame.width/2
         button.backgroundColor = UIColor.clear
         button.contentMode = .scaleAspectFit
-        button.setImage(UIImage(named: "logout")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = UIColor(red:0.85, green:0.10, blue:0.25, alpha:1.00)
+        button.setImage(UIImage(named: "logout-1"), for: .normal)
+        //button.tintColor = UIColor(red:0.85, green:0.10, blue:0.25, alpha:1.00)
         //button.layer.borderColor = UIColor.white.cgColor
         //button.layer.borderWidth = 0.3
         button.isHighlighted = true
