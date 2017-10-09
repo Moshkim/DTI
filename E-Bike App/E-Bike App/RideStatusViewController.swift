@@ -1756,7 +1756,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                         //totalRemainingDistanceInMiles = (totalremainingDistance/1000)*1.61
                         // FIXIT - I need to fix the Alert View
                         if totalremainingDistance < 0.05 && totalremainingDistance > 0.00{
-                            totalDistanceToDestination.text = "Remaining Distance = \(0.0)mi"
+                            //totalDistanceToDestination.text = "Remaining Distance = \(0.0)mi"
                             destinationTag = 0
                             
                             let destinationAlertView = UIAlertController(title: "Destination!", message: "We are here :)", preferredStyle: .alert)
@@ -1779,11 +1779,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                                 print(distanceSegnment)
                                 print("********************************************************************************************************")
                                 
-                                totalDistanceToDestination.text = "Remaining Distance \n \(String(format: "%.2f", totalremainingDistance))mi"
+                                //totalDistanceToDestination.text = "Remaining Distance \n \(String(format: "%.2f", totalremainingDistance))mi"
                             }
                             
                         } else if totalremainingDistance < 0.00{
-                            totalDistanceToDestination.text = "Distance = There is something wrong with total remaining distance"
+                            //totalDistanceToDestination.text = "Distance = There is something wrong with total remaining distance"
                             
                         }
                     }
@@ -2390,10 +2390,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             alertView(sender: sender)
             
             
-            UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                self.addressLabel.frame = CGRect(x: -(self.windowSize?.frame.width)!, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
-                
-            }, completion: nil)
+            
             
             
             
@@ -2493,6 +2490,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 sender.setTitleColor(UIColor.white, for: .normal)
                 sender.setTitle("Start", for: .normal)
                 sender.tag = 1
+                
+                UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                    self.addressLabel.frame = CGRect(x: -(self.windowSize?.frame.width)!, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
+                    
+                }, completion: nil)
+                
                 self.saveAsItIsRoute()
             }
             
@@ -2503,6 +2506,11 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 sender.setTitleColor(UIColor.white, for: .normal)
                 sender.setTitle("Start", for: .normal)
                 sender.tag = 1
+                
+                UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                    self.addressLabel.frame = CGRect(x: -(self.windowSize?.frame.width)!, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
+                    
+                }, completion: nil)
                 
                 self.saveNameOfRoute()
                 
