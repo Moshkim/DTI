@@ -21,6 +21,13 @@ struct SettingConfig {
 }
 
 
+struct DrivingMode {
+    static let BICYCLING = "bicycling"
+    static let DRIVING = "driving"
+    
+}
+
+
 struct Config {
     static var STORAGE_ROOT_REF         = "gs://e-bike-app.appspot.com"
     static var DATABASE_ROOT_REF        = "https://e-bike-app.firebaseio.com"

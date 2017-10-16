@@ -29,7 +29,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     // Access to User Defaults 
     let userDefault = UserDefaults.standard
     
-    
     // Kalma Filter Algorithm
     var resetKalmanFilter: Bool = true
     var hcKalmanFilter: HCKalmanAlgorithm?
@@ -127,6 +126,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     // Google API info between two points
     // Direction to Destination
+    fileprivate var didTapTheDestination = false
+    fileprivate var didTapTheDestinationPlacePosition = CLLocation()
     fileprivate var destinationTag = 0
     fileprivate var totalremainingDistance = Double()
     fileprivate var totalremainingDuration = Double()
@@ -144,7 +145,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     fileprivate var locationList: [CLLocation] = []
     fileprivate var elevationList: [CLLocationDistance] = []
     fileprivate var locationListWithDistance = [[CLLocation(),Double()]]
+    
     fileprivate var timer: Timer?
+    fileprivate var isPaused: Bool = false
     fileprivate var countdownTimer: Timer?
     fileprivate var countdownNumber: Float = 3.0
     fileprivate var totalMovingTimer: Timer?
@@ -298,7 +301,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     lazy var navItemBarView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black
-        view.translatesAutoresizingMaskIntoConstraints = false
+        //view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
     }()
@@ -319,7 +322,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     let statusViewControl: UIPageControl = {
         let bar = UIPageControl(frame: CGRect(x: 0, y: 0, width:50, height: 30))
         bar.pageIndicatorTintColor = UIColor.white
-        bar.currentPageIndicatorTintColor = UIColor.DTIRed()
+        bar.currentPageIndicatorTintColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00)
         return bar
     }()
     
@@ -475,7 +478,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return button
     }()
     
-    
+/*
     lazy var directionToDestButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.layer.cornerRadius = button.frame.width/2
@@ -558,7 +561,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             let endPointMapPin = GMSMarker()
             
             
-            let endMarkerImage = UIImage(named: "dot-1")
+            let endMarkerImage = UIImage(named: "endPin")
             let endMarkerView = UIImageView(image: endMarkerImage)
             
             
@@ -580,15 +583,21 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         }
         
     }
+     */
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         latDirection = marker.position.latitude
         longDirection = marker.position.longitude
         
+        let position = CLLocation(latitude: latDirection, longitude: longDirection)
+        didTapTheDestinationPlacePosition = position
         
         print("wow")
-        directionToDestButton.setImage(UIImage(named: "bike"), for: .normal)
-        directionToDestButton.isHidden = false
+        //directionToDestButton.setImage(UIImage(named: "bike"), for: .normal)
+        //directionToDestButton.isHidden = false
+        
+        startButton.setImage(UIImage(named: "bikeButton"), for: .normal)
+        didTapTheDestination = true
         
         
         markerTappedPosition = marker.position
@@ -652,11 +661,13 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         controller.didSelectGooglePlace{(place) -> Void in
             //print(place.description)
             
-            let position = place.coordinate
-            self.infoMarker = GMSMarker(position: position)
-            self.infoMarker.title = place.name
-            self.infoMarker.snippet = place.formattedAddress
-            self.infoMarker.map = self.mapView
+            //self.infoMarker = GMSMarker(position: position)
+            //self.infoMarker.title = place.name
+            //self.infoMarker.snippet = place.formattedAddress
+            //self.infoMarker.map = self.mapView
+            self.mapView.clear()
+            
+            self.setStartAndEndPin(destination: place.coordinate)
             
             //let camera = GMSCameraPosition.camera(withTarget: place.coordinate, zoom: 10)
             //self.mapView.animate(to: camera)
@@ -681,8 +692,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         let aPointCoordinate = "\(lat),\(long)"
         
         let bPointCoordinate = "\(coordinate.latitude),\(coordinate.longitude)"
+        print(DrivingMode.DRIVING)
         
-        let url = "http://maps.googleapis.com/maps/api/directions/json?origin=\(aPointCoordinate)&destination=\(bPointCoordinate)&sensor=false&mode=bicycling"
+        let url = "http://maps.googleapis.com/maps/api/directions/json?origin=\(aPointCoordinate)&destination=\(bPointCoordinate)&sensor=false&mode=\(DrivingMode.DRIVING)"
         
         guard let urlString = URL(string: url) else {
             print("Error: Cannot create URL")
@@ -834,7 +846,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 let firstViewOfMain = UIView()
                 firstViewOfMain.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 100, height: 150)
                 firstViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
-                firstViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
+                firstViewOfMain.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 firstViewOfMain.layer.borderWidth = 3
                 firstViewOfMain.backgroundColor = UIColor.black
                 
@@ -857,7 +869,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 let secondViewOfMain = UIView()
                 secondViewOfMain.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 100, height: 150)
                 secondViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
-                secondViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
+                secondViewOfMain.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 secondViewOfMain.layer.borderWidth = 3
                 secondViewOfMain.backgroundColor = UIColor.black
                 
@@ -886,7 +898,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 let thirdViewOfMain = UIView()
                 thirdViewOfMain.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 100, height: 150)
                 thirdViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
-                thirdViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
+                thirdViewOfMain.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 thirdViewOfMain.layer.borderWidth = 3
                 thirdViewOfMain.backgroundColor = UIColor.black
                 //UIColor(red:0.99, green:0.73, blue:0.17, alpha:1.00)
@@ -928,7 +940,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 let fourthViewOfMain = UIView()
                 fourthViewOfMain.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 100, height: 150)
                 fourthViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
-                fourthViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
+                fourthViewOfMain.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 fourthViewOfMain.layer.borderWidth = 3
                 fourthViewOfMain.backgroundColor = UIColor.black
                 //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
@@ -959,7 +971,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 let fifthViewOfMain = UIView()
                 fifthViewOfMain.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 100, height: 150)
                 fifthViewOfMain.layer.cornerRadius = firstViewOfMain.frame.width/2
-                fifthViewOfMain.layer.borderColor = UIColor.DTIRed().cgColor
+                fifthViewOfMain.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 fifthViewOfMain.layer.borderWidth = 3
                 fifthViewOfMain.backgroundColor = UIColor.black
                 //UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
@@ -1188,7 +1200,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 middleFrameOfView.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 340, height: 340)
                 middleFrameOfView.cornerRadius = middleFrameOfView.frame.width/2
                 middleFrameOfView.borderWidth = 3
-                middleFrameOfView.borderColor = UIColor.DTIRed()
+                middleFrameOfView.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00)
                 middleFrameOfView.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 middleFrameOfView.translatesAutoresizingMaskIntoConstraints = false
                 
@@ -1199,7 +1211,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 speedButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
                 speedButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 speedButton.layer.cornerRadius = speedButton.frame.width/2
-                speedButton.layer.borderColor = UIColor.DTIRed().cgColor
+                speedButton.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 speedButton.layer.borderWidth = 3
                 speedButton.isHighlighted = true
                 speedButton.titleLabel?.textAlignment = .center
@@ -1214,7 +1226,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 distanceButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
                 distanceButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 distanceButton.layer.cornerRadius = speedButton.frame.width/2
-                distanceButton.layer.borderColor = UIColor.DTIRed().cgColor
+                distanceButton.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 distanceButton.layer.borderWidth = 3
                 distanceButton.isHighlighted = true
                 distanceButton.titleLabel?.textAlignment = .center
@@ -1229,7 +1241,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 timeButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
                 timeButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 timeButton.layer.cornerRadius = speedButton.frame.width/2
-                timeButton.layer.borderColor = UIColor.DTIRed().cgColor
+                timeButton.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 timeButton.layer.borderWidth = 3
                 timeButton.isHighlighted = true
                 timeButton.titleLabel?.textAlignment = .center
@@ -1245,7 +1257,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 heartRateButton.frame = CGRect(x: mainFrameOfView.frame.width * CGFloat(index), y: 0, width: 80, height: 80)
                 heartRateButton.backgroundColor = UIColor(red:0.06, green:0.06, blue:0.06, alpha:1.00)
                 heartRateButton.layer.cornerRadius = speedButton.frame.width/2
-                heartRateButton.layer.borderColor = UIColor.DTIRed().cgColor
+                heartRateButton.layer.borderColor = UIColor(red:0.56, green:0.04, blue:0.22, alpha:1.00).cgColor
                 heartRateButton.layer.borderWidth = 3
                 heartRateButton.isHighlighted = true
                 heartRateButton.titleLabel?.numberOfLines = 2
@@ -1922,7 +1934,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     if let place = placemark?.firstResult() {
                         
                         if place.thoroughfare != nil {
-                            self.addressLabel.text = " \(place.lines![0]) \n \(place.lines![1])"
+                            self.addressLabel.text = " \(place.lines![0])"
                             
                             if place.locality == nil {
                                 self.address.append("\(String(describing: place.country))")
@@ -2219,12 +2231,22 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return label
     }()
     
+    let mapButtonContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.clear
+    
+        return view
+    }()
+    
     lazy var mapButton: UIButton = {
         let button = UIButton()
-        button.titleLabel?.textAlignment = .center
-        button.setTitle("Map", for: .normal)
+        
+        
+        //button.setTitle("Map", for: .normal)
+        button.setImage(UIImage(named:"mapGlow"), for: .normal)
         button.backgroundColor = UIColor.clear
-        button.setTitleColor(UIColor.DTIRed(), for: .normal)
+        //button.setTitleColor(UIColor.DTIRed(), for: .normal)
+        button.contentMode = .scaleAspectFit
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.layer.shadowColor = UIColor.DTIRed().cgColor
         button.layer.shadowOffset = CGSize(width: 1, height: -1)
@@ -2243,18 +2265,27 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         let position = CGPoint(x: 0, y: 0)
         entireScrollView.setContentOffset(position, animated: true)
 
-        mapButton.setTitleColor(UIColor.DTIRed(), for: .normal)
-        rideStatusButton.setTitleColor(UIColor.white, for: .normal)
+        mapButton.setImage(UIImage(named:"mapGlow"), for: .normal)
+        rideStatusButton.setImage(UIImage(named:"ridestatus"), for: .normal)
         
     }
+    
+    let rideStatusButtonContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.clear
+        
+        return view
+    }()
     
     lazy var rideStatusButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.textAlignment = .center
-        button.setTitle("Status", for: .normal)
+        //button.setTitle("Status", for: .normal)
+        button.setImage(UIImage(named: "ridestatus"), for: .normal)
         button.backgroundColor = UIColor.clear
         button.tintColor = UIColor.white
-        button.setTitleColor(UIColor.white, for: .normal)
+        //button.setTitleColor(UIColor.white, for: .normal)
+        button.contentMode = .scaleAspectFit
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.layer.shadowColor = UIColor.DTIRed().cgColor
         button.layer.shadowOffset = CGSize(width: 1, height: -1)
@@ -2273,25 +2304,34 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         entireScrollView.setContentOffset(position, animated: true)
         rideStatusTag = true
 
-        mapButton.setTitleColor(UIColor.white, for: .normal)
-        rideStatusButton.setTitleColor(UIColor.DTIRed(), for: .normal)
+        mapButton.setImage(UIImage(named:"map"), for: .normal)
+        rideStatusButton.setImage(UIImage(named:"ridestatusGlow"), for: .normal)
         
         
     }
     
+    let startButtonContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.clear
+        
+        return view
+    }()
+    
     lazy var startButton: UIButton = {
         
         let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        button.setTitle("Start", for: .normal)
-        //button.cornerRadius = button.frame.width/2
-        //button.borderWidth = 2
-        //button.borderColor = UIColor.white
-        button.backgroundColor = UIColor.clear
-        button.tintColor = UIColor.white
-        button.titleLabel?.textColor = UIColor.white
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.shadowColor = UIColor.DTIRed()
-        button.shadowOffset = CGSize(width: 1, height: -1)
+        button.setImage(UIImage(named: "startButton"), for: .normal)
+        button.contentMode = .scaleAspectFit
+        //button.setTitle("Start", for: .normal)
+        button.cornerRadius = button.frame.width/2
+        button.borderWidth = 0.5
+        button.borderColor = UIColor.black
+        button.backgroundColor = UIColor.black
+        //button.tintColor = UIColor.white
+        //button.titleLabel?.textColor = UIColor.white
+        //button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        //button.shadowColor = UIColor.DTIRed()
+        //button.shadowOffset = CGSize(width: 1, height: -1)
         button.tag = 1
         
         button.addTarget(self, action: #selector(startAndStop), for: .touchUpInside)
@@ -2302,99 +2342,128 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     
-    @objc func startAndStop(sender: UIButtonY) {
+    @objc func startAndStop(sender: UIButton) {
         
-        if let window = UIApplication.shared.keyWindow {
-            window.addSubview(blackView)
-            window.addSubview(countdownLabel)
+        if didTapTheDestination == true {
+            sender.setImage(UIImage(named: "startButton"), for: .normal)
+            didTapTheDestination = false
             
-            blackView.frame = window.frame
-            blackView.alpha = 0
-        }
-        
-        
-        if (sender.tag == 1) {
+            let position = didTapTheDestinationPlacePosition
             
-            sender.setTitleColor(UIColor.DTIRed(), for: .normal)
-            sender.setTitle("Stop", for: .normal)
-            sender.tag = 2
             
-            countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {
-                _ in
+            // clear the map first and just direction between start to destination point
+            
+            mapView.clear()
+            
+            self.setStartAndEndPin(destination: position.coordinate)
+            
+            
+            //let camera = GMSCameraPosition.camera(withTarget: place.coordinate, zoom: 10)
+            //self.mapView.animate(to: camera)
+            let bounds = GMSCoordinateBounds(coordinate: position.coordinate, coordinate: (self.mapView.myLocation?.coordinate)!)
+            self.mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 100))
+            
+            self.drawRouteBetweenTwoPoints(coordinate: position.coordinate)
+            
+        } else {
+            
+            if let window = UIApplication.shared.keyWindow {
+                window.addSubview(blackView)
+                window.addSubview(countdownLabel)
                 
-                UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                    
-                    self.blackView.alpha = 1
-                    self.countdownLabel.isHidden = false
-                    
-                }, completion: nil)
+                blackView.frame = window.frame
+                blackView.alpha = 0
+            }
+            
+            
+            if (sender.tag == 1) {
                 
-                self.countdownLabel.text = "\(Int(self.countdownNumber))"
-                // TODO: show the time count with some text
-                if self.countdownNumber == 0 {
-                    self.countdownLabel.textColor = UIColor(red:0.76, green:0.18, blue:0.76, alpha:1.00)
-                    self.countdownLabel.text = "Go!"
-                }
+                //sender.setTitleColor(UIColor.DTIRed(), for: .normal)
                 
+                sender.tag = 2
                 
-                print(self.countdownNumber)
-                if self.countdownNumber == -1 {
-                    // Reset the kalman filter algorithm to store new data
-                    self.resetKalmanFilter = true
-                    
-                    
-                    
-                    
-                    // Don't go to sleep mode while app is running or when start button is clicked
-                    UIApplication.shared.isIdleTimerDisabled = true
-                    //UIScreen.main.brightness = CGFloat(0.7)
-                    
-                    // Heart Rate Tag Change to 1 to append data to array
-                    
-                    
-                    
-                    // MARK - Disappear the History tool bar when start button clicked
-                    /*
-                     UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                     self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!+40, width: (self.windowSize?.frame.width)!, height: 40)
-                     
-                     }, completion: nil)
-                     */
-                    
-                    
+                countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {
+                    _ in
                     
                     UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                         
-                        self.blackView.alpha = 0
-                        self.countdownLabel.isHidden = true
+                        self.blackView.alpha = 1
+                        self.countdownLabel.isHidden = false
                         
                     }, completion: nil)
                     
+                    self.countdownLabel.text = "\(Int(self.countdownNumber))"
+                    // TODO: show the time count with some text
+                    if self.countdownNumber == 0 {
+                        self.countdownLabel.textColor = UIColor(red:0.76, green:0.18, blue:0.76, alpha:1.00)
+                        self.countdownLabel.text = "Go!"
+                    }
                     
-                    self.startEbike()
                     
-                    self.countdownTimer?.invalidate()
-                    self.countdownNumber = 3
+                    print(self.countdownNumber)
+                    if self.countdownNumber == -1 {
+                        // Reset the kalman filter algorithm to store new data
+                        self.resetKalmanFilter = true
+                        
+                        
+                        
+                        
+                        // Don't go to sleep mode while app is running or when start button is clicked
+                        UIApplication.shared.isIdleTimerDisabled = true
+                        //UIScreen.main.brightness = CGFloat(0.7)
+                        
+                        // Heart Rate Tag Change to 1 to append data to array
+                        
+                        
+                        
+                        // MARK - Disappear the History tool bar when start button clicked
+                        /*
+                         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                         self.toolBox.frame = CGRect(x: 0, y: (self.windowSize?.frame.height)!+40, width: (self.windowSize?.frame.width)!, height: 40)
+                         
+                         }, completion: nil)
+                         */
+                        
+                        
+                        
+                        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                            
+                            self.blackView.alpha = 0
+                            self.countdownLabel.isHidden = true
+                            sender.setImage(UIImage(named: "stopButton"), for: .normal)
+                            
+                        }, completion: nil)
+                        
+                        
+                        self.startEbike()
+                        
+                        self.countdownTimer?.invalidate()
+                        self.countdownNumber = 3
+                    }
+                    
+                    self.countdownNumber -= 1
                 }
                 
-                self.countdownNumber -= 1
-            }
+            } else if (sender.tag == 2){
+                
+                // Can be go to sleep mode after your ride is done and play with apps
+                UIApplication.shared.isIdleTimerDisabled = false
+                //UIScreen.main.brightness = CGFloat(1.0)
+                
+                
+                //The pause should be occured here!!!!!
+                self.isPaused = true
+                self.locationManager.stopUpdatingLocation()
+                self.locationManager.stopUpdatingHeading()
+                //altimeter.stopRelativeAltitudeUpdates()
 
-        } else if (sender.tag == 2){
-            
-            
-            // Can be go to sleep mode after your ride is done and play with apps
-            UIApplication.shared.isIdleTimerDisabled = false
-            UIScreen.main.brightness = CGFloat(1.0)
-            
-            alertView(sender: sender)
-            
-            
-            
-            
+                alertView(sender: sender)
+                
+            }
             
             
         }
+
         
     }
     
@@ -2436,6 +2505,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             locationManager.startUpdatingHeading()
         }
         locationManager.startUpdatingLocation()
+        
+        
         let camera = GMSCameraPosition(target: (self.mapView.myLocation?.coordinate)!, zoom: 15, bearing: (self.mapView.myLocation?.course)!, viewingAngle: 35)
         mapView.animate(to: camera)
         
@@ -2455,20 +2526,23 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true){ _ in
-            self.seconds += 1
-            let formattedDistance = FormatDisplay.distance(self.distance)
-            let formattedTime = FormatDisplay.time(self.seconds)
+            if self.isPaused == false {
+                self.seconds += 1
+                let formattedDistance = FormatDisplay.distance(self.distance)
+                let formattedTime = FormatDisplay.time(self.seconds)
+                
+                self.timeFromStart.text = "\(formattedTime)"
+                self.timeLabel.text = "\(formattedTime)"
+                self.distanceLabel.text = "\(formattedDistance)"
+                self.totalDistanceLabel.text = "\(formattedDistance)"
+            }
             
-            self.timeFromStart.text = "\(formattedTime)"
-            self.timeLabel.text = "\(formattedTime)"
-            self.distanceLabel.text = "\(formattedDistance)"
-            self.totalDistanceLabel.text = "\(formattedDistance)"
         }
         
     }
     
     
-    fileprivate func alertView(sender: UIButtonY) {
+    fileprivate func alertView(sender: UIButton) {
         
         
         if locationList.count > 1 {
@@ -2487,8 +2561,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 // Stop storing the heart rate data to the array
                 self.heartRateTag = 2
-                sender.setTitleColor(UIColor.white, for: .normal)
-                sender.setTitle("Start", for: .normal)
+                //sender.setTitleColor(UIColor.white, for: .normal)
+                sender.setImage(UIImage(named: "startButton"), for: .normal)
                 sender.tag = 1
                 
                 UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
@@ -2503,8 +2577,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 _ in
                 
                 self.heartRateTag = 2
-                sender.setTitleColor(UIColor.white, for: .normal)
-                sender.setTitle("Start", for: .normal)
+                //sender.setTitleColor(UIColor.white, for: .normal)
+                sender.setImage(UIImage(named: "startButton"), for: .normal)
                 sender.tag = 1
                 
                 UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
@@ -2516,7 +2590,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
             }
             
-            let cancelButton = UIAlertAction(title: "Resume", style: .cancel)
+            let cancelButton = UIAlertAction(title: "Resume", style: .cancel) {
+                _ in
+                self.locationManager.startUpdatingLocation()
+                self.locationManager.startUpdatingHeading()
+                self.isPaused = false
+            }
             
             
             alertController.view.tintColor = UIColor.DTIBlue()
@@ -2622,7 +2701,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // Get the average heart rate to store in core data
         if heartRateList.count > 0 {
             newRide.avgheartrate = Int16(cumulativeSumOfHeartRateData/heartRateList.count)
-        
         } else {
             newRide.avgheartrate = 0
         }
@@ -2634,44 +2712,47 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         } else {
             newRide.address = "No address is registered"
         }
+
+        
+        // This is absolute elevation
         let initialAbsoluteElevation = (locationList[1].altitude*(3.28084))
         
-        if locationList.count > 0 {
-            for i in 0..<locationList.count {
-                let locationObject = Locations(context: CoreDataStack.context)
+        // This is relative elevation
+        for i in 0..<locationList.count {
+            let locationObject = Locations(context: CoreDataStack.context)
+            
                 
-                    
-                    //locationList[i].altitude as Double
-                locationObject.timestamp = locationList[i].timestamp as Date
-                
-                
-                if elevationDataArray[i] < 0 {
-                    locationObject.elevation = (initialAbsoluteElevation-(elevationDataArray[i]*(3.28084)))
-                } else {
-                    locationObject.elevation = (initialAbsoluteElevation+(elevationDataArray[i]*(3.28084)))
-                    locationObject.pressure = pressureDataArray[i]
-                }
-                
-                
-                if locationList[i].speed < 0 {
-                    locationObject.speed = 0
-                }
-                else {
-                    locationObject.speed = locationList[i].speed as Double
-                    
-                }
-                locationObject.latitude = locationList[i].coordinate.latitude
-                locationObject.longitude = locationList[i].coordinate.longitude
-                locationObject.heartRate = Int16(heartRateList[i])
-                newRide.addToLocations(locationObject)
+            //locationList[i].altitude as Double
+            locationObject.timestamp = locationList[i].timestamp as Date
+            
+            
+            if elevationDataArray[i] < 0 {
+                locationObject.elevation = (initialAbsoluteElevation-(elevationDataArray[i]*(3.28084)))
+            } else {
+                locationObject.elevation = (initialAbsoluteElevation+(elevationDataArray[i]*(3.28084)))
+                locationObject.pressure = pressureDataArray[i]
             }
             
-            // Save the context
-            CoreDataStack.saveContext()
-            ride = newRide
             
+            if locationList[i].speed < 0 {
+                locationObject.speed = 0
+            }
+            else {
+                locationObject.speed = locationList[i].speed as Double
+                
+            }
+            locationObject.latitude = locationList[i].coordinate.latitude
+            locationObject.longitude = locationList[i].coordinate.longitude
+            locationObject.heartRate = Int16(heartRateList[i])
+            newRide.addToLocations(locationObject)
         }
+        
+        // Save the context
+        CoreDataStack.saveContext()
+        ride = newRide
+            
     }
+    
     
     
     //MARK: - Weather Info Section ************************************************************************************************************************************//
@@ -2680,31 +2761,31 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         if let icon = currentWeatherIcon {
             switch icon as String {
             case CurrentWeatherStatus.rain.rawValue:
-                weatherIcon.setImage(UIImage(named: "rain")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "rain"), for: .normal)
                 iconString = "rain"
             case CurrentWeatherStatus.clearDay.rawValue:
-                weatherIcon.setImage(UIImage(named: "clear")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "clear"), for: .normal)
                 iconString = "clear"
             case CurrentWeatherStatus.clearNight.rawValue:
-                weatherIcon.setImage(UIImage(named: "clear")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "clear"), for: .normal)
                 iconString = "clear"
             case CurrentWeatherStatus.someCloudDay.rawValue:
-                weatherIcon.setImage(UIImage(named: "cloudy")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "cloudy"), for: .normal)
                 iconString = "cloudy"
             case CurrentWeatherStatus.someCouldNight.rawValue:
-                weatherIcon.setImage(UIImage(named: "cloudy")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "cloudy"), for: .normal)
                 iconString = "cloudy"
             case CurrentWeatherStatus.sleet.rawValue:
-                weatherIcon.setImage(UIImage(named: "sleet")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "sleet"), for: .normal)
                 iconString = "sleet"
             case CurrentWeatherStatus.cloudy.rawValue:
-                weatherIcon.setImage(UIImage(named: "cloudy")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "cloudy"), for: .normal)
                 iconString = "cloudy"
             case CurrentWeatherStatus.snow.rawValue:
-                weatherIcon.setImage(UIImage(named: "snow")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "snow"), for: .normal)
                 iconString = "snow"
             case CurrentWeatherStatus.wind.rawValue:
-                weatherIcon.setImage(UIImage(named: "wind")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                weatherIcon.setImage(UIImage(named: "wind"), for: .normal)
                 iconString = "wind"
             default:
                 break
@@ -2893,7 +2974,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         locationManager.activityType = .fitness
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager.distanceFilter = 3
+        locationManager.distanceFilter = 5
         locationManager.requestWhenInUseAuthorization()
         locationManager.startMonitoringSignificantLocationChanges()
         locationManager.allowsBackgroundLocationUpdates = true
@@ -2953,7 +3034,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // find coffee places
         mapMenuSlideView.addSubview(coffeSearchButton)
         // direct A to B point (navigation)
-        mapMenuSlideView.addSubview(directionToDestButton)
+        //mapMenuSlideView.addSubview(directionToDestButton)
         
         
         
@@ -2982,16 +3063,26 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         
+        view.addSubview(navItemBarView)
+        
+        navItemBarView.addSubview(mapButtonContainer)
+        
+        mapButtonContainer.addSubview(mapButton)
+        
+        
+        //navItemBarView.addSubview(startButtonContainer)
+        
         navItemBarView.addSubview(startButton)
         
-        navItemBarView.addSubview(mapButton)
         
-        navItemBarView.addSubview(rideStatusButton)
+        navItemBarView.addSubview(rideStatusButtonContainer)
+        
+        rideStatusButtonContainer.addSubview(rideStatusButton)
         
         // BOTTOM
         //view.addSubview(toolBox)
         
-        view.addSubview(navItemBarView)
+        
         
         // MARK: - Constraints ********************************************************************************************************************************************************//
         
@@ -3028,8 +3119,8 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         _ = restaurantSearchButton.anchor(mapMenuSlideView.topAnchor, left: coffeSearchButton.rightAnchor, bottom: mapMenuSlideView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
         restaurantSearchButton.centerYAnchor.constraint(equalTo: mapMenuSlideView.centerYAnchor).isActive = true
         
-        _ = directionToDestButton.anchor(mapMenuSlideView.topAnchor, left: nil, bottom: mapMenuSlideView.bottomAnchor, right: mapMenuSlideView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 50, heightConstant: 50)
-        directionToDestButton.centerYAnchor.constraint(equalTo: mapMenuSlideView.centerYAnchor).isActive = true
+        //_ = directionToDestButton.anchor(mapMenuSlideView.topAnchor, left: nil, bottom: mapMenuSlideView.bottomAnchor, right: mapMenuSlideView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 50, heightConstant: 50)
+        //directionToDestButton.centerYAnchor.constraint(equalTo: mapMenuSlideView.centerYAnchor).isActive = true
         
         
         _ = myLocationButton.anchor(nil, left: nil, bottom: mapView.bottomAnchor, right: mapView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 25, rightConstant: 5, widthConstant: 50, heightConstant: 50)
@@ -3070,15 +3161,28 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         // Map view Button
         
-        _ = mapButton.anchor(navItemBarView.topAnchor, left: navItemBarView.leftAnchor, bottom: navItemBarView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/3, heightConstant: 50)
+        _ = mapButtonContainer.anchor(navItemBarView.topAnchor, left: navItemBarView.leftAnchor, bottom: navItemBarView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/3, heightConstant: 50)
         
-        _ = rideStatusButton.anchor(navItemBarView.topAnchor, left: nil, bottom: navItemBarView.bottomAnchor, right: navItemBarView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/3, heightConstant: 50)
+        _ = mapButton.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 45, heightConstant: 45)
+        mapButton.centerXAnchor.constraint(equalTo: mapButtonContainer.centerXAnchor).isActive = true
+        mapButton.centerYAnchor.constraint(equalTo: mapButtonContainer.centerYAnchor).isActive = true
+        
+        
+        _ = rideStatusButtonContainer.anchor(navItemBarView.topAnchor, left: nil, bottom: navItemBarView.bottomAnchor, right: navItemBarView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/3, heightConstant: 50)
+        
+        
+        _ = rideStatusButton.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 45, heightConstant: 45)
+        rideStatusButton.centerXAnchor.constraint(equalTo: rideStatusButtonContainer.centerXAnchor).isActive = true
+        rideStatusButton.centerYAnchor.constraint(equalTo: rideStatusButtonContainer.centerYAnchor).isActive = true
+        
         
         
         // TRIGER BUTTON TO START JOURNEY
-        _ = startButton.anchor(navItemBarView.topAnchor, left: nil, bottom: navItemBarView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width/3, heightConstant: 50)
-        startButton.centerXAnchor.constraint(equalTo: navItemBarView.centerXAnchor).isActive = true
         
+        
+        _ = startButton.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        startButton.centerXAnchor.constraint(equalTo: navItemBarView.centerXAnchor).isActive = true
+        startButton.centerYAnchor.constraint(equalTo: navItemBarView.centerYAnchor).isActive = true
         
         
         _ = navItemBarView.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 50)
@@ -3120,6 +3224,57 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 //*************************************************************************************************************************************//
 
 extension RiderStatusViewController {
+    
+    
+    func setStartAndEndPin(destination: CLLocationCoordinate2D) {
+        // starting point
+        /******************************************************************************************************/
+        
+        let startPointMapPin = GMSMarker()
+        
+        let startMarkerImage = UIImage(named: "startPin")
+        //!.withRenderingMode(.alwaysTemplate)
+        
+        //creating a marker view
+        let startMarkerView = UIImageView(image: startMarkerImage)
+        
+        startPointMapPin.iconView = startMarkerView
+        
+        startPointMapPin.layer.cornerRadius = 25
+        startPointMapPin.position = (mapView.myLocation?.coordinate)!
+        startPointMapPin.title = "Start"
+        startPointMapPin.opacity = 1
+        startPointMapPin.infoWindowAnchor.y = 1
+        startPointMapPin.map = mapView
+        startPointMapPin.appearAnimation = GMSMarkerAnimation.pop
+        startPointMapPin.isTappable = true
+        
+        /******************************************************************************************************/
+        
+        
+        
+        // destination
+        /******************************************************************************************************/
+        let endPointMapPin = GMSMarker()
+        
+        
+        let endMarkerImage = UIImage(named: "endPin")
+        let endMarkerView = UIImageView(image: endMarkerImage)
+        
+        
+        endPointMapPin.iconView = endMarkerView
+        endPointMapPin.layer.cornerRadius = 25
+        endPointMapPin.position = destination
+        endPointMapPin.title = "end"
+        endPointMapPin.opacity = 1
+        endPointMapPin.infoWindowAnchor.y = 1
+        endPointMapPin.map = mapView
+        endPointMapPin.appearAnimation = GMSMarkerAnimation.pop
+        endPointMapPin.isTappable = true
+        
+        /******************************************************************************************************/
+        
+    }
     
     
     @objc func POIForPlaces(sender: UIButton) {

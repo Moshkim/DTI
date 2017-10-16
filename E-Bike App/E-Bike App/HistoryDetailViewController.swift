@@ -20,6 +20,8 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     // Polyline segment colored lines
     var arrayOfSegementColor = [GMSStyleSpan]()
     
+    // Map Touch To Maximum
+    var mapTouched = true
     
     //Page of Graph
     var pageOfGraph = 0
@@ -526,6 +528,8 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         return view
     }()
     
+
+    
     lazy var backButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 20))
         button.setTitle("<Back", for: .normal)
@@ -720,7 +724,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         }
         if let addressOptional = ride?.address {
             address = "\(addressOptional)"
-            export += addressOptional + ","
+            export += address! + ","
         }
         if let durationOptional = ride?.duration {
             duration = "\(FormatDisplay.time(Int((durationOptional))))"
@@ -831,24 +835,8 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             
             path.add(position)
             bounds = bounds.includingPath(path)
-            
-            
-            
-            if eachSpeed < 5 && eachSpeed >= 0 {
-                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidRed))
-            } else if eachSpeed >= 5 && eachSpeed < 10 {
-                
-                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.redToYellow))
-            } else if eachSpeed >= 10 && eachSpeed < 13 {
-                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidYellow))
-            } else if eachSpeed >= 13 && eachSpeed < 15 {
-                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.yellowToGreen))
-            } else if eachSpeed >= 15 {
-                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidGreen))
-            }
-            
-            
-            //drawTraffic(path: path, speed: eachSpeed)
+            // Draw colored segments on the map
+            drawColoredSegments(speed: eachSpeed)
         }
         
         let update = GMSCameraUpdate.fit(bounds, with: UIEdgeInsets.zero)
@@ -891,8 +879,39 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         }
     }
     */
-    func drawTraffic(path: GMSPath, speed: Double) {
-
+    func drawColoredSegments(speed: Double) {
+        
+        
+        //car speed
+        if speed < 10 && speed >= 0 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidRed))
+        } else if speed >= 10 && speed < 20 {
+            
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.redToYellow))
+        } else if speed >= 20 && speed < 30 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidYellow))
+        } else if speed >= 30 && speed < 40 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.yellowToGreen))
+        } else if speed >= 40 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidGreen))
+        }
+        
+        
+        //bike speed
+        /*
+        if speed < 5 && speed >= 0 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidRed))
+        } else if speed >= 5 && speed < 10 {
+            
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.redToYellow))
+        } else if speed >= 10 && speed < 13 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidYellow))
+        } else if speed >= 13 && speed < 15 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.yellowToGreen))
+        } else if speed >= 15 {
+            arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidGreen))
+        }
+         */
         
     }
     
