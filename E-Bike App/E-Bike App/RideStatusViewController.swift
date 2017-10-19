@@ -1802,7 +1802,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                     
                     print("Traveled Distance:",  totalTravelDistance)
-                    print("Straight Distance:", startLocation.distance(from: location))
+                    //print("Straight Distance:", startLocation.distance(from: location))
                     print("Elevation:", location.altitude)
                     print("Relative Elevation:", trackingElevationData)
                     print("Speed:", location.speed)
@@ -2446,17 +2446,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
             } else if (sender.tag == 2){
                 
-                // Can be go to sleep mode after your ride is done and play with apps
-                UIApplication.shared.isIdleTimerDisabled = false
-                //UIScreen.main.brightness = CGFloat(1.0)
                 
-                
-                //The pause should be occured here!!!!!
-                self.isPaused = true
-                self.locationManager.stopUpdatingLocation()
-                self.locationManager.stopUpdatingHeading()
-                //altimeter.stopRelativeAltitudeUpdates()
-
                 alertView(sender: sender)
                 
             }
@@ -2570,12 +2560,20 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                     
                 }, completion: nil)
                 
+                
                 self.saveAsItIsRoute()
             }
             
-            let changeNameButton = UIAlertAction(title: "New Route", style: .default) {
+            let pauseButton = UIAlertAction(title: "Pause", style: .default) {
                 _ in
                 
+                
+                //The pause should be occured here!!!!!
+                self.isPaused = true
+                self.locationManager.stopUpdatingLocation()
+                self.locationManager.stopUpdatingHeading()
+                
+                /*
                 self.heartRateTag = 2
                 //sender.setTitleColor(UIColor.white, for: .normal)
                 sender.setImage(UIImage(named: "startButton"), for: .normal)
@@ -2587,6 +2585,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 }, completion: nil)
                 
                 self.saveNameOfRoute()
+                 */
                 
             }
             
@@ -2604,7 +2603,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             
             alertController.addAction(saveButton)
-            alertController.addAction(changeNameButton)
+            alertController.addAction(pauseButton)
             alertController.addAction(cancelButton)
             present(alertController, animated: true, completion: nil)
             
@@ -2664,6 +2663,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     fileprivate func stopEbike() {
         
+        // Can be go to sleep mode after your ride is done and play with apps
+        UIApplication.shared.isIdleTimerDisabled = false
+
         mySearchButton.isHidden = false
         
         // stop timer for this ride
@@ -2823,7 +2825,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 switch icon {
                 case "clear":
-                    let action = UIAlertAction(title: "Let's get go wild!", style: .default, handler: nil)
+                    let action = UIAlertAction(title: "Let's get wild!", style: .default, handler: nil)
                     action.setValue(image, forKey: "image")
                     alertController.addAction(action)
                 case "cloudy":
@@ -3239,7 +3241,7 @@ extension RiderStatusViewController {
         let startMarkerView = UIImageView(image: startMarkerImage)
         
         startPointMapPin.iconView = startMarkerView
-        
+        startPointMapPin.layer.zPosition = 5
         startPointMapPin.layer.cornerRadius = 25
         startPointMapPin.position = (mapView.myLocation?.coordinate)!
         startPointMapPin.title = "Start"

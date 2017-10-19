@@ -12,7 +12,7 @@ import GoogleMaps
 import GooglePlaces
 import CoreData
 
-class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UICollectionViewDelegateFlowLayout {
+class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate {
     
     var location: [Locations]?
     
@@ -24,22 +24,67 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     private let cellId = "cellId"
     
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    
+    
+    lazy var fetchedResutController: NSFetchedResultsController = { () -> NSFetchedResultsController<NSFetchRequestResult> in
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Ride")
         
+        
+        if let sortType = userDefault.value(forKey: "historyListSortType") {
+            if (sortType as! String) == "Distance" {
+                
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "distance", ascending: false)]
+                
+            } else if (sortType as! String) == "Date" {
+                
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+                
+            }
+            
+        }
+        let context = getContext()
+        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        frc.delegate = self
+        return frc
+    }()
+    
+    // This is where all the magic happens with core data changes or update
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        if type == .delete {
+            collectionView?.deleteItems(at: [indexPath!])
+            collectionView?.scrollToItem(at: indexPath!, at: .top, animated: true)
+        }
+        if type == .update {
+            collectionView?.scrollToItem(at: indexPath!, at: .top, animated: true)
+        }
+        
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if let count = fetchedResutController.sections?[section].numberOfObjects {
+            return count
+        }
+        /*
         if let count = arrayRide?.count {
             return count
         }
+         */
         return 0
         
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! RideCell
+        
+        let ride  = fetchedResutController.object(at: indexPath) as! Ride
+        
+        cell.ride = ride
+        /*
         if let ride = arrayRide?[indexPath.item]{
             cell.ride = ride
             
         }
-        
+        */
         return cell
     }
     
@@ -47,7 +92,8 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         //let layout = UICollectionViewFlowLayout()
         //let controller = HistoryDetailViewController(collectionViewLayout: layout)
         let control = HistoryDetailViewController()
-        control.ride = arrayRide?[indexPath.item]
+        let ride  = fetchedResutController.object(at: indexPath) as! Ride
+        control.ride = ride
         navigationController?.pushViewController(control, animated: true)
         
         
@@ -101,7 +147,14 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
         collectionView?.alwaysBounceVertical = true
         collectionView?.alwaysBounceHorizontal = false
         
-        loadData()
+        do {
+            try fetchedResutController.performFetch()
+        } catch let error{
+            print(error)
+            
+        }
+        
+        //loadData()
         //clearData()
         
     }

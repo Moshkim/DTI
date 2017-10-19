@@ -188,16 +188,40 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
     
     
     
-    let nameOfTheRoute: UILabel = {
+    lazy var nameOfTheRoute: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
         label.textAlignment = .center
         label.textColor = UIColor.white
         label.font = UIFont.boldSystemFont(ofSize: 24)
         label.backgroundColor = UIColor.clear
+        label.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(userTappedLabel))
+        label.addGestureRecognizer(tapGesture)
         //label.numberOfLines = 2
         
         return label
     }()
+    
+    @objc func userTappedLabel(){
+        let alertViewController = UIAlertController(title: "Rename Route", message: "", preferredStyle: .alert)
+        let saveNameAction = UIAlertAction(title: "Save", style: .default) {
+            _ in
+            
+            let nameTextField = alertViewController.textFields![0] as UITextField
+            self.nameOfTheRoute.text = nameTextField.text
+            
+            self.ride.name = nameTextField.text
+            CoreDataStack.saveContext()
+        }
+        
+        alertViewController.addTextField { (textField: UITextField!) in
+            textField.placeholder = "Enter The Name"
+        }
+        
+        alertViewController.addAction(saveNameAction)
+        self.present(alertViewController, animated: true, completion: nil)
+        
+    }
     
     let mapView: GMSMapView = {
         
@@ -575,17 +599,29 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         }
         xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
         
-        for i in 0...xMilesLabelLength {
-            elevationXLabels.append(Float(i))
-        }
-        
-        
-        if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
-            elevationChart.labelFont = UIFont.systemFont(ofSize: 10)
-        } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
-            elevationChart.labelFont = UIFont.systemFont(ofSize: 8)
-        } else if xMilesLabelLength > 20 {
-            elevationChart.labelFont = UIFont.systemFont(ofSize: 6)
+        if xMilesLabelLength <= 10{
+            for i in 0...xMilesLabelLength {
+                elevationXLabels.append(Float(i))
+            }
+        } else if xMilesLabelLength > 10 && xMilesLabelLength <= 20 {
+            for i in stride(from: 0, to: xMilesLabelLength, by: 3){
+                elevationXLabels.append(Float(i))
+            }
+            
+        } else if xMilesLabelLength > 20 && xMilesLabelLength <= 30 {
+            for i in stride(from: 0, to: xMilesLabelLength, by: 5){
+                elevationXLabels.append(Float(i))
+            }
+            
+        } else if xMilesLabelLength > 30 && xMilesLabelLength <= 40{
+            for i in stride(from: 0, to: xMilesLabelLength, by: 7){
+                elevationXLabels.append(Float(i))
+            }
+            
+        } else if xMilesLabelLength > 40 {
+            for i in stride(from: 0, to: xMilesLabelLength, by: 10){
+                elevationXLabels.append(Float(i))
+            }
         }
         
         let series = ChartSeries(data: seriesData)
@@ -742,7 +778,7 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         let series = ChartSeries(data: seriesData)
         series.area = true
-        heartRateChart.xLabels = heartRateXLabels
+        heartRateChart.xLabels = elevationXLabels
         heartRateChart.xLabelsFormatter = { String(Int(round($1))) }
         heartRateChart.add(series)
         
@@ -926,7 +962,8 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
         
         _ = backButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 40, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 30)
         
-        _ = nameOfTheRoute.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 40)
+        _ = nameOfTheRoute.anchor(view.topAnchor, left: nil, bottom: nil, right: nil, topConstant: 30, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 40)
+        nameOfTheRoute.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = mapView.anchor(nameOfTheRoute.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 200)
 

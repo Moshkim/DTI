@@ -15,6 +15,10 @@ import SwiftChart
 
 class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrollViewDelegate, ChartDelegate{
 
+    
+    //Timer for the map maximize and minimize
+    let timer = Timer()
+    
     // Draw The Route on the Map
     fileprivate let path = GMSMutablePath()
     // Polyline segment colored lines
@@ -264,10 +268,37 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         }
         xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
         
-        for i in 0...xMilesLabelLength {
-            elevationXLabels.append(Float(i))
+        
+        if xMilesLabelLength <= 10{
+            for i in 0...xMilesLabelLength {
+                elevationXLabels.append(Float(i))
+            }
+        } else if xMilesLabelLength > 10 && xMilesLabelLength <= 20 {
+            for i in stride(from: 0, to: xMilesLabelLength, by: 3){
+                elevationXLabels.append(Float(i))
+            }
+            
+        } else if xMilesLabelLength > 20 && xMilesLabelLength <= 30 {
+            for i in stride(from: 0, to: xMilesLabelLength, by: 5){
+                elevationXLabels.append(Float(i))
+            }
+            
+        } else if xMilesLabelLength > 30 && xMilesLabelLength <= 40{
+            for i in stride(from: 0, to: xMilesLabelLength, by: 7){
+                elevationXLabels.append(Float(i))
+            }
+            
+        } else if xMilesLabelLength > 40 {
+            for i in stride(from: 0, to: xMilesLabelLength, by: 10){
+                elevationXLabels.append(Float(i))
+            }
         }
         
+        
+        
+        
+        
+        /*
         if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
             elevationChart.labelFont = UIFont.systemFont(ofSize: 10)
         } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
@@ -275,7 +306,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         } else if xMilesLabelLength > 20 {
             elevationChart.labelFont = UIFont.systemFont(ofSize: 6)
         }
-        
+        */
         
         
         let series = ChartSeries(data: seriesData)
@@ -297,7 +328,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         var seriesData:[(x: Float, y: Float)] = []
         var cumulativeDistance = 0.0
-        var xMilesLabelLength: Int = 0
+        //var xMilesLabelLength: Int = 0
         
     
         let locationPoints = ride?.locations?.array as! [Locations]
@@ -337,13 +368,13 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         }
         
         
-        xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
-        
+        //xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
+        /*
         for i in 0...xMilesLabelLength {
             speedXLabels.append(Float(i))
         }
-        
-        
+        */
+        /*
         if xMilesLabelLength > 10 && xMilesLabelLength <= 15{
             speedChart.labelFont = UIFont.systemFont(ofSize: 10)
         } else if xMilesLabelLength > 15 && xMilesLabelLength <= 20 {
@@ -351,7 +382,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         } else if xMilesLabelLength > 20 {
             speedChart.labelFont = UIFont.systemFont(ofSize: 6)
         }
-        
+        */
         let series = ChartSeries(data: seriesData)
         series.area = true
         series.color = UIColor(red:0.91, green:0.71, blue:0.70, alpha:1.00)
@@ -373,7 +404,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         var seriesData:[(x: Float, y: Float)] = []
         var cumulativeDistance = 0.0
-        var xMilesLabelLength: Int = 0
+        //var xMilesLabelLength: Int = 0
         
         let locationPoints = ride?.locations?.array as! [Locations]
     
@@ -423,7 +454,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             }
         }
         
-        
+        /*
         xMilesLabelLength = Int(((cumulativeDistance/1000.0)/1.61))
         
         
@@ -440,11 +471,12 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         } else if xMilesLabelLength > 20 {
             heartRateChart.labelFont = UIFont.systemFont(ofSize: 6)
         }
+        */
         
         let series = ChartSeries(data: seriesData)
         series.area = true
         series.color = UIColor.DTIRed()
-        heartRateChart.xLabels = heartRateXLabels
+        heartRateChart.xLabels = elevationXLabels
         heartRateChart.xLabelsFormatter = { String(Int(round($1))) }
         heartRateChart.add(series)
 
@@ -481,7 +513,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     
     var ride: Ride? {
         didSet{
-            navigationItem.title = ride?.name
+            nameOfTheRoute.text = ride?.name
             self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]
             let roundDistance = Double((ride?.distance)!).rounded(toPlaces: 2)
             
@@ -503,13 +535,45 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             heartRateLabel.text = "Avg ❤️ Rate: \(heartRate) bpm"
             addressLabel.text = "Region: \(address)"
             
-            DrawPath()
+            //DrawPath()
             
         }
     }
+
     
+    lazy var nameOfTheRoute: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.backgroundColor = UIColor.clear
+        label.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(userTappedLabel))
+        label.addGestureRecognizer(tapGesture)
+        
+        return label
+    }()
     
-    
+    @objc func userTappedLabel(){
+        let alertViewController = UIAlertController(title: "Rename Route", message: "", preferredStyle: .alert)
+        let saveNameAction = UIAlertAction(title: "Save", style: .default) {
+            _ in
+            
+            let nameTextField = alertViewController.textFields![0] as UITextField
+            self.nameOfTheRoute.text = nameTextField.text
+            
+            self.ride?.name = nameTextField.text
+            CoreDataStack.saveContext()
+        }
+        
+        alertViewController.addTextField { (textField: UITextField!) in
+            textField.placeholder = "Enter The Name"
+        }
+        
+        alertViewController.addAction(saveNameAction)
+        self.present(alertViewController, animated: true, completion: nil)
+        
+    }
     
     lazy var graphView: ScrollableGraphView = {
         var view = ScrollableGraphView(frame: CGRect(x: 0, y: 0, width: 100, height: 150))
@@ -519,8 +583,8 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     }()
     
     
-    let mapView: GMSMapView = {
-        let view = GMSMapView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    lazy var mapView: GMSMapView = {
+        let view = GMSMapView(frame: CGRect(x: 10, y: 80, width: self.view.frame.width-20, height: 250))
         view.mapType = .normal
         view.layer.cornerRadius = 5
         view.setMinZoom(5, maxZoom: 18)
@@ -528,6 +592,39 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         return view
     }()
     
+    lazy var maximizeMapButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: self.mapView.frame.width-35, y: 5, width: 30, height: 30))
+        button.setTitle("+", for: .normal)
+        button.setTitleColor(UIColor.black, for: .normal)
+        button.backgroundColor = UIColor.clear
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.borderWidth = 2
+        button.tag = 0
+        button.addTarget(self, action: #selector(maximiseMap), for: .touchUpInside)
+        return button
+    }()
+    @objc func maximiseMap(sender: UIButton) {
+        
+        if sender.tag == 0 {
+            sender.tag = 1
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.mapView.frame = CGRect(x: 0, y: 70, width: self.view.frame.width, height: self.view.frame.height-50)
+                
+                self.maximizeMapButton.setTitle("X", for: .normal)
+                self.maximizeMapButton.frame = CGRect(x: self.mapView.frame.width-35, y: 5, width: 30, height: 30)
+            }, completion: nil)
+        } else {
+            sender.tag = 0
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.mapView.frame = CGRect(x: 10, y: 80, width: self.view.frame.width-20, height: 250)
+                self.maximizeMapButton.setTitle("+", for: .normal)
+                self.maximizeMapButton.frame = CGRect(x: self.mapView.frame.width-35, y: 5, width: 30, height: 30)
+            }, completion: nil)
+        }
+        
+        
+    }
 
     
     lazy var backButton: UIButton = {
@@ -542,6 +639,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     
     
     @objc func goBackToMain() {
+        
         _ = navigationController?.popToRootViewController(animated: true)
     }
     
@@ -779,11 +877,11 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     // FIXIT - I need to fix it!
     func moveToRefreshedHistory() {
         //let vc = HistoryViewController()
-        //navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
         //self.performSegue(withIdentifier: "backToHistoryViewSegue", sender: self)
         //navigationController?.pushViewController(vc, animated: true)
         //navigationController?.popToRootViewController(animated: true)
-        self.dismiss(animated: true, completion: nil)
+        //self.dismiss(animated: true, completion: nil)
     }
     
 
@@ -839,7 +937,10 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             drawColoredSegments(speed: eachSpeed)
         }
         
-        let update = GMSCameraUpdate.fit(bounds, with: UIEdgeInsets.zero)
+        
+        
+        let update = GMSCameraUpdate.fit(bounds, withPadding: 40)
+            //GMSCameraUpdate.fit(bounds, with: UIEdgeInsets.zero)
 
         mapView.animate(with: update)
         
@@ -848,6 +949,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         polyline.geodesic = true
         polyline.spans = arrayOfSegementColor
         polyline.map = self.mapView
+        
         
     }
     /*
@@ -1014,13 +1116,17 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         elevationChart.setNeedsDisplay()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DrawPath()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black
         
-        navigationController?.navigationBar.barTintColor = UIColor.black
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
+        navigationItem.titleView = nameOfTheRoute
+        
         
         let item = UIBarButtonItem(customView: deleteButton)
         let item1 = UIBarButtonItem(customView: shareButton)
@@ -1031,7 +1137,13 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         navigationItem.leftBarButtonItem = backButton
         
         
+        
         view.addSubview(mapView)
+        
+        
+        mapView.addSubview(maximizeMapButton)
+        
+        //_ = maximizeMapButton.anchor(mapView.topAnchor, left: nil, bottom: nil, right: mapView.rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 5, widthConstant: 30, heightConstant: 30)
         
         // Charts of Elevations, Speed, Heart Rate
         view.addSubview(scrollView)
@@ -1094,6 +1206,9 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         
         
+
+        
+        
         // Date
         view.addSubview(dateLabel)
         
@@ -1124,8 +1239,8 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         view.addSubview(addressLabel)
         
         
-        _ = mapView.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 80, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 250)
         
+        //_ = mapView.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 80, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 250)
         
         _ = dateLabel.anchor(scrollViewPagingControl.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
         dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
