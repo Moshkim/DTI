@@ -21,3 +21,6 @@ class ResizingImage: UIView {
         return newImage!
     }
 }
+
+
+

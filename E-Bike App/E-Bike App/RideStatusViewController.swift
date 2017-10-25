@@ -18,6 +18,7 @@ import MapKit
 import LocalAuthentication
 import CoreBluetooth
 import FirebaseAuth
+import UserNotifications
 
 
 
@@ -220,6 +221,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     var totalMovingTime: Int?
     
     
+    // Pause Button View
+    //****************************************************************************************************************************************************************
+    var isPauseMenuExpanded = false
+    //****************************************************************************************************************************************************************
     
     
     
@@ -1868,7 +1873,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
                 
                     // Look for the address
-                    reverseGeocodeCoordinate(coordinate: location.coordinate)
+                    //reverseGeocodeCoordinate(coordinate: location.coordinate)
                 
                     // whenever location changes in which every 3 meters then we pick up the relative altitude and air pressure around device
                     elevationDataArray.append(trackingElevationData)
@@ -2268,6 +2273,10 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         mapButton.setImage(UIImage(named:"mapGlow"), for: .normal)
         rideStatusButton.setImage(UIImage(named:"ridestatus"), for: .normal)
         
+        UIView.animate(withDuration: 0.3, animations: {
+            self.pauseMenuDarkView.backgroundColor = UIColor.black.withAlphaComponent(0.9)
+        })
+        
     }
     
     let rideStatusButtonContainer: UIView = {
@@ -2307,25 +2316,179 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         mapButton.setImage(UIImage(named:"map"), for: .normal)
         rideStatusButton.setImage(UIImage(named:"ridestatusGlow"), for: .normal)
         
+        UIView.animate(withDuration: 0.3, animations: {
+            self.pauseMenuDarkView.backgroundColor = UIColor.black.withAlphaComponent(1)
+        })
+        
         
     }
+
     
-    let startButtonContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.clear
-        
+    var buttonTimer = Timer()
+    
+    lazy var pauseMenuDarkView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 250, height: 250))
+        view.center.x = self.view.frame.width/2
+        view.center.y = self.view.frame.height-25
+        view.layer.cornerRadius = view.frame.width/2
+        view.backgroundColor = UIColor.black
+        view.alpha = 0.9
+        view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        //view.center = self.navItemBarView.center
         return view
     }()
     
+    lazy var instagramCameraButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        //button.transform = CGAffineTransform(translationX: 0, y: 10)
+        button.setImage(UIImage(named: "instagramCamera"), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.backgroundColor = UIColor.black
+        button.addTarget(self, action: #selector(openUpCustomCamera), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func openUpCustomCamera() {
+        print("Clicked Clicked")
+        
+        
+        self.performSegue(withIdentifier: .camera, sender: nil)
+    }
+    
+    lazy var pauseButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        button.transform = CGAffineTransform(translationX: 0, y: 10)
+        button.setImage(UIImage(named: "pauseButton"), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.backgroundColor = UIColor.black
+        button.tag = 0
+        button.addTarget(self, action: #selector(pause), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func pause(sender: UIButton) {
+        //The pause should be occured here!!!!!
+        if sender.tag == 0 {
+            sender.tag = 1
+            self.pauseButton.backgroundColor = UIColor.white
+            self.isPaused = true
+            self.locationManager.stopUpdatingLocation()
+            self.locationManager.stopUpdatingHeading()
+        }
+        
+    }
+    
+    
+    lazy var saveButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        button.transform = CGAffineTransform(translationX: 0, y: 10)
+        button.setImage(UIImage(named: "saveButton"), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.backgroundColor = UIColor.black
+        button.addTarget(self, action: #selector(save), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func save(sender: UIButton) {
+        
+        sender.backgroundColor = UIColor.white
+        buttonTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
+            _ in
+            sender.backgroundColor = UIColor.black
+        })
+        
+        if locationList.count > 1 {
+            // Stop storing the heart rate data to the array
+            self.heartRateTag = 2
+            //sender.setTitleColor(UIColor.white, for: .normal)
+            startButton.setImage(UIImage(named: "startButton"), for: .normal)
+            startButton.tag = 1
+            
+            UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.addressLabel.frame = CGRect(x: -(self.windowSize?.frame.width)!, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
+                
+            }, completion: nil)
+            
+            
+            self.saveAsItIsRoute()
+
+        } else {
+            let alertController = UIAlertController(title: "Go take some ride!", message: "We need to have at least few location points in order to analyze your data", preferredStyle: .alert)
+    
+            let cancel = UIAlertAction(title: "Okay", style: .cancel)
+    
+            alertController.addAction(cancel)
+            self.present(alertController, animated: true, completion: nil)
+    
+        }
+    }
+    
+    lazy var resumeButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        button.transform = CGAffineTransform(translationX: 0, y: 10)
+        button.setImage(UIImage(named: "resumeButton"), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.backgroundColor = UIColor.black
+        button.tag = 0
+        button.addTarget(self, action: #selector(resume), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    
+    @objc func resume(sender: UIButton) {
+        
+        if pauseButton.tag == 1 {
+            pauseButton.tag = 0
+            pauseButton.backgroundColor = UIColor.black
+            if sender.tag == 0 {
+                sender.tag = 1
+                sender.backgroundColor = UIColor.white
+                
+                buttonTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
+                    _ in
+                    sender.backgroundColor = UIColor.black
+                    sender.tag = 0
+                })
+                
+                self.locationManager.startUpdatingLocation()
+                self.locationManager.startUpdatingHeading()
+                self.isPaused = false
+                
+            }
+        } else {
+            sender.backgroundColor = UIColor.white
+            buttonTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
+                _ in
+                sender.backgroundColor = UIColor.black
+            })
+        }
+        
+        
+        
+    }
+    
     lazy var startButton: UIButton = {
         
-        let button = UIButtonY(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         button.setImage(UIImage(named: "startButton"), for: .normal)
         button.contentMode = .scaleAspectFit
         //button.setTitle("Start", for: .normal)
-        button.cornerRadius = button.frame.width/2
-        button.borderWidth = 0.5
-        button.borderColor = UIColor.black
+        button.layer.cornerRadius = button.frame.width/2
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.black.cgColor
         button.backgroundColor = UIColor.black
         //button.tintColor = UIColor.white
         //button.titleLabel?.textColor = UIColor.white
@@ -2333,7 +2496,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         //button.shadowColor = UIColor.DTIRed()
         //button.shadowOffset = CGSize(width: 1, height: -1)
         button.tag = 1
-        
         button.addTarget(self, action: #selector(startAndStop), for: .touchUpInside)
         
         return button
@@ -2446,8 +2608,48 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
                 
             } else if (sender.tag == 2){
                 
+                self.instagramCameraButton.transform = CGAffineTransform(translationX: 5, y: -10)
+                self.pauseButton.transform = CGAffineTransform(translationX: -5, y: -10)
+                self.resumeButton.transform = CGAffineTransform(translationX: 10, y: -10)
+                self.saveButton.transform = CGAffineTransform(translationX: -10, y: -10)
                 
-                alertView(sender: sender)
+                if isPauseMenuExpanded == false {
+                    isPauseMenuExpanded = true
+                    
+                    
+                    
+                    UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                        self.pauseMenuDarkView.transform = .identity
+                        self.pauseMenuDarkView.transform = CGAffineTransform(translationX: 0, y: -25)
+                        self.addressLabel.frame = CGRect(x: -(self.windowSize?.frame.width)!, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
+                    }, completion: nil)
+                    
+                    // Each Pause Menu button will animate upward and downward
+                    UIView.animate(withDuration: 1, delay: 0.2, usingSpringWithDamping: 0.3, initialSpringVelocity: 0, options: .curveEaseOut, animations: {
+                        self.instagramCameraButton.transform = .identity
+                        self.pauseButton.transform = .identity
+                        self.resumeButton.transform = .identity
+                        self.saveButton.transform = .identity
+                    }, completion: nil)
+                    
+                } else {
+                    isPauseMenuExpanded = false
+                    
+                    
+                    // Pause Menu View will animate
+                    UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                        self.pauseMenuDarkView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+                        self.addressLabel.frame = CGRect(x: 0, y: self.mainFirstFrameView.frame.height-50, width: self.view.frame.width, height: 50)
+                    }, completion: nil)
+                    
+                    
+                    
+                    
+                }
+                
+                
+                
+                //alertView(sender: sender)
                 
             }
             
@@ -2710,7 +2912,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         //
         if address.count > 0 {
-            newRide.address = address[2]
+            newRide.address = address[1]
         } else {
             newRide.address = "No address is registered"
         }
@@ -2999,6 +3201,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         view.addSubview(weatherIcon)
         
         
+        
+        
+        
         // The entire scroll view
         view.addSubview(entireScrollView)
         
@@ -3065,21 +3270,56 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         
+        
+        view.addSubview(pauseMenuDarkView)
+        
+        
+        pauseMenuDarkView.addSubview(instagramCameraButton)
+        
+        // Instagram Camera Button
+        _ = instagramCameraButton.anchor(pauseMenuDarkView.topAnchor, left: pauseMenuDarkView.centerXAnchor, bottom: nil, right: nil, topConstant: 20, leftConstant: 10, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+        
+        
+        
+        // Pause Button
+        pauseMenuDarkView.addSubview(pauseButton)
+        
+        _ = pauseButton.anchor(pauseMenuDarkView.topAnchor, left: nil, bottom: nil, right: pauseMenuDarkView.centerXAnchor, topConstant: 20, leftConstant: 0, bottomConstant: 0, rightConstant: 10, widthConstant: 50, heightConstant: 50)
+        
+        
+        
+        // Resume Button
+        pauseMenuDarkView.addSubview(resumeButton)
+        _ = resumeButton.anchor(instagramCameraButton.bottomAnchor, left: nil, bottom: nil, right: pauseMenuDarkView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 20, widthConstant: 50, heightConstant: 50)
+        
+        
+        // Save Button
+        pauseMenuDarkView.addSubview(saveButton)
+        _ = saveButton.anchor(pauseButton.bottomAnchor, left: pauseMenuDarkView.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 20, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 50)
+
+        
         view.addSubview(navItemBarView)
+        
+        
+       
+        navItemBarView.addSubview(startButton)
         
         navItemBarView.addSubview(mapButtonContainer)
         
         mapButtonContainer.addSubview(mapButton)
         
-        
-        //navItemBarView.addSubview(startButtonContainer)
-        
-        navItemBarView.addSubview(startButton)
-        
-        
         navItemBarView.addSubview(rideStatusButtonContainer)
         
         rideStatusButtonContainer.addSubview(rideStatusButton)
+        
+        
+        
+        
+
+        
+        
+        
+       
         
         // BOTTOM
         //view.addSubview(toolBox)
@@ -3179,6 +3419,9 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         
+        
+        
+        
         // TRIGER BUTTON TO START JOURNEY
         
         
@@ -3199,6 +3442,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         // ALL THE LABELS AND MAP IN THE SCROLL VIEW
         loadFeatures()
         
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -3214,7 +3458,16 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         let camera = GMSCameraPosition(target: target, zoom: 12, bearing: 0, viewingAngle: 0)
         mapView.animate(to: camera)
+        
+        
+        
+        // Set the notification
+        (UIApplication.shared.delegate as? AppDelegate)?.scheduleNotification()
+        //let content = UNMutableNotificationContent()
+        //content.badge = 0 as NSNumber
+
     }
+
     
     
     override func viewDidAppear(_ animated: Bool) {
@@ -3980,6 +4233,7 @@ extension RiderStatusViewController: SegueHandlerType {
         case termsAndPrivacy = "MenuToTermsViewSegue"
         case bikeTypes = "MenuToBikeTypesViewSegue"
         case myStats = "MenuToMyStatsViewSegue"
+        case camera = "cameraViewSegue"
         
     }
     
@@ -4004,6 +4258,9 @@ extension RiderStatusViewController: SegueHandlerType {
             
         case .myStats:
             _ = segue.destination as! MyStatsViewController
+            
+        case .camera:
+            _ = segue.destination as! CameraViewController
             
         }
     }

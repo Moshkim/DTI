@@ -12,16 +12,36 @@ import GoogleMaps
 import GooglePlaces
 //import GoogleSignIn
 import Firebase
+import UserNotifications
+
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate{
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate{
 
     var window: UIWindow?
 
     let googleMapsApiKey = "AIzaSyAkxIRJ2cr4CkY8wz6iPLyfIxc01x4yuOA"
     //AIzaSyAumV9VTUkaW-hUOTpbPR0DzTEBThF23TQ
 
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        UIApplication.shared.registerForRemoteNotifications()
+        // User Notification Center
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound], completionHandler: { (authorized: Bool, error: Error?) in
+            if !authorized {
+                print("You should turn on the notification to motivate you to ride more and get G-Points more")
+            }
+            
+        })
+        // Define Actions
+        let goToAppAction = UNNotificationAction(identifier: "goToApp", title: "Tap Above to ride!", options: [])
+        let cancelAction = UNNotificationAction(identifier: "cancel", title: "Maybe next time!", options: [])
+        
+        let category = UNNotificationCategory(identifier: "rideMoreCategory", actions: [goToAppAction, cancelAction], intentIdentifiers: [], options: [])
+        
+        UNUserNotificationCenter.current().setNotificationCategories([category])
+        
         // Override point for customization after application launch.
         GMSServices.provideAPIKey(googleMapsApiKey)
         GMSPlacesClient.provideAPIKey(googleMapsApiKey)
@@ -67,6 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         
         
         
+        
         // "Key window" is the window that receives events fron the device
         self.window?.makeKeyAndVisible()
         
@@ -74,6 +95,51 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
     }
     
     
+    
+    func scheduleNotification() {
+        print("I did come here!")
+        UNUserNotificationCenter.current().delegate = self
+        
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Get some more G-Coins and get more healthy!"
+        content.body = "Just a reminder to ride more and have a reward for your ride!"
+        //content.badge = 1 as NSNumber
+        content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = "rideMoreCategory"
+        
+        print("get this far")
+        guard let path = Bundle.main.path(forResource: "app", ofType: "png") else { return }
+        print("did pass this line")
+        let url = URL(fileURLWithPath: path)
+        
+        do {
+            let attachment = try UNNotificationAttachment(identifier: "logo", url: url, options: nil)
+            content.attachments = [attachment]
+        } catch {
+            print("The attachment could not be loaded")
+        }
+        
+        let request = UNNotificationRequest(identifier: "burningBushNotification", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error:Error?) in
+            if let error = error{
+                print("There was an Error - \(error.localizedDescription)")
+            }
+        })
+    }
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if response.actionIdentifier == "goToApp" {
+            
+        } else {
+            
+        }
+        
+        scheduleNotification()
+        completionHandler()
+    }
     
     /*
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {

@@ -20,6 +20,10 @@
 		A6144FA61EDE242B00204D02 /* TileGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA51EDE242B00204D02 /* TileGridView.swift */; };
 		A6144FA81EDE243200204D02 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6144FA71EDE243200204D02 /* TileView.swift */; };
 		A61680601F1D60F000CE39D3 /* AnimateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */; };
+		A61F6FDC1F9AA1B500560A51 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A61F6FDB1F9AA1B500560A51 /* GoogleService-Info.plist */; };
+		A61F6FDE1F9EB23100560A51 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61F6FDD1F9EB23100560A51 /* CameraViewController.swift */; };
+		A61F6FE01F9EF2E200560A51 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61F6FDF1F9EF2E200560A51 /* PreviewViewController.swift */; };
+		A61F6FE21F9FDF5100560A51 /* PhotoArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61F6FE11F9FDF5100560A51 /* PhotoArray.swift */; };
 		A6201F981F439DFF001AD3F1 /* NearPlaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6201F971F439DFF001AD3F1 /* NearPlaces.swift */; };
 		A625DDDD1EC623B600DB521E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDC1EC623B600DB521E /* AppDelegate.swift */; };
 		A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A625DDDE1EC623B600DB521E /* MapViewController.swift */; };
@@ -28,6 +32,8 @@
 		A625DDEA1EC623B600DB521E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */; };
 		A629C8A01F269499002924DE /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C89E1F269499002924DE /* CoreDataStack.swift */; };
 		A629C8A21F269521002924DE /* FormatDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629C8A11F269521002924DE /* FormatDisplay.swift */; };
+		A62E9D911F9A7FC100EB5259 /* app.png in Resources */ = {isa = PBXBuildFile; fileRef = A62E9D901F9A7FC100EB5259 /* app.png */; };
+		A62E9D931F9A840400EB5259 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A62E9D921F9A83E900EB5259 /* UserNotifications.framework */; };
 		A630165E1F3A6972006C0B7F /* NetworkProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */; };
 		A63016601F3A741E006C0B7F /* ForecastService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A630165F1F3A741E006C0B7F /* ForecastService.swift */; };
 		A63016621F3A7831006C0B7F /* CurrentWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63016611F3A7831006C0B7F /* CurrentWeather.swift */; };
@@ -59,7 +65,6 @@
 		A667DF971F573580000FDC33 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A667DF961F573580000FDC33 /* AdSupport.framework */; };
 		A667DF991F57362A000FDC33 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A667DF981F57362A000FDC33 /* iAd.framework */; };
 		A667DF9B1F57446A000FDC33 /* EmailVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667DF9A1F57446A000FDC33 /* EmailVerification.swift */; };
-		A67553E31F8C4E3A00F4B7CC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A67553E21F8C4E0C00F4B7CC /* GoogleService-Info.plist */; };
 		A68447EA1F02C8A400B90B79 /* UIViewXRadialGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D01F02C8A400B90B79 /* UIViewXRadialGradient.swift */; };
 		A68447EB1F02C8A400B90B79 /* UITextFieldX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D11F02C8A400B90B79 /* UITextFieldX.swift */; };
 		A68447EC1F02C8A400B90B79 /* UIButtonX.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68447D21F02C8A400B90B79 /* UIButtonX.swift */; };
@@ -123,6 +128,10 @@
 		A616805F1F1D60F000CE39D3 /* AnimateButtonController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnimateButtonController.swift; path = "E-Bike App/AnimateButtonController.swift"; sourceTree = SOURCE_ROOT; };
 		A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "E-Bike App.entitlements"; sourceTree = "<group>"; };
 		A61680641F1EA82D00CE39D3 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		A61F6FDB1F9AA1B500560A51 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../../Volumes/MoMo/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A61F6FDD1F9EB23100560A51 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		A61F6FDF1F9EF2E200560A51 /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
+		A61F6FE11F9FDF5100560A51 /* PhotoArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoArray.swift; sourceTree = "<group>"; };
 		A6201F971F439DFF001AD3F1 /* NearPlaces.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NearPlaces.swift; path = "E-Bike App/NearPlaces.swift"; sourceTree = SOURCE_ROOT; };
 		A625DDD91EC623B600DB521E /* E-Bike App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E-Bike App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A625DDDC1EC623B600DB521E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -133,6 +142,8 @@
 		A625DDEB1EC623B600DB521E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A629C89E1F269499002924DE /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		A629C8A11F269521002924DE /* FormatDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormatDisplay.swift; sourceTree = "<group>"; };
+		A62E9D901F9A7FC100EB5259 /* app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = app.png; path = icons/app.png; sourceTree = SOURCE_ROOT; };
+		A62E9D921F9A83E900EB5259 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		A630165D1F3A6972006C0B7F /* NetworkProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkProcessor.swift; path = "E-Bike App/NetworkProcessor.swift"; sourceTree = SOURCE_ROOT; };
 		A630165F1F3A741E006C0B7F /* ForecastService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForecastService.swift; path = "E-Bike App/ForecastService.swift"; sourceTree = SOURCE_ROOT; };
 		A63016611F3A7831006C0B7F /* CurrentWeather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CurrentWeather.swift; path = "E-Bike App/CurrentWeather.swift"; sourceTree = SOURCE_ROOT; };
@@ -163,7 +174,6 @@
 		A667DF961F573580000FDC33 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		A667DF981F57362A000FDC33 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		A667DF9A1F57446A000FDC33 /* EmailVerification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailVerification.swift; sourceTree = "<group>"; };
-		A67553E21F8C4E0C00F4B7CC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A67553E41F8EA67E00F4B7CC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A68447D01F02C8A400B90B79 /* UIViewXRadialGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewXRadialGradient.swift; sourceTree = "<group>"; };
 		A68447D11F02C8A400B90B79 /* UITextFieldX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldX.swift; sourceTree = "<group>"; };
@@ -217,6 +227,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A62E9D931F9A840400EB5259 /* UserNotifications.framework in Frameworks */,
 				A60EBC671F5F307D004AF307 /* LocalAuthentication.framework in Frameworks */,
 				A667DF991F57362A000FDC33 /* iAd.framework in Frameworks */,
 				A667DF971F573580000FDC33 /* AdSupport.framework in Frameworks */,
@@ -239,6 +250,7 @@
 		54596950254F28FE3BCDFFDB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A62E9D921F9A83E900EB5259 /* UserNotifications.framework */,
 				A60EBC661F5F307D004AF307 /* LocalAuthentication.framework */,
 				A667DF981F57362A000FDC33 /* iAd.framework */,
 				A667DF961F573580000FDC33 /* AdSupport.framework */,
@@ -294,11 +306,12 @@
 		A625DDDB1EC623B600DB521E /* E-Bike App */ = {
 			isa = PBXGroup;
 			children = (
+				A62E9D901F9A7FC100EB5259 /* app.png */,
 				A625DDE01EC623B600DB521E /* Main.storyboard */,
 				A625DDE81EC623B600DB521E /* LaunchScreen.storyboard */,
 				A625DDE31EC623B600DB521E /* E_Bike_App.xcdatamodeld */,
 				A67553E41F8EA67E00F4B7CC /* Assets.xcassets */,
-				A67553E21F8C4E0C00F4B7CC /* GoogleService-Info.plist */,
+				A61F6FDB1F9AA1B500560A51 /* GoogleService-Info.plist */,
 				A625DDEB1EC623B600DB521E /* Info.plist */,
 				A61680611F1EA81400CE39D3 /* E-Bike App.entitlements */,
 				A625DDDC1EC623B600DB521E /* AppDelegate.swift */,
@@ -380,6 +393,7 @@
 				A63417E61F561EE600F1CF99 /* DataServiceFirebase.swift */,
 				A6FC1B411F59FB2A00B08DC3 /* ProfilePicture.swift */,
 				A68A9A1C1F634E9200D1099D /* Graph.swift */,
+				A61F6FE11F9FDF5100560A51 /* PhotoArray.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -539,6 +553,8 @@
 			isa = PBXGroup;
 			children = (
 				A661BF131F1002410029A905 /* RideStatusViewController.swift */,
+				A61F6FDD1F9EB23100560A51 /* CameraViewController.swift */,
+				A61F6FDF1F9EF2E200560A51 /* PreviewViewController.swift */,
 			);
 			name = "Main Controller";
 			sourceTree = "<group>";
@@ -588,7 +604,7 @@
 				TargetAttributes = {
 					A625DDD81EC623B600DB521E = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = JB4K9XSBZ5;
+						DevelopmentTeam = PSA75TP92H;
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -599,6 +615,9 @@
 								enabled = 0;
 							};
 							com.apple.Maps.iOS = {
+								enabled = 0;
+							};
+							com.apple.Push = {
 								enabled = 0;
 							};
 						};
@@ -633,7 +652,8 @@
 				A625DDE21EC623B600DB521E /* Main.storyboard in Resources */,
 				A6F1C4181F1FD29F000B03AE /* style.json in Resources */,
 				A64135C01F8EADFB00023757 /* Assets.xcassets in Resources */,
-				A67553E31F8C4E3A00F4B7CC /* GoogleService-Info.plist in Resources */,
+				A62E9D911F9A7FC100EB5259 /* app.png in Resources */,
+				A61F6FDC1F9AA1B500560A51 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -712,6 +732,7 @@
 				A6144FA21EDDFC1800204D02 /* RootContainerViewController.swift in Sources */,
 				A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */,
 				A60EBC651F5F125D004AF307 /* MyStatsViewController.swift in Sources */,
+				A61F6FE21F9FDF5100560A51 /* PhotoArray.swift in Sources */,
 				A6144F981EDDEF6200204D02 /* Utils.swift in Sources */,
 				A68447EA1F02C8A400B90B79 /* UIViewXRadialGradient.swift in Sources */,
 				A6646FEE1ED360FC00B6FF30 /* enum.swift in Sources */,
@@ -727,6 +748,7 @@
 				A6301CFC1EEF57170005EA12 /* PageCell.swift in Sources */,
 				A6431BDF1F0314A300466972 /* EbikeSettingViewController.swift in Sources */,
 				A6FC1B3E1F59D7BD00B08DC3 /* SettingMenuSlide.swift in Sources */,
+				A61F6FE01F9EF2E200560A51 /* PreviewViewController.swift in Sources */,
 				A6D7D8001F7EF45700AA8A0D /* MapAndStatusMenuBar.swift in Sources */,
 				A63CC2301EFA121D00F2B7DC /* SignupViewController.swift in Sources */,
 				A64966471F3583240039D768 /* HistoryDetailViewController.swift in Sources */,
@@ -741,6 +763,7 @@
 				A6BD1C6D1EF842A100E5D8EE /* SpinerLayer.swift in Sources */,
 				A6301CFA1EEF4A2E0005EA12 /* LoginViewController.swift in Sources */,
 				A63417E71F561EE600F1CF99 /* DataServiceFirebase.swift in Sources */,
+				A61F6FDE1F9EB23100560A51 /* CameraViewController.swift in Sources */,
 				A68447F51F02C8A400B90B79 /* FloatingActionButton.swift in Sources */,
 				A6301CFE1EF05A190005EA12 /* Page.swift in Sources */,
 				A68573F21EF084FD005C96CC /* LoginPage.swift in Sources */,
@@ -916,11 +939,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = JB4K9XSBZ5;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PSA75TP92H;
 				INFOPLIST_FILE = "E-Bike App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings.burningbush;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "E-Bike App/E-Bike App-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
@@ -936,11 +961,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = JB4K9XSBZ5;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PSA75TP92H;
 				INFOPLIST_FILE = "E-Bike App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dtiholdings.burningbush;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "E-Bike App/E-Bike App-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;

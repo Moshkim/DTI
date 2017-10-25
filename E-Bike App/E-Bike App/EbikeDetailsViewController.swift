@@ -454,6 +454,23 @@ class EbikeDetailsViewController: UIViewController, GMSMapViewDelegate, CLLocati
             bounds = bounds.includingPath(path)
             
             
+            /*
+            //car speed
+            if speed < 10 && speed >= 0 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidRed))
+            } else if speed >= 10 && speed < 20 {
+                
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.redToYellow))
+            } else if speed >= 20 && speed < 30 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidYellow))
+            } else if speed >= 30 && speed < 40 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.yellowToGreen))
+            } else if speed >= 40 {
+                arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidGreen))
+            }
+            */
+            //bike speed
+            
             if eachSpeed < 5 && eachSpeed >= 0 {
                 arrayOfSegementColor.append(GMSStyleSpan(style: MulticolorPolyline.solidRed))
             } else if eachSpeed >= 5 && eachSpeed < 10 {

@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allows user to access photo library</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -45,16 +43,23 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allows us to save awesome photo to your photo library</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Allow Location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Hello! Can i get your location for some good things :)</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allows user to access photo library</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allows us to access your camera to take some awesome pictures</string>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>location</string>
-		<string>external-accessory</string>
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+		<string>fetch</string>
+		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

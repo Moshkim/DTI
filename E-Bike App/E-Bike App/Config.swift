@@ -16,6 +16,10 @@ struct Window {
 
 }
 
+struct appDel {
+    static let appDelegate = UIApplication.shared.delegate as? AppDelegate
+}
+
 struct SettingConfig {
     static var WeatherEnable            = true
 }
