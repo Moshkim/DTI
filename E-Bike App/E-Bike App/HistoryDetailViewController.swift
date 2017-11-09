@@ -13,7 +13,10 @@ import GoogleMaps
 import GooglePlaces
 import SwiftChart
 
-class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrollViewDelegate, ChartDelegate{
+
+class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrollViewDelegate, ChartDelegate, iCarouselDelegate, iCarouselDataSource{
+    
+    
 
     
     //Timer for the map maximize and minimize
@@ -23,6 +26,12 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     fileprivate let path = GMSMutablePath()
     // Polyline segment colored lines
     var arrayOfSegementColor = [GMSStyleSpan]()
+    
+    //@IBOutlet weak var carouselView: iCarousel!
+    
+    // Index of Photo
+    var arrayOfIndexPhoto = [String]()
+    
     
     // Map Touch To Maximum
     var mapTouched = true
@@ -586,9 +595,11 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     lazy var mapView: GMSMapView = {
         let view = GMSMapView(frame: CGRect(x: 10, y: 80, width: self.view.frame.width-20, height: 250))
         view.mapType = .normal
+        view.isUserInteractionEnabled = true
         view.layer.cornerRadius = 5
         view.setMinZoom(5, maxZoom: 18)
         view.autoresizingMask = [.flexibleWidth,.flexibleHeight]
+        view.delegate = self
         return view
     }()
     
@@ -601,10 +612,10 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         button.layer.borderColor = UIColor.black.cgColor
         button.layer.borderWidth = 2
         button.tag = 0
-        button.addTarget(self, action: #selector(maximiseMap), for: .touchUpInside)
+        button.addTarget(self, action: #selector(maximizeMap), for: .touchUpInside)
         return button
     }()
-    @objc func maximiseMap(sender: UIButton) {
+    @objc func maximizeMap(sender: UIButton) {
         
         if sender.tag == 0 {
             sender.tag = 1
@@ -859,6 +870,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         let deleteButton = UIAlertAction(title: "Delete", style: .default) {
             _ in
             self.clearData()
+            self.deleteRelatedPhotosWithRoute()
             self.moveToRefreshedHistory()
             
         }
@@ -884,8 +896,281 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         //self.dismiss(animated: true, completion: nil)
     }
     
-
     
+    func deleteRelatedPhotosWithRoute() {
+        
+        let fileMananer = FileManager.default
+        
+        //Get the URL for the users home directory
+        let documentsURL = fileMananer.urls(for: .documentDirectory, in: .userDomainMask).first!
+        
+        //Get the document URL as a string
+        let documentPath = documentsURL.path
+        
+        
+        
+        do {
+            // Look through array of files in documentDirectory
+            /*let files = try fileMananer.contentsOfDirectory(atPath: "\(documentPath)")
+            for file in files {
+                
+                
+            }*/
+            
+            //try fileMananer.removeItem(atPath: "\(documentPath)/\(file)")
+            
+            for i in 0..<arrayOfIndexPhoto.count {
+                print("\(arrayOfIndexPhoto[i]).jpeg")
+                try fileMananer.removeItem(atPath: "\(documentPath)/\(arrayOfIndexPhoto[i]).jpeg")
+                
+            }
+            
+            
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+    }
+    
+    
+    
+    lazy var carouselView: iCarousel = {
+        let view = iCarousel(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: self.view.frame.height))
+        view.delegate = self
+        view.dataSource = self
+        view.type = .timeMachine
+        view.scrollSpeed = 0.5
+        //view.isUserInteractionEnabled = true
+        //let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tappedBackground))
+        //view.addGestureRecognizer(tapGesture)
+        
+        let label = UILabel(frame: CGRect(x: 0, y: self.view.frame.height-70, width: self.view.frame.width, height: 50))
+        label.textAlignment = .center
+        label.text = "< Swipe >"
+        label.backgroundColor = UIColor.clear
+        label.textColor = UIColor.white
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        view.addSubview(label)
+        
+        return view
+    }()
+    
+    var eachIndexsOfPhotoLocation = [[Int16]]()
+    var images = [UIImage]()
+    var tempNumbers = [1,2,3,4,5]
+    var currentPosition = 0
+    var isThisFirstTime = true
+    
+    func numberOfItems(in carousel: iCarousel) -> Int {
+        if isThisFirstTime == false {
+            print(eachIndexsOfPhotoLocation[currentPosition].count)
+            print("*******************************************************************************************************************************************")
+            return eachIndexsOfPhotoLocation[currentPosition].count
+        } else {
+            return 1
+        }
+        
+    }
+    
+    func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
+        
+        let itemView = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+        itemView.backgroundColor = UIColor.cyan
+        
+        
+        print(isThisFirstTime)
+        print("***************************************************************************")
+        if isThisFirstTime == true {
+            itemView.backgroundColor = UIColor.black
+            
+            print("does it come here?")
+            
+            
+        } else {
+            print("it should not come here when we first time see the view")
+            print("***************************************************************************")
+            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
+            let url = URL(fileURLWithPath: path)
+            
+            for i in 0..<eachIndexsOfPhotoLocation[currentPosition].count{
+                let filePath = url.appendingPathComponent("\(eachIndexsOfPhotoLocation[currentPosition][i]).jpeg").path
+                print(filePath)
+                print("***************************************************************************")
+                if let photo = UIImage(contentsOfFile: filePath){
+                    images.append(photo)
+                }
+            }
+            //let tempView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+            itemView.center = carouselView.center
+            
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tappedBackground))
+            
+            itemView.addGestureRecognizer(tapGesture)
+            
+            let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+            imageView.contentMode = .scaleAspectFit
+            imageView.image = images[index]
+            itemView.addSubview(imageView)
+            
+            
+        }
+        
+        
+        return itemView
+    }
+    
+    func carousel(_ carousel: iCarousel, valueFor option: iCarouselOption, withDefault value: CGFloat) -> CGFloat {
+        if option == iCarouselOption.spacing {
+            return value * 1.2
+        }
+        return value
+    }
+    
+
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        print("the marker is tapped")
+        isThisFirstTime = false
+        if let indexs = marker.userData {
+            print(indexs)
+            currentPosition = indexs as! Int
+            
+            images.removeAll()
+            carouselView.reloadData()
+            
+            
+            UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.carouselView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+                self.carouselView.backgroundColor = UIColor.black.withAlphaComponent(0.9)
+                
+            }, completion: nil)
+            
+            
+        }
+        return false
+    }
+    
+    
+    @objc func tappedBackground() {
+        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.carouselView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: self.view.frame.height)
+
+        }, completion: nil)
+        
+    }
+    
+    
+    func DrawPhotoPin() {
+        print("goes in here")
+        guard let photoInfo = ride?.photos else { return }
+        print("goes in here")
+        let photoPoints = photoInfo.array as! [Photo]
+        
+        if photoPoints.count > 0 {
+            print("goes in here woohooo")
+            for i in 0..<photoPoints.count {
+                eachIndexsOfPhotoLocation.append([])
+                
+                print(eachIndexsOfPhotoLocation)
+                print("***************************************************************************")
+                print("***************************************************************************")
+                print("***************************************************************************")
+                guard let photoIndex = photoPoints[i].numberOfPhoto else { return }
+                //print("goes in here woohooo")
+                let indexPhoto = photoIndex.array as! [IndexForPhoto]
+                
+                print("***************************************************************************")
+                print("***************************************************************************")
+                print("***************************************************************************")
+                
+                print("indexPhoto: ", indexPhoto.count)
+                
+                print("***************************************************************************")
+                print("***************************************************************************")
+                print("***************************************************************************")
+                
+                
+                if indexPhoto.count > 0 {
+                    print("goes in here woohooo")
+                    for j in 0..<indexPhoto.count{
+                        
+                        
+                        if i <= photoPoints.count-2{
+                            let temp = (photoPoints[i+1].numberOfPhoto?.array as! [IndexForPhoto])[0].index
+                            for t in indexPhoto[j].index..<temp {
+                                eachIndexsOfPhotoLocation[i].append(t)
+                            }
+                        } else if i == photoPoints.count-1 {
+                            let temp = photoPoints[i].lastElementIndex
+                            for t in indexPhoto[j].index...temp{
+                                eachIndexsOfPhotoLocation[i].append(t)
+                            }
+                            
+                        }
+                        
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        print(eachIndexsOfPhotoLocation)
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        arrayOfIndexPhoto.append(String(describing: indexPhoto[j].index))
+                        
+                        if j == 0 {
+                            
+                            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
+                            let url = URL(fileURLWithPath: path)
+                            
+                            print(url.appendingPathComponent("\(String(describing: indexPhoto[j].index)).jpeg").path)
+                            
+                            let filePath = url.appendingPathComponent("\(String(describing: indexPhoto[j].index)).jpeg").path
+ 
+                            
+                            if FileManager.default.fileExists(atPath: filePath) {
+                                print("goes in here")
+                                //if var photoTaken = UIImage(contentsOfFile: filePath){
+                                    //photoTaken = photoTaken.resized(toWidth: 50)!
+                                    /*
+                                     let options : [NSObject:AnyObject] = [
+                                     kCGImageSourceCreateThumbnailWithTransform: true as AnyObject,
+                                     kCGImageSourceCreateThumbnailFromImageAlways: true as AnyObject,
+                                     kCGImageSourceThumbnailMaxPixelSize: 300 as AnyObject ]
+                                     
+                                     let source = CGImageSourceCreateWithURL(filePath as! CFURL, options as CFDictionary)
+                                     let thumbnails = UIImage(cgImage: source as! CGImage)
+                                     */
+                                    
+                                   // var photoData = Dictionary<String, Any>()
+                                    //photoData["index"] = indexPhoto[0].index
+                                    
+                                    //print(photoTaken)
+                                let photoPin = GMSMarker()
+                                photoPin.isTappable = true
+                                photoPin.userData = i
+                                
+                                photoPin.title = "\(String(describing: indexPhoto[j].index)).jpeg"
+                                let markerImage = UIImage(named:"photoPin")
+                                let markerView = UIImageView(image: markerImage)
+                                let position = CLLocationCoordinate2D(latitude: photoPoints[i].latitude, longitude: photoPoints[i].longitude)
+                                markerPinConfig(marker: photoPin, imageView: markerView, position: position)
+                                    
+                                //}
+                            }
+                        }
+                        
+                    }
+                }
+
+            }
+            
+        }
+        
+        
+        
+    }
+    
+    
+
     
     func DrawPath(){
         
@@ -1119,6 +1404,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         DrawPath()
+        DrawPhotoPin()
     }
     
     override func viewDidLoad() {
@@ -1205,7 +1491,6 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         
         
-        
 
         
         
@@ -1260,6 +1545,11 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         _ = gainElevationLabel.anchor(heartRateLabel.bottomAnchor, left: view.centerXAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 10, widthConstant: (view.frame.width/2)-20, heightConstant: 20)
         
         _ = addressLabel.anchor(maxElevationLabel.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 5, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: view.frame.width-20, heightConstant: 20)
+        
+        
+        
+        
+        view.addSubview(carouselView)
         
         initializedElevationChart()
         initializedSpeedChart()

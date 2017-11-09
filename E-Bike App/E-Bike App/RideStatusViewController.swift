@@ -483,112 +483,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return button
     }()
     
-/*
-    lazy var directionToDestButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        button.layer.cornerRadius = button.frame.width/2
-        button.layer.borderColor = UIColor.white.cgColor
-        button.layer.borderWidth = 1
-        button.contentMode = .scaleAspectFit
-        button.backgroundColor = UIColor.black
-        button.isHidden = true
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.tag = 0
-        
-        button.setImage(UIImage(named: "bike"), for: .normal)//?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.addTarget(self, action: #selector(directionToDest), for: .touchUpInside)
-        
-        return button
-    }()
-    
-    
-    
 
-    
-    
-    
-    // MARK: - Direction to Destination
-    @objc func directionToDest(sender: UIButton) {
-        
-        let lat = latDirection
-        let long = longDirection
-        let position = CLLocationCoordinate2DMake(lat, long)
-        
-        
-        if sender.tag == 0 {
-            sender.tag = 1
-            sender.setImage(UIImage(named: "direction"), for: .normal)
-            drawRouteBetweenTwoPoints(coordinate: position)
-        }
-        if sender.tag == 1 {
-            sender.tag = 0
-            
-            // TODO: We need to fix here!
-            //sender.setImage(UIImage(named: "coffeePlaces"), for: .normal)
-            
-            startButton.setTitleColor(UIColor.DTIRed(), for: .normal)
-            startButton.setTitle("Stop", for: .normal)
-            startButton.tag = 2
-            
-            
-            // clear the map first and just direction between start to destination point
-            
-            mapView.clear()
-            
-            // starting point
-            /******************************************************************************************************/
-            
-            let startPointMapPin = GMSMarker()
-            
-            let startMarkerImage = UIImage(named: "startPin")
-            //!.withRenderingMode(.alwaysTemplate)
-            
-            //creating a marker view
-            let startMarkerView = UIImageView(image: startMarkerImage)
-            
-            startPointMapPin.iconView = startMarkerView
-            
-            startPointMapPin.layer.cornerRadius = 25
-            startPointMapPin.position = (mapView.myLocation?.coordinate)!
-            startPointMapPin.title = "Start"
-            startPointMapPin.opacity = 1
-            startPointMapPin.infoWindowAnchor.y = 1
-            startPointMapPin.map = mapView
-            startPointMapPin.appearAnimation = GMSMarkerAnimation.pop
-            startPointMapPin.isTappable = true
-            
-            /******************************************************************************************************/
-            
-            
-            
-            // destination
-            /******************************************************************************************************/
-            let endPointMapPin = GMSMarker()
-            
-            
-            let endMarkerImage = UIImage(named: "endPin")
-            let endMarkerView = UIImageView(image: endMarkerImage)
-            
-            
-            endPointMapPin.iconView = endMarkerView
-            endPointMapPin.layer.cornerRadius = 25
-            endPointMapPin.position = markerTappedPosition
-            endPointMapPin.title = "end"
-            endPointMapPin.opacity = 1
-            endPointMapPin.infoWindowAnchor.y = 1
-            endPointMapPin.map = mapView
-            endPointMapPin.appearAnimation = GMSMarkerAnimation.pop
-            endPointMapPin.isTappable = true
-            
-            /******************************************************************************************************/
-            
-            let camera = GMSCameraPosition.camera(withTarget: (mapView.myLocation?.coordinate)!, zoom:15, bearing: (mapView.myLocation?.course)!, viewingAngle: 35)
-            self.mapView.animate(to: camera)
-            startEbike()
-        }
-        
-    }
-     */
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         latDirection = marker.position.latitude
@@ -2351,10 +2246,18 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         return button
     }()
     
+    var photoLocation = [CLLocationCoordinate2D()]
+    
     @objc func openUpCustomCamera() {
         print("Clicked Clicked")
         
+        if let position = self.mapView.myLocation?.coordinate {
+            photoLocation.append(position)
+        }
         
+        // FIXIT: - need to find a way out
+        //FilePathForPhoto.indexForPhotoOnEachRoute.removeAll()
+        FilePathForPhoto.indexForPhotoOnEachRoute.append([])
         self.performSegue(withIdentifier: .camera, sender: nil)
     }
     
@@ -2950,6 +2853,84 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             locationObject.heartRate = Int16(heartRateList[i])
             newRide.addToLocations(locationObject)
         }
+        
+        //FilePathForPhoto.indexForPhotoOnEachRoute.removeFirst()
+        photoLocation.removeFirst()
+        print(FilePathForPhoto.indexForPhotoOnEachRoute)
+        print("***************************************************************************")
+        print("***************************************************************************")
+        print("***************************************************************************")
+        print("***************************************************************************")
+        print(photoLocation.count)
+        print(photoLocation)
+        print("***************************************************************************")
+        print("***************************************************************************")
+        print("***************************************************************************")
+        
+        
+        
+        if photoLocation.count > 0 {
+            for i in 0..<photoLocation.count {
+                let photoObject = Photo(context: CoreDataStack.context)
+                let photoIndexObject = IndexForPhoto(context: CoreDataStack.context)
+                if FilePathForPhoto.indexForPhotoOnEachRoute[i].count > 0 {
+                    
+                    photoIndexObject.index = Int16(FilePathForPhoto.indexForPhotoOnEachRoute[i][0])
+                    
+                    photoObject.addToNumberOfPhoto(photoIndexObject)
+                    /*
+                    for j in 0..<FilePathForPhoto.indexForPhotoOnEachRoute[i].count {
+                        
+                        print("-----------------------------------------------------------------------------------------------")
+                        print("-----------------------------------------------------------------------------------------------")
+                        print(FilePathForPhoto.indexForPhotoOnEachRoute[i])
+                        print("-----------------------------------------------------------------------------------------------")
+                        print("-----------------------------------------------------------------------------------------------")
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        print("Let's check if there is multiple photos in one \(FilePathForPhoto.indexForPhotoOnEachRoute[i]) location")
+                        print(FilePathForPhoto.indexForPhotoOnEachRoute[i][j])
+                        
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        print("***************************************************************************")
+                        
+                        
+                    }
+                         */
+                }
+                if i == photoLocation.count-1 {
+                    photoObject.lastElementIndex = Int16(FilePathForPhoto.lastElementOfPhotoIndex)
+                    FilePathForPhoto.lastElementOfPhotoIndex = 0
+                }
+                
+                photoObject.latitude = photoLocation[i].latitude
+                photoObject.longitude = photoLocation[i].longitude
+                newRide.addToPhotos(photoObject)
+            }
+        }
+        
+        FilePathForPhoto.indexForPhotoOnEachRoute.removeAll()
+        
+        /*
+        if let photoPosition:CLLocationCoordinate2D = photoLocation {
+            let photoObject = Photo(context: CoreDataStack.context)
+            if let path:String = FilePathForPhoto.path {
+                photoObject.filePath = path
+                photoObject.latitude = photoPosition.latitude
+                photoObject.longitude = photoPosition.longitude
+            }
+            
+        }
+     */
+        
+        
+        
+        
+        
+        
+        
         
         // Save the context
         CoreDataStack.saveContext()

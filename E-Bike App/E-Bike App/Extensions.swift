@@ -24,25 +24,85 @@ extension UIImage {
         return UIImageJPEGRepresentation(self, quality.rawValue)!
     }
     
-    func resized(withPercentage percentage: CGFloat) -> UIImage {
+    
+    func resizeWithPercentage(percentage: CGFloat) -> UIImage? {
+        let imageView = UIImageView(frame: CGRect(origin: .zero, size: CGSize(width: size.width * percentage, height: size.height * percentage)))
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = self
+        UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, scale)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        imageView.layer.render(in: context)
+        guard let result = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        UIGraphicsEndImageContext()
+        return result
+    }
+    
+    func resizeWithWidth(width: CGFloat) -> UIImage? {
+        let imageView = UIImageView(frame: CGRect(origin: .zero, size: CGSize(width: width, height: CGFloat(ceil(width/size.width * size.height)))))
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = self
+        UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, scale)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        imageView.layer.render(in: context)
+        guard let result = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        UIGraphicsEndImageContext()
+        return result
+    }
+    
+    func resized(withPercentage percentage: CGFloat) -> UIImage? {
         let canvasSize = CGSize(width: size.width * percentage, height: size.height * percentage)
         UIGraphicsBeginImageContextWithOptions(canvasSize, false, scale)
         defer {
             UIGraphicsEndImageContext()
         }
         draw(in: CGRect(origin: .zero, size: canvasSize))
-        return UIGraphicsGetImageFromCurrentImageContext()!
+        return UIGraphicsGetImageFromCurrentImageContext()
     }
     
-    func resized(toWidth width: CGFloat) -> UIImage {
+    func resized(toWidth width: CGFloat) -> UIImage? {
         let canvasSize = CGSize(width: width, height: CGFloat(ceil(width/size.width * size.height)))
         UIGraphicsBeginImageContextWithOptions(canvasSize, false, scale)
         defer {
             UIGraphicsEndImageContext()
         }
         draw(in: CGRect(origin: .zero, size: canvasSize))
-        return UIGraphicsGetImageFromCurrentImageContext()!
+        return UIGraphicsGetImageFromCurrentImageContext()
     }
+    
+    func resizedTo1MB() -> UIImage? {
+        guard let imageData = UIImagePNGRepresentation(self) else {return nil}
+        
+        var resizingImage = self
+        var imageSizeKB = Double(imageData.count) / 1024.0
+        
+        while imageSizeKB > 1024 {
+            guard let resizedImage = resizingImage.resized(toWidth: 250),
+                let imageData = UIImagePNGRepresentation(resizedImage)
+                else{ return nil}
+            resizingImage = resizedImage
+            imageSizeKB = Double(imageData.count) / 1024.0
+        }
+        return resizingImage
+    }
+    
+    func imageResizeImageIO(imageURL: NSURL, scalingFactor: Double) -> UIImage? {
+        guard let imageSource = CGImageSourceCreateWithURL(imageURL, nil) else { return nil }
+        
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as NSDictionary? else { return nil }
+        guard let width = properties[kCGImagePropertyPixelWidth as NSString] as? NSNumber else { return nil }
+        guard let height = properties[kCGImagePropertyPixelHeight as NSString] as? NSNumber else { return nil }
+        
+        let options: [NSString: NSObject] = [
+            kCGImageSourceThumbnailMaxPixelSize: max(width.doubleValue, height.doubleValue) * scalingFactor as NSObject,
+            kCGImageSourceCreateThumbnailFromImageAlways: true as NSObject,
+            kCGImageSourceCreateThumbnailWithTransform: true as NSObject,
+            kCGImageSourceShouldAllowFloat: true as NSObject
+        ]
+        
+        let scaledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary).flatMap { UIImage(cgImage: $0) }
+        return scaledImage
+    }
+    
 }
 
 

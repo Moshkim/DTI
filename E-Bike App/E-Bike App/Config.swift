@@ -10,6 +10,16 @@
 import Foundation
 
 
+struct userDefaultSetting {
+    static let userDefaults = UserDefaults.standard
+    
+    static func isKeyPresentInUserDefaults(key: String) -> Bool {
+        return UserDefaults.standard.object(forKey: key) != nil
+    }
+}
+
+
+
 
 struct Window {
     static let Size = UIApplication.shared.keyWindow

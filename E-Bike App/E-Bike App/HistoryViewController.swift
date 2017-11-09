@@ -50,14 +50,24 @@ class HistoryViewController: UICollectionViewController, GMSMapViewDelegate, UIC
     
     // This is where all the magic happens with core data changes or update
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        if type == .delete {
-            collectionView?.deleteItems(at: [indexPath!])
-            collectionView?.scrollToItem(at: indexPath!, at: .top, animated: true)
-        }
-        if type == .update {
-            collectionView?.scrollToItem(at: indexPath!, at: .top, animated: true)
-        }
         
+        guard let updatedIndexPath = indexPath?.count else {return}
+        
+        
+        
+        if updatedIndexPath > 2{
+            if type == .delete {
+                collectionView?.deleteItems(at: [indexPath!])
+                collectionView?.scrollToItem(at: indexPath!, at: .top, animated: true)
+            }
+            if type == .update {
+                collectionView?.scrollToItem(at: indexPath!, at: .top, animated: true)
+            }
+        } else {
+            if type == .delete {
+                collectionView?.deleteItems(at: [indexPath!])
+            }
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

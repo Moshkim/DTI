@@ -39,6 +39,62 @@ class SettingViewController: UIViewController{
     // ************************************************************************************************************************************
     
     
+    // MARK: - Clear Image Caches ****************************************************************************************************************
+    
+    lazy var clearCacheButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor.brown
+        button.setTitle("Clear Cache", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.addTarget(self, action: #selector(clearCaches), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    @objc func clearCaches() {
+
+        let fileMananer = FileManager.default
+        
+        //Get the URL for the users home directory
+        let documentsURL = fileMananer.urls(for: .documentDirectory, in: .userDomainMask).first!
+        
+        //Get the document URL as a string
+        let documentPath = documentsURL.path
+        
+        
+        
+        do {
+            // Look through array of files in documentDirectory
+            let files = try fileMananer.contentsOfDirectory(atPath: "\(documentPath)")
+            
+            for file in files {
+                // If we find existing image filePath delete it to make way for new imageData
+                
+                try fileMananer.removeItem(atPath: "\(documentPath)/\(file)")
+                
+            }
+            if userDefaultSetting.isKeyPresentInUserDefaults(key: "photoCount") == true {
+                var currentValue = userDefaultSetting.userDefaults.value(forKey: "photoCount") as! Int
+                
+                currentValue = 0
+                
+                userDefaultSetting.userDefaults.set(currentValue, forKey: "photoCount")
+                userDefaultSetting.userDefaults.synchronize()
+                
+            }
+            
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    
+    // ************************************************************************************************************************************
+    
+    
+    
+    
     // MARK: - History List Sort Type Setting *********************************************************************************************
     
     lazy var historyListSortTypeSetting: UISegmentedControl = {
@@ -126,14 +182,20 @@ class SettingViewController: UIViewController{
         
         
         view.addSubview(backToHome)
+        
+        
         view.addSubview(weatherLabel)
         view.addSubview(weatherSwitch)
+        view.addSubview(clearCacheButton)
         
         view.addSubview(historyListSortTypeSetting)
         
         
         
         _ = backToHome.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 20, leftConstant: 5, bottomConstant: 0, rightConstant: 0, widthConstant: 60, heightConstant: 30)
+        
+        _ = clearCacheButton.anchor(nil, left: nil, bottom: weatherLabel.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 100, heightConstant: 40)
+        clearCacheButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         _ = weatherLabel.anchor(nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 150, heightConstant: 40)
         weatherLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
