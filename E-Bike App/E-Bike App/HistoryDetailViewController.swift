@@ -938,7 +938,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         let view = iCarousel(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: self.view.frame.height))
         view.delegate = self
         view.dataSource = self
-        view.type = .timeMachine
+        view.type = .coverFlow
         view.scrollSpeed = 0.5
         //view.isUserInteractionEnabled = true
         //let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tappedBackground))
@@ -975,7 +975,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
         
         let itemView = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
-        itemView.backgroundColor = UIColor.cyan
+        //itemView.backgroundColor = UIColor.cyan
         
         
         print(isThisFirstTime)
@@ -1021,7 +1021,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
     
     func carousel(_ carousel: iCarousel, valueFor option: iCarouselOption, withDefault value: CGFloat) -> CGFloat {
         if option == iCarouselOption.spacing {
-            return value * 1.2
+            return value
         }
         return value
     }
