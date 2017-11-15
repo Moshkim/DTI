@@ -869,9 +869,9 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         let deleteButton = UIAlertAction(title: "Delete", style: .default) {
             _ in
-            self.clearData()
+            
             self.deleteRelatedPhotosWithRoute()
-            self.moveToRefreshedHistory()
+            
             
         }
         
@@ -910,6 +910,25 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
         
         do {
+            
+            
+            guard let photoInfo = ride?.photos else { return }
+            let photoPoints = photoInfo.array as! [Photo]
+            
+            if photoPoints.count > 0 {
+                for i in 0..<photoPoints.count {
+                    if eachIndexsOfPhotoLocation[i].count > 0 {
+                        for j in 0..<eachIndexsOfPhotoLocation[i].count {
+                            let photoIndex = eachIndexsOfPhotoLocation[i][j]
+                            print(photoIndex)
+                            print("\(documentPath)/\(photoIndex).jpeg")
+                            try fileMananer.removeItem(atPath: "\(documentPath)/\(photoIndex).jpeg")
+                        }
+                    }
+                }
+            }
+            self.clearData()
+            self.moveToRefreshedHistory()
             // Look through array of files in documentDirectory
             /*let files = try fileMananer.contentsOfDirectory(atPath: "\(documentPath)")
             for file in files {
@@ -918,13 +937,13 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
             }*/
             
             //try fileMananer.removeItem(atPath: "\(documentPath)/\(file)")
-            
+            /*
             for i in 0..<arrayOfIndexPhoto.count {
                 print("\(arrayOfIndexPhoto[i]).jpeg")
                 try fileMananer.removeItem(atPath: "\(documentPath)/\(arrayOfIndexPhoto[i]).jpeg")
                 
             }
-            
+            */
             
         } catch {
             print(error.localizedDescription)

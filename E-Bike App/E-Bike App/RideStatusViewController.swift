@@ -22,7 +22,8 @@ import UserNotifications
 
 
 
-class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate, MKMapViewDelegate{
+class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate, MKMapViewDelegate, iCarouselDelegate, iCarouselDataSource{
+    
     
     // Access to the window size
     let windowSize = UIApplication.shared.keyWindow
@@ -536,14 +537,30 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     
     //************************************************************************************************************************************//
+    
+    var isCarouselActive = false
 
     @objc fileprivate func zoomToMyLocation(sender: UIButton) {
-        guard let position = self.mapView.myLocation?.coordinate else { return }
         
-        self.cameraTag = 0
-        
-        let camera = GMSCameraPosition.camera(withTarget: position, zoom: 15, bearing: (mapView.myLocation?.course)!, viewingAngle: 35)
-        self.mapView.animate(to: camera)
+        if isCarouselActive == true {
+            self.carouselView.reloadData()
+            
+            UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.carouselView.frame = CGRect(x: 0, y: self.view.frame.height-210, width: self.view.frame.width, height: 160)
+                
+            }, completion: nil)
+            
+            isCarouselActive = false
+            self.myLocationButton.setImage(UIImage(named: "myLocation"), for: .normal)
+            
+        } else {
+            guard let position = self.mapView.myLocation?.coordinate else { return }
+            
+            self.cameraTag = 0
+            
+            let camera = GMSCameraPosition.camera(withTarget: position, zoom: 15, bearing: (mapView.myLocation?.course)!, viewingAngle: 35)
+            self.mapView.animate(to: camera)
+        }
         
     }
 
@@ -592,7 +609,6 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         let aPointCoordinate = "\(lat),\(long)"
         
         let bPointCoordinate = "\(coordinate.latitude),\(coordinate.longitude)"
-        print(DrivingMode.DRIVING)
         
         let url = "http://maps.googleapis.com/maps/api/directions/json?origin=\(aPointCoordinate)&destination=\(bPointCoordinate)&sensor=false&mode=\(DrivingMode.DRIVING)"
         
@@ -2108,7 +2124,25 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     
     //************************************************************************************************************************************//
     
-   
+    var isThisFirstTime = true
+    var numberOfCarouselScene = 0
+    var eachCarouselDataDic = Array<[Any]>()
+    var addressList = [String]()
+    var ratingList = [Float]()
+    var priceLevelList = [Int]()
+    var distanceList = [String]()
+    var durationList = [String]()
+    
+    lazy var carouselView: iCarousel = {
+        let view = iCarousel(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 180))
+        view.backgroundColor = UIColor.clear
+        view.delegate = self
+        view.dataSource = self
+        view.type = .linear
+        view.scrollSpeed = 0.5
+        return view
+    }()
+    
     
     
     lazy var blackView: UIView = {
@@ -3296,6 +3330,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
         
         
         
+        view.addSubview(carouselView)
 
         
         
@@ -3462,6 +3497,106 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
 extension RiderStatusViewController {
     
     
+
+    
+    
+    func numberOfItems(in carousel: iCarousel) -> Int {
+        if(isThisFirstTime == true){
+            return 1
+        } else {
+            return eachCarouselDataDic.count
+        }
+    }
+    
+    func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
+        let itemView = UIView(frame: CGRect(x: 0, y: 0, width: 240, height: 160))
+        //itemView.backgroundColor = UIColor.black
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 240, height: 160))
+        //imageView.backgroundColor = UIColor.black
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(named: "roundBox")
+        itemView.addSubview(imageView)
+        
+        
+        if isThisFirstTime == true {
+            
+            
+            
+        } else {
+            
+            let nameLabel = UILabel(frame: CGRect(x: 0, y: 20, width: 200, height: 20))
+            nameLabel.center.x = itemView.center.x
+            nameLabel.text = "\(eachCarouselDataDic[index][0])"
+            nameLabel.textColor = UIColor.white
+            nameLabel.font = UIFont.boldSystemFont(ofSize: 10)
+            nameLabel.textAlignment = .center
+            
+            let ratingLabel = UILabel(frame: CGRect(x: 40, y: 50, width: 150, height: 20))
+            ratingLabel.text = "Rating: \(eachCarouselDataDic[index][1])"
+            ratingLabel.textColor = UIColor.white
+            ratingLabel.font = UIFont.boldSystemFont(ofSize: 10)
+            ratingLabel.textAlignment = .left
+            
+            let distLabel = UILabel(frame: CGRect(x: 40, y: 70, width: 150, height: 20))
+            distLabel.text = "Distance: \(eachCarouselDataDic[index][2])"
+            distLabel.textColor = UIColor.white
+            distLabel.font = UIFont.boldSystemFont(ofSize: 10)
+            distLabel.textAlignment = .left
+            
+            
+            let durLabel = UILabel(frame: CGRect(x: 40, y: 90, width: 150, height: 20))
+            durLabel.text = "Duration: \(eachCarouselDataDic[index][3])"
+            durLabel.textColor = UIColor.white
+            durLabel.font = UIFont.boldSystemFont(ofSize: 10)
+            durLabel.textAlignment = .left
+            
+            
+            itemView.addSubview(nameLabel)
+            itemView.addSubview(ratingLabel)
+            itemView.addSubview(distLabel)
+            itemView.addSubview(durLabel)
+            
+            
+        }
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tappedBackground))
+        itemView.addGestureRecognizer(tapGesture)
+        return itemView
+    }
+    
+    @objc func tappedBackground() {
+        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.carouselView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 160)
+            
+        }, completion: nil)
+        
+    }
+    
+    
+    func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
+        let index = carousel.currentItemIndex
+        let points = eachCarouselDataDic[index][4] as! String
+        
+        
+        let path = GMSPath(fromEncodedPath: points)
+        self.polyPath.map = nil
+        self.polyPath = GMSPolyline(path: path)
+        self.polyPath.strokeWidth = 4
+        self.polyPath.strokeColor = UIColor.DTIRed()
+        self.polyPath.map = self.mapView
+        let destinationCoordinate = eachCarouselDataDic[index][5] as! CLLocationCoordinate2D
+        let bounds = GMSCoordinateBounds(coordinate: destinationCoordinate, coordinate: (self.mapView.myLocation?.coordinate)!)
+        self.mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 150))
+        
+    }
+    
+    func carousel(_ carousel: iCarousel, valueFor option: iCarouselOption, withDefault value: CGFloat) -> CGFloat {
+        if option == iCarouselOption.spacing {
+            return value
+        }
+        return value
+    }
+    
     func setStartAndEndPin(destination: CLLocationCoordinate2D) {
         // starting point
         /******************************************************************************************************/
@@ -3513,8 +3648,128 @@ extension RiderStatusViewController {
     }
     
     
+    func drawPolylineAmongMultiplePoints(coordinate: CLLocationCoordinate2D, index: Int) {
+        
+        guard let lat = mapView.myLocation?.coordinate.latitude else {return}
+        guard let long = mapView.myLocation?.coordinate.longitude else {return}
+        
+        let aPointCoordinate = "\(lat),\(long)"
+        
+        let bPointCoordinate = "\(coordinate.latitude),\(coordinate.longitude)"
+        
+        let url = "http://maps.googleapis.com/maps/api/directions/json?origin=\(aPointCoordinate)&destination=\(bPointCoordinate)&sensor=false&mode=\(DrivingMode.DRIVING)"
+        
+        guard let urlString = URL(string: url) else {
+            print("Error: Cannot create URL")
+            return
+        }
+        
+        let urlRequest = URLRequest(url: urlString)
+        
+        
+        // Set up the session
+        
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        
+        // Make the request
+        
+        
+        let task = session.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
+            
+            do{
+                
+                if error != nil{
+                    print("Error: \(String(describing: error?.localizedDescription))")
+                    
+                } else {
+                    
+                    guard let data = data else {
+                        throw JSONError.NoData
+                    }
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary else {
+                        throw JSONError.ConversionFailed
+                    }
+                    
+                    
+                    
+                    let arrayRoutes = json["routes"] as! NSArray
+                    let arrayLegs = (arrayRoutes[0] as! NSDictionary).object(forKey: "legs") as! NSArray
+                    let arraySteps = arrayLegs[0] as! NSDictionary
+                    
+                    
+                    let dicDistance = arraySteps["distance"] as! NSDictionary
+                    let totalDistance = dicDistance["text"] as! String
+                    self.totalremainingDistance = (dicDistance["value"] as! Double)*(1/1000)*(1.61)
+                    
+                    
+                    let dicDuration = arraySteps["duration"] as! NSDictionary
+                    let totalDuration = dicDuration["text"] as! String
+                    self.totalremainingDuration = dicDuration["value"] as! Double
+                    
+                    
+                    self.eachCarouselDataDic[index] += [totalDistance, totalDuration]
+                    
+                    
+                    print("\(totalDistance), \(totalDuration)")
+                    
+                    DispatchQueue.global(qos: .background).async {
+                        let array = json["routes"] as! NSArray
+                        let dic = array[0] as! NSDictionary
+                        
+                        let dic1 = dic["overview_polyline"] as! NSDictionary
+                        let points = dic1["points"] as! String
+                        let position = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                        self.eachCarouselDataDic[index] += [points, position]
+                        
+                        
+                        
+                        //print(points)
+                        
+                        /*
+                        DispatchQueue.main.async {
+                            
+                            //self.totalDistanceToDestination.text = "Remaining Distance \n \(totalDistance)"
+                            //self.totalDurationToDestination.text = "Duration \n \(totalDuration)"
+                            
+                            let path = GMSPath(fromEncodedPath: points)
+                            self.polyPath.map = nil
+                            self.polyPath = GMSPolyline(path: path)
+                            self.polyPath.strokeWidth = 4
+                            self.polyPath.strokeColor = UIColor.DTIRed()
+                            self.polyPath.map = self.mapView
+
+                        }
+                         */
+  
+                    }
+                    
+                }
+                
+            }catch let error as JSONError {
+                print(error.rawValue)
+            }catch let error as NSError {
+                print(error.debugDescription)
+                
+            }
+            
+            
+        })
+        task.resume()
+        
+    }
+    
+    
+    
     @objc func POIForPlaces(sender: UIButton) {
         print("I am here~~~")
+        
+        //mapView.clear()
+        
+        //For Carousel view to have access to the POI elements
+        isThisFirstTime = false
+        self.eachCarouselDataDic.removeAll()
+        
         var typeOfPlace = String()
         
         var markerImage = UIImage()
@@ -3531,7 +3786,6 @@ extension RiderStatusViewController {
             break
         }
         let markerView = UIImageView(image: markerImage)
-        print(typeOfPlace)
         
         
         guard let lat = mapView.myLocation?.coordinate.latitude else {return}
@@ -3548,13 +3802,9 @@ extension RiderStatusViewController {
         var latitude = CLLocationDegrees()
         var longitude = CLLocationDegrees()
 
-        print("What is going on?")
         let jsonURLString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&maxprice=3&radius=3200&opennow&type=\(typeOfPlace)&key=\(Config.GOOGLE_API_KEY)"
-        //"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(lat),\(long)&radius=3200&opennow&maxprice=3&type=\(typeOfPlace)&key=\(Config.GOOGLE_API_KEY)"
         
-        print(jsonURLString)
-        
-        
+
         guard let urlString = URL(string: jsonURLString) else {
             print("Error: Cannot create URL")
             return
@@ -3593,22 +3843,30 @@ extension RiderStatusViewController {
                         
                         for i in 0..<arrayPlaces.count {
                             
+                            self.eachCarouselDataDic.append([])
                             let arrayForLocations = (((arrayPlaces[i] as! NSDictionary).object(forKey: "geometry") as! NSDictionary).object(forKey: "location") as! NSDictionary)
+                            guard let lat = arrayForLocations.object(forKey: "lat") else { return }
+                            guard let long = arrayForLocations.object(forKey: "lng") else { return }
+                            let position = CLLocationCoordinate2D(latitude: lat as! CLLocationDegrees, longitude: long as! CLLocationDegrees)
                             
                             let arrayForName = (arrayPlaces[i] as! NSDictionary).object(forKey: "name") as! String
                             let arrayForAddress = (arrayPlaces[i] as! NSDictionary).object(forKey: "vicinity") as! String
                             
                             if let arrayForRating = (arrayPlaces[i] as! NSDictionary).object(forKey: "rating") as? NSNumber {
                                 arrayOfRating.append(Double(truncating: arrayForRating).rounded(toPlaces: 1))
+                                self.eachCarouselDataDic[i] += [arrayForName,arrayForRating]
                             } else {
                                 arrayOfRating.append(0.0)
+                                self.eachCarouselDataDic[i] += [arrayForName,0.0]
                             }
                             
                             arrayOfNames.append(arrayForName)
                             arrayOfAddress.append(arrayForAddress)
-                            
-                            
                             arrayOfLocations.append([arrayForLocations.object(forKey: "lat") as! Double, arrayForLocations.object(forKey: "lng") as! Double])
+                            
+                            //self.eachCarouselDataDic[i] += [arrayForName,arrayForRating]
+                            
+                            self.drawPolylineAmongMultiplePoints(coordinate: position, index: i)
                             
                             
                         }
@@ -3664,6 +3922,12 @@ extension RiderStatusViewController {
         task.resume()
         
         
+        
+        
+        UIView.animate(withDuration: 3, animations: {
+            self.isCarouselActive = true
+            self.myLocationButton.setImage(UIImage(named: "carousel"), for: .normal)
+        })
     }
     
     func ratingSystem(rating: Double) -> String {
