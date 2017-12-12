@@ -6,9 +6,15 @@ PODS:
   - Firebase/Core (4.0.0):
     - FirebaseAnalytics (= 4.0.0)
     - FirebaseCore (= 4.0.0)
+  - Firebase/Crash (4.0.0):
+    - Firebase/Core
+    - FirebaseCrash (= 2.0.0)
   - Firebase/Database (4.0.0):
     - Firebase/Core
     - FirebaseDatabase (= 4.0.0)
+  - Firebase/Performance (4.0.0):
+    - Firebase/Core
+    - FirebasePerformance (= 1.0.0)
   - Firebase/Storage (4.0.0):
     - Firebase/Core
     - FirebaseStorage (= 2.0.0)
@@ -22,10 +28,23 @@ PODS:
     - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseCore (4.0.0):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseCrash (2.0.0):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - Protobuf (~> 3.1)
   - FirebaseDatabase (4.0.0):
     - FirebaseAnalytics (~> 4.0)
   - FirebaseInstanceID (2.0.0):
     - FirebaseCore (~> 4.0)
+  - FirebasePerformance (1.0.0):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.1)
   - FirebaseStorage (2.0.0):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
@@ -49,6 +68,8 @@ PODS:
   - GoogleToolboxForMac/DebugUtils (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - GoogleToolboxForMac/Defines (2.1.1)
+  - GoogleToolboxForMac/Logger (2.1.1):
+    - GoogleToolboxForMac/Defines (= 2.1.1)
   - GoogleToolboxForMac/NSData+zlib (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.1):
@@ -64,6 +85,7 @@ PODS:
   - GTMSessionFetcher/Full (1.1.10):
     - GTMSessionFetcher/Core (= 1.1.10)
   - KeychainSwift (8.0.2)
+  - Protobuf (3.3.0)
   - SwiftChart (0.5.0)
   - SwiftyJSON (3.0.0)
 
@@ -71,7 +93,9 @@ DEPENDENCIES:
   - Alamofire (~> 4.4)
   - Firebase/Auth
   - Firebase/Core
+  - Firebase/Crash
   - Firebase/Database
+  - Firebase/Performance
   - Firebase/Storage
   - GoogleMaps
   - GooglePlacePicker
@@ -98,8 +122,10 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: 6f08e746f7d66f5452931bc2e822b5df9c66b64a
   FirebaseAuth: ebb6abcbabae00fc47446d690c19ce68d8484fde
   FirebaseCore: 85ad466044c2f013cdb167f85d426d15b128114a
+  FirebaseCrash: 600ec2cbd8e10c3064a42de2c6ee7687bd02a076
   FirebaseDatabase: d829b3a8c3e2ac7a16773c5df226966b0805dfc2
   FirebaseInstanceID: 9fbf536668f4d3f0880e7438456dabd1376e294b
+  FirebasePerformance: 77cff325f2adfb20fc03fec32b9811870c1d5130
   FirebaseStorage: 8110a1ed2034c8fbfd83890d2acc9cdbbd99afec
   GoogleMaps: 104c418d61ab8a05dff06ed0784c25ea9d37da45
   GooglePlacePicker: 345b1aabd42c9d6d9bf2369c1bae1234d903e764
@@ -110,9 +136,10 @@ SPEC CHECKSUMS:
   GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
   GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
   KeychainSwift: 213db04dfe7244988e61f77c72a2afb2f775954a
+  Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   SwiftChart: d1d22d2b1c4582f4d561edf97a210059c00ee256
   SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
 
-PODFILE CHECKSUM: 441c02c377ff7215a2b2e13272e0df23954c7269
+PODFILE CHECKSUM: 59b0d2149ada06f2a5b94a60eb78a8087f22f3a6
 
 COCOAPODS: 1.2.1

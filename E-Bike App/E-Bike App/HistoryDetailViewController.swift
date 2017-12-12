@@ -1164,6 +1164,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
                                     
                                     //print(photoTaken)
                                 let photoPin = GMSMarker()
+                                photoPin.layer.zPosition = 10
                                 photoPin.isTappable = true
                                 photoPin.userData = i
                                 
@@ -1218,6 +1219,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
         
             if i == 0{
                 let startPointMapPin = GMSMarker()
+                startPointMapPin.layer.zPosition = 8
                 startPointMapPin.title = "Start"
                 let markerImage = UIImage(named: "startPin")
                 //creating a marker view
@@ -1227,6 +1229,7 @@ class HistoryDetailViewController: UIViewController, GMSMapViewDelegate, UIScrol
                 
             } else if i == locationPoints.count - 1{
                 let endPointMapPin = GMSMarker()
+                endPointMapPin.layer.zPosition = 5
                 endPointMapPin.title = "end"
                 let markerImage = UIImage(named: "endPin")
                 //creating a marker view

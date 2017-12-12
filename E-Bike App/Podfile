@@ -11,6 +11,8 @@ target 'E-Bike App' do
 
 	#This is firebase authentication!
 
+	pod 'Firebase/Crash'
+	pod 'Firebase/Performance'
     pod 'Firebase/Storage'
 	pod 'Firebase/Core'
 	pod 'Firebase/Database'

@@ -97,7 +97,7 @@
 		A6C7BFAF1F1933C10000E66A /* CircleMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFA91F1933C10000E66A /* CircleMenu.swift */; };
 		A6C7BFB01F1933C10000E66A /* CircleMenuLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFAA1F1933C10000E66A /* CircleMenuLoader.swift */; };
 		A6C7BFB11F1933C10000E66A /* CircleMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */; };
-		A6D7D7FC1F7BFA7E00AA8A0D /* IntroductionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D7D7FB1F7BFA7E00AA8A0D /* IntroductionViewController.swift */; };
+		A6D168CD1FC4D6EF001E9B93 /* SharePhotoWithInstagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D168CC1FC4D6EF001E9B93 /* SharePhotoWithInstagram.swift */; };
 		A6D7D7FE1F7CC17800AA8A0D /* MulticolorPolyline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D7D7FD1F7CC17800AA8A0D /* MulticolorPolyline.swift */; };
 		A6D7D8001F7EF45700AA8A0D /* MapAndStatusMenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D7D7FF1F7EF45600AA8A0D /* MapAndStatusMenuBar.swift */; };
 		A6F1C4181F1FD29F000B03AE /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = A6F1C4171F1FD29F000B03AE /* style.json */; };
@@ -211,7 +211,7 @@
 		A6C7BFA91F1933C10000E66A /* CircleMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenu.swift; sourceTree = "<group>"; };
 		A6C7BFAA1F1933C10000E66A /* CircleMenuLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuLoader.swift; sourceTree = "<group>"; };
 		A6C7BFAC1F1933C10000E66A /* CircleMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleMenuButton.swift; sourceTree = "<group>"; };
-		A6D7D7FB1F7BFA7E00AA8A0D /* IntroductionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroductionViewController.swift; sourceTree = "<group>"; };
+		A6D168CC1FC4D6EF001E9B93 /* SharePhotoWithInstagram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePhotoWithInstagram.swift; sourceTree = "<group>"; };
 		A6D7D7FD1F7CC17800AA8A0D /* MulticolorPolyline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MulticolorPolyline.swift; sourceTree = "<group>"; };
 		A6D7D7FF1F7EF45600AA8A0D /* MapAndStatusMenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MapAndStatusMenuBar.swift; path = "E-Bike App/MapAndStatusMenuBar.swift"; sourceTree = SOURCE_ROOT; };
 		A6F1C4171F1FD29F000B03AE /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = style.json; path = "E-Bike App/style.json"; sourceTree = SOURCE_ROOT; };
@@ -400,6 +400,7 @@
 				A6FC1B411F59FB2A00B08DC3 /* ProfilePicture.swift */,
 				A68A9A1C1F634E9200D1099D /* Graph.swift */,
 				A61F6FE11F9FDF5100560A51 /* Photo.swift */,
+				A6D168CC1FC4D6EF001E9B93 /* SharePhotoWithInstagram.swift */,
 			);
 			name = Model;
 			path = "../../../../../Google Drive/Swift Development/SecretProject/SecretProject";
@@ -546,7 +547,6 @@
 		A6FC1B4A1F5B2AAB00B08DC3 /* SignIn & Signup Controller */ = {
 			isa = PBXGroup;
 			children = (
-				A6D7D7FB1F7BFA7E00AA8A0D /* IntroductionViewController.swift */,
 				A6301CF91EEF4A2E0005EA12 /* LoginViewController.swift */,
 				A64E95A71F548AE700E6C1C1 /* LoginAndOutViewController.swift */,
 				A667DF941F573233000FDC33 /* SignupController.swift */,
@@ -719,7 +719,6 @@
 			files = (
 				A68447ED1F02C8A400B90B79 /* UILabelX.swift in Sources */,
 				A6664F0B1F2FED47007316AA /* HistoryViewController.swift in Sources */,
-				A6D7D7FC1F7BFA7E00AA8A0D /* IntroductionViewController.swift in Sources */,
 				A6301CF81EEF1D170005EA12 /* SettingCell.swift in Sources */,
 				A6BD1C6B1EF842A100E5D8EE /* FadeTransition.swift in Sources */,
 				A69FDB021F0D6CF1003D7D15 /* ScrollableGraphView.swift in Sources */,
@@ -736,6 +735,7 @@
 				A65548581F02CAB400968564 /* MenuNavigationViewController.swift in Sources */,
 				A6144FA21EDDFC1800204D02 /* RootContainerViewController.swift in Sources */,
 				A625DDDF1EC623B600DB521E /* MapViewController.swift in Sources */,
+				A6D168CD1FC4D6EF001E9B93 /* SharePhotoWithInstagram.swift in Sources */,
 				A60EBC651F5F125D004AF307 /* MyStatsViewController.swift in Sources */,
 				A61F6FE21F9FDF5100560A51 /* Photo.swift in Sources */,
 				A6144F981EDDEF6200204D02 /* Utils.swift in Sources */,

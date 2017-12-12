@@ -8,6 +8,9 @@
 
 import UIKit
 import FirebaseAuth
+import Firebase
+import FirebaseDatabase
+import FirebaseStorage
 
 class SettingMenuSlide: NSObject {
     
@@ -39,15 +42,14 @@ class SettingMenuSlide: NSObject {
         
         // Decode the saved profile picture
         
-        let image = UserDefaults.standard.object(forKey: "profileImage")
+        let image = userDefaultSetting.userDefaults.object(forKey: "profileImage")
         if let profileImage = image {
         
-            imageView.image = UIImage(data: (image as! NSData) as Data)
+            imageView.image = UIImage(data: profileImage as! Data)
         } else {
             imageView.image = UIImage(named: "profile")
         
         }
-       
         
         imageView.backgroundColor = UIColor.clear
         imageView.layer.borderColor = UIColor.white.cgColor
@@ -66,13 +68,13 @@ class SettingMenuSlide: NSObject {
     //************************************************************************************************************************************//
     let profileNickName: UILabel = {
         let label = UILabel()
+        
         if let username = UserDefaults.standard.object(forKey: "username") {
             label.text = "\(username)"
         
         } else {
             label.text = "Burning Bush"
         }
-        
         label.textColor = UIColor.white
         label.textAlignment = .center
         
@@ -91,7 +93,6 @@ class SettingMenuSlide: NSObject {
     //************************************************************************************************************************************//
     
     
-    
     // MARK - MY STATS
     //************************************************************************************************************************************//
     
@@ -104,6 +105,7 @@ class SettingMenuSlide: NSObject {
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
+        button.contentHorizontalAlignment = .left
         button.addTarget(self, action: #selector(moveToMyHistoryViewController), for: .touchUpInside)
         return button
     }()
@@ -139,6 +141,7 @@ class SettingMenuSlide: NSObject {
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
+        button.contentHorizontalAlignment = .left
         button.addTarget(self, action: #selector(moveToMyStatsViewController), for: .touchUpInside)
         return button
     }()
@@ -175,6 +178,7 @@ class SettingMenuSlide: NSObject {
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
+        button.contentHorizontalAlignment = .left
         button.addTarget(self, action: #selector(moveToBikeTypesViewController), for: .touchUpInside)
         return button
     }()
@@ -205,12 +209,13 @@ class SettingMenuSlide: NSObject {
     lazy var connectToDevice: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
-        button.setTitle("Connect Devices", for: .normal)
+        button.setTitle("Connect", for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
+        button.contentHorizontalAlignment = .left
         button.addTarget(self, action: #selector(connectToDevices), for: .touchUpInside)
         return button
     }()
@@ -242,12 +247,13 @@ class SettingMenuSlide: NSObject {
     lazy var termsAndPrivacy: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.clear
-        button.setTitle("Terms & Privacy", for: .normal)
+        button.setTitle("Terms&Privacy", for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
+        button.contentHorizontalAlignment = .left
         button.addTarget(self, action: #selector(moveToTermsAndPrivacyViewController), for: .touchUpInside)
         return button
     }()
@@ -292,6 +298,7 @@ class SettingMenuSlide: NSObject {
         button.isHighlighted = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
+        button.contentHorizontalAlignment = .left
         button.addTarget(self, action: #selector(moveToSettingViewController), for: .touchUpInside)
         return button
     
@@ -363,17 +370,16 @@ class SettingMenuSlide: NSObject {
     //************************************************************************************************************************************//
     
     
-    
     // MARK - CENTER FUNCTION TO HANDLING ALL THE SIDE MENU UI
     
     //************************************************************************************************************************************//
     func handleSideMenuButton() {
         
         //Show Menu
-        
+
         
         if let window = UIApplication.shared.keyWindow{
-
+            
             
             window.addSubview(blackView)
             window.addSubview(slideMenuView)
@@ -409,29 +415,29 @@ class SettingMenuSlide: NSObject {
             _ = profileNickName.anchor(profilePicture.bottomAnchor, left: nil, bottom: nil, right: nil, topConstant: 10, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
                 profileNickName.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
-            _ = myHistory.anchor(nil, left: nil, bottom: myStats.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
-            myHistory.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
+            _ = myHistory.anchor(nil, left: nil, bottom: myStats.topAnchor, right: nil, topConstant: 0, leftConstant: 150, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width-150, heightConstant: 30)
+                myHistory.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
-            _ = myStats.anchor(nil, left: nil, bottom: bikeTypes.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = myStats.anchor(nil, left: nil, bottom: bikeTypes.topAnchor, right: nil, topConstant: 0, leftConstant: 150, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width-150, heightConstant: 30)
                 myStats.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
-            _ = bikeTypes.anchor(nil, left: nil, bottom: connectToDevice.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = bikeTypes.anchor(nil, left: nil, bottom: connectToDevice.topAnchor, right: nil, topConstant: 0, leftConstant: 150, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width-150, heightConstant: 30)
                 bikeTypes.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
-            _ = connectToDevice.anchor(nil, left: nil, bottom: termsAndPrivacy.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = connectToDevice.anchor(nil, left: nil, bottom: termsAndPrivacy.topAnchor, right: nil, topConstant: 0, leftConstant: 150, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width-150, heightConstant: 30)
                 connectToDevice.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
-            _ = termsAndPrivacy.anchor(nil, left: nil, bottom: settingButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = termsAndPrivacy.anchor(nil, left: nil, bottom: settingButton.topAnchor, right: nil, topConstant: 0, leftConstant: 150, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width-150, heightConstant: 30)
                 termsAndPrivacy.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             
             //_ = settingImage.anchor(nil, left: slideMenuView.leftAnchor, bottom: logoutButton.topAnchor, right: settingButton.leftAnchor, topConstant: 0, leftConstant: 40, bottomConstant: 80, rightConstant: 0, widthConstant: 30, heightConstant: 30)
             
-            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width, heightConstant: 30)
+            _ = settingButton.anchor(nil, left: nil, bottom: logoutButton.topAnchor, right: nil, topConstant: 0, leftConstant: 150, bottomConstant: 30, rightConstant: 0, widthConstant: slideMenuView.frame.width-150, heightConstant: 30)
                 settingButton.centerXAnchor.constraint(equalTo: slideMenuView.centerXAnchor).isActive = true
             
             _ = logoutButton.anchor(nil, left: nil, bottom: slideMenuView.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 10, rightConstant: 0, widthConstant: 40, heightConstant: 40)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0900"
+   LastUpgradeVersion = "0920"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6C277319F640B32D9FFD16B38D1E4A31"
+               BlueprintIdentifier = "3EF5AB07ACF1DADFF5BCCE5860F99993"
                BuildableName = "SwiftChart.framework"
                BlueprintName = "SwiftChart"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6C277319F640B32D9FFD16B38D1E4A31"
+            BlueprintIdentifier = "3EF5AB07ACF1DADFF5BCCE5860F99993"
             BuildableName = "SwiftChart.framework"
             BlueprintName = "SwiftChart"
             ReferencedContainer = "container:Pods.xcodeproj">

@@ -42,9 +42,8 @@ class AuthService {
                 
                 
                 guard let uid = user?.uid else { return }
-                let storageRef = Storage.storage().reference(forURL: Config.STORAGE_ROOT_REF).child("profile_image").child(uid)
-                let userRef = Database.database().reference(fromURL: Config.DATABASE_ROOT_REF).child("users").child(uid)
-                
+                let storageRef = Storage.storage().reference(forURL: Config.STORAGE_ROOT_REF).child(uid).child("profile_image")
+                let userRef = Database.database().reference(fromURL: Config.DATABASE_ROOT_REF).child("users").child(uid).child("userInfo")
 
                 storageRef.putData(imageData, metadata: nil, completion: { (metaData, error) in
                 
@@ -54,7 +53,7 @@ class AuthService {
                     }
                     
                     let profileImageURL = metaData?.downloadURL()?.absoluteString
-                    userRef.setValue(["username": name, "email": email, "profileImageURL": profileImageURL])
+                    userRef.setValue(["username": name, "email": email, "password": password ,"profileImageURL": profileImageURL])
             
                     onSuccess()
                 })

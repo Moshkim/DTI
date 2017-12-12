@@ -177,8 +177,8 @@ class LoginAndOutViewController: UIViewController, GIDSignInUIDelegate{
                 if success {
                     print("User has authenticated!")
                     DispatchQueue.main.async {
-                        let email = UserDefaults.standard.object(forKey: "email")
-                        let password = UserDefaults.standard.object(forKey: "password")
+                        guard let email = UserDefaults.standard.object(forKey: "email") else { return }
+                        guard let password = UserDefaults.standard.object(forKey: "password") else { return }
                         
                         AuthService.signIn(email: email as! String, password: password as! String, onSuccess: {
                             self.performSegue(withIdentifier: "LoginToRiderStatusSegue", sender: self.loginButton)
