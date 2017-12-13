@@ -53,7 +53,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F7b-2A-hPt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="182" y="276"/>
+            <point key="canvasLocation" x="684" y="388"/>
         </scene>
         <!--Sign In With TouchID View Controller-->
         <scene sceneID="S19-Ny-c6t">
@@ -74,7 +74,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SVm-12-at0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-492" y="839"/>
+            <point key="canvasLocation" x="-239" y="688"/>
         </scene>
         <!--Menu View Controller-->
         <scene sceneID="o6g-Yv-FV3">
@@ -98,7 +98,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hVV-hf-coU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1737" y="602"/>
+            <point key="canvasLocation" x="1398" y="440"/>
         </scene>
         <!--History View Controller-->
         <scene sceneID="V1C-m9-MmD">
@@ -136,7 +136,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bZV-0j-tz7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="273" y="3698"/>
+            <point key="canvasLocation" x="334" y="3188"/>
         </scene>
         <!--History Detail View Controller-->
         <scene sceneID="Sqb-46-zav">
@@ -157,7 +157,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xtb-IQ-LVx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1336.8" y="3187.5562218890559"/>
+            <point key="canvasLocation" x="1356" y="3188"/>
         </scene>
         <!--Ebike Details View Controller-->
         <scene sceneID="hDR-pY-tge">
@@ -201,7 +201,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F1z-p1-rch" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1318" y="860"/>
+            <point key="canvasLocation" x="-1186" y="688"/>
         </scene>
         <!--Signup Controller-->
         <scene sceneID="sdW-xT-rUv">
@@ -222,7 +222,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FAb-VL-Z4r" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-719" y="1564"/>
+            <point key="canvasLocation" x="-270" y="1542"/>
         </scene>
         <!--Setting View Controller-->
         <scene sceneID="KtR-wf-c53">
@@ -334,7 +334,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="erx-e4-xJF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2334" y="1267"/>
+            <point key="canvasLocation" x="2241" y="946"/>
         </scene>
         <!--Preview View Controller-->
         <scene sceneID="7et-XP-lkn">
@@ -491,7 +491,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="llD-mA-GU6" customClass="GMSMapView">
-                                <rect key="frame" x="0.0" y="64" width="375" height="502"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="502"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
                                 <constraints>
@@ -597,23 +597,6 @@
             </objects>
             <point key="canvasLocation" x="-652" y="3188"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="QHC-gb-HiC">
-            <objects>
-                <viewController id="0ig-55-nSH" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="aPK-W6-p58"/>
-                        <viewControllerLayoutGuide type="bottom" id="EuV-I7-7bO"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="OXV-8m-iXq">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="4Ik-iZ-PWl" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-        </scene>
     </scenes>
     <resources>
         <image name="Destination" width="686" height="766"/>
@@ -622,9 +605,9 @@
         <image name="getDirectionArrow" width="778" height="768"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="qX4-7C-N0h"/>
-        <segue reference="1uj-td-jI8"/>
-        <segue reference="C4u-2X-IJU"/>
-        <segue reference="1YH-UB-0d7"/>
+        <segue reference="e4s-PL-k57"/>
+        <segue reference="rS7-at-CCz"/>
+        <segue reference="BLt-nd-ynn"/>
+        <segue reference="rcr-Gh-1mr"/>
     </inferredMetricsTieBreakers>
 </document>
