@@ -558,7 +558,7 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
             
             
             startButton.setImage(UIImage(named: "bikeButton"), for: .normal)
-            didTapTheDestination = true
+            //didTapTheDestination = true
             
             
         } else {
@@ -2449,6 +2449,12 @@ class RiderStatusViewController: UIViewController, UIScrollViewDelegate, CLLocat
     @objc func startAndStop(sender: UIButton) {
         
         if didTapTheDestination == true {
+            
+            UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.carouselView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 160)
+                
+            }, completion: nil)
+            
             sender.setImage(UIImage(named: "startButton"), for: .normal)
             didTapTheDestination = false
             
@@ -3697,6 +3703,7 @@ extension RiderStatusViewController {
         startButton.setImage(UIImage(named: "startButton"), for: .normal)
         didTapTheDestination = false
         
+        
         UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.carouselView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 160)
             
@@ -3727,6 +3734,7 @@ extension RiderStatusViewController {
     }
     
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
+        didTapTheDestination = true
         let index = carousel.currentItemIndex
         if let points = eachCarouselDataDic[index][4] as? String {
             let path = GMSPath(fromEncodedPath: points)
@@ -3737,6 +3745,7 @@ extension RiderStatusViewController {
             self.polyPath.map = self.mapView
             
             let destinationCoordinate = eachCarouselDataDic[index][5] as! CLLocationCoordinate2D
+            didTapTheDestinationPlacePosition = CLLocation(latitude: destinationCoordinate.latitude, longitude: destinationCoordinate.longitude)
             let bounds = GMSCoordinateBounds(coordinate: destinationCoordinate, coordinate: (self.mapView.myLocation?.coordinate)!)
             self.mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 150))
         } else {
