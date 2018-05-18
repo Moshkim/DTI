@@ -8,6 +8,33 @@
 
 import Foundation
 
+class TaskManager {
+    static let shared = TaskManager()
+    
+    let session = URLSession(configuration: .default)
+    typealias completeHandler = (Data?, URLResponse?, Error?) -> Void
+    var tasks = [URL: [completeHandler]]()
+    func dataTask(with url: URL, completion: @escaping completeHandler){
+        if tasks.keys.contains(url){
+            tasks[url]?.append(completion)
+        } else {
+            tasks[url] = [completion]
+            let _ = session.dataTask(with: url, completionHandler: {[weak self] (data, response, error) in
+                DispatchQueue.main.async {
+                    print("Finished network task")
+                    
+                    guard let completionHandlers = self?.tasks[url] else { return }
+                    for handler in completionHandlers{
+                        print("executing completion block")
+                        handler(data, response, error)
+                    }
+                }
+                
+            }).resume()
+        }
+    }
+}
+
 class NetworkProcessor {
     
     lazy var configuration: URLSessionConfiguration = URLSessionConfiguration.default
